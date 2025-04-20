@@ -166,7 +166,9 @@ export default function BibleIA() {
                     </SelectContent>
                 </Select>}
             </div>
-            <section ref={ref}>
+            <section onCopy={(e) => e.preventDefault()}
+                onCut={(e) => e.preventDefault()}
+                onPaste={(e) => e.preventDefault()} ref={ref}>
                 <div className='flex flex-col gap-1  '>
                     {selectTextBookBible[selectNumberChapter!]?.map((texts, index) => {
                         return <div key={index} className='flex items-start gap-1'>
@@ -189,7 +191,7 @@ export default function BibleIA() {
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center  justify-between'>
                             Pergunte a nossa IA
-                            <div className='cursor-pointer' onClick={() => setIsDrawerOpen(!isDrawerOpen)}><X className='w-5 bg text-black'/></div>
+                            <div className='cursor-pointer' onClick={() => setIsDrawerOpen(!isDrawerOpen)}><X className='w-5 bg text-black' /></div>
                         </DialogTitle>
                     </DialogHeader>
 
