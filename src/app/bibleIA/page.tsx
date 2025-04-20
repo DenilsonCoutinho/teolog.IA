@@ -130,6 +130,20 @@ export default function BibleIA() {
 
         return
     };
+
+
+    const handleTouchUp = () => {
+        const selection = window.getSelection();
+        if (!selection || selection.isCollapsed) return;
+
+        const selectedText = selection.toString().trim();
+        const anchorNode = selection.anchorNode;
+
+        if (ref.current?.contains(anchorNode)) {
+            setIsDrawerOpen(true)
+            setTextSelected(selectedText);
+        }
+    };
     return (
         <div className="flex flex-col items-center justify-center max-w-[600px] m-auto p-8 pb-20 gap-16 ">
             {/* <div className='border rounded-full bg-slate-800 h-10 w-10 fixed bottom-10 right-10'></div> */}
@@ -166,9 +180,8 @@ export default function BibleIA() {
                     </SelectContent>
                 </Select>}
             </div>
-            <section onCopy={(e) => e.preventDefault()}
-                onCut={(e) => e.preventDefault()}
-                onPaste={(e) => e.preventDefault()} ref={ref}>
+            <section onCopy={() => handleTouchUp()}
+                ref={ref}>
                 <div className='flex flex-col gap-1  '>
                     {selectTextBookBible[selectNumberChapter!]?.map((texts, index) => {
                         return <div key={index} className='flex items-start gap-1'>
@@ -181,13 +194,13 @@ export default function BibleIA() {
                 </div>
             </section>
 
-            <Dialog onOpenChange={(val) => {
+            <Dialog  onOpenChange={(val) => {
                 if (val === false) {
                     return
                 }
                 setIsDrawerOpen(val)
             }} open={isDrawerOpen}>
-                <DialogContent className='px-3 h-screen'>
+                <DialogContent className='px-3'>
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center  justify-between'>
                             Pergunte a nossa IA
@@ -195,7 +208,7 @@ export default function BibleIA() {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div className="mx-auto w-full h-[28rem] flex flex-col border rounded-xl ">
+                    <div className="mx-auto w-full h-[26rem] flex flex-col border rounded-xl ">
                         {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto p-4 bg-gray-100">
                             {loading ? <div className='flex justify-center flex-col items-center'>
@@ -228,7 +241,7 @@ export default function BibleIA() {
                                 <Textarea
                                     onChange={(e) => setTextSelected(e.target.value)}
                                     value={textSelected}
-                                    className="max-h-40 text-wrap"
+                                    className="max-h-32 text-wrap"
                                     disabled={!textSelected || loading}
                                 />
                                 <Button
