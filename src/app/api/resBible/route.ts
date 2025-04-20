@@ -1,4 +1,6 @@
 // pages/api/biblia.ts
+export const maxDuration = 25; // This function can run for a maximum of 5 seconds
+
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
