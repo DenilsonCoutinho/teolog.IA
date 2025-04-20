@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  apiKey: process.env.XAI_API_KEY, // This is the default and can be omitted
+  apiKey: process.env.XAI_API_KEY! as string, // This is the default and can be omitted
   baseURL: "https://api.x.ai/v1",
 });
 
