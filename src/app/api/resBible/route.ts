@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
         },
         { role: "user", content: messageUser }
       ],
-      model: "grok-3-beta",
+      model: "grok-3-mini-beta",
     });
 
     return NextResponse.json({ res: response });
