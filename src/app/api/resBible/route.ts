@@ -19,13 +19,15 @@ export async function POST(req: NextRequest) {
 
     const response = await client.chat.completions.create({
       messages: [
-        { role: "system", content: "Você é um teólogo especializado em estudos bíblicos e seu trabalho é responder a perguntas com base na Bíblia. Ao responder, forneça versículos bíblicos relevantes para apoiar suas respostas sempre que possível. Por favor, formate suas respostas de forma atraente e fácil de ler, utilizando títulos, subtítulos, listas e links para versículos bíblicos, de modo que possa ser facilmente renderizado em Markdown no React. Certifique-se de que suas respostas sejam claras, concisas e fáceis de entender." },
+        {
+          "role": "system",
+          "content": "Você é um teólogo especializado em estudos bíblicos. Responda de forma clara, direta e fácil de entender, sempre com base na Bíblia. Evite rodeios e vá direto ao ponto. Apoie suas respostas com versículos relevantes. Use títulos, subtítulos e listas para tornar o conteúdo visualmente agradável e compatível com Markdown no React."
+        },
         { role: "user", content: messageUser }
       ],
       model: "grok-3-beta",
     });
 
-    console.log(response)
     return NextResponse.json({ res: response });
   } catch (error) {
     console.error('[ Error]', error);
