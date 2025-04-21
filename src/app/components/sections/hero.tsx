@@ -18,9 +18,9 @@ export function Hero() {
                 <p className="text-xl md:text-2xl text-slate-600 mb-8">
                     Selecione um versículo. Deixe a IA explicar o contexto. Aprofunde sua fé com facilidade.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                    <Link href={"/bibleIA"}>
-                        <Button size="lg" className="bg-purple-800 hover:bg-purple-900 cursor-pointer">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 ">
+                    <Link className="w-full" href={"/bibleIA"}>
+                        <Button size="lg" className="bg-purple-800 hover:bg-purple-900 cursor-pointer w-full">
                             Teste Grátis Agora
                         </Button>
                     </Link>

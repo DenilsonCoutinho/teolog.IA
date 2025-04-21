@@ -118,7 +118,7 @@ export default function BibleIA() {
                 throw new Error("Erro ao gerar resposta!")
             }
             const data = await res.json();
-            setResponseIa(data.res.choices[0].message.content);
+            setResponseIa(data?.res?.text);
             setTextSelected('')
         } catch (error: unknown) {
             if (error instanceof Error) {
@@ -215,7 +215,7 @@ export default function BibleIA() {
                                 <Loader />
                                 <h1>Gerando resposta...</h1>
                             </div> : <>
-                                {responseIa.length === 0 ? (
+                                {!responseIa? (
                                     <div className="h-full flex items-center justify-center text-gray-400 text-center">
                                         <p className="text-lg">Comece uma conversa...</p>
                                     </div>
