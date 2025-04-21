@@ -106,20 +106,40 @@ export default function BibleIA() {
     }, [])
 
     const send = async () => {
-        setLoading(true)
-        const messageUser = "livro:" + selectNameBook + " " + "Capitulo:" + (selectNumberChapter! + 1) + "\n" + "\n" + textSelected
-        try {
-            const res = await fetch('/api/resBible', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messageUser }),
-            });
-            if (!res.ok) {
-                throw new Error("Erro ao gerar resposta!")
-            }
-            const data = await res.json();
-            setResponseIa(data?.res?.text);
-            setTextSelected('')
+        // setLoading(true)
+        setResponseIa("");
+
+    const messageUser =
+      `livro: ${selectNameBook} Capítulo: ${selectNumberChapter! + 1}\n\n${textSelected}`.trim();
+
+    try {
+      const stream = await fetch("/api/resBible", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({messageUser }),
+      });
+
+      if (!stream.ok) {
+        throw new Error(`Erro ao gerar resposta: ${stream.statusText}`);
+      }
+
+      if (!stream.body) {
+        throw new Error("Resposta da API não contém um corpo de stream válido");
+      }
+
+      const reader = stream.body.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        fullResponse += chunk;
+        setResponseIa(fullResponse); // Atualiza a UI em tempo real
+      }
+
+      setTextSelected("");
         } catch (error: unknown) {
             if (error instanceof Error) {
                 alert(error.message)
@@ -211,10 +231,8 @@ export default function BibleIA() {
                     <div className="mx-auto w-full h-[26rem] flex flex-col border rounded-xl ">
                         {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto p-4 bg-gray-100">
-                            {loading ? <div className='flex justify-center flex-col items-center'>
-                                <Loader />
-                                <h1>Gerando resposta...</h1>
-                            </div> : <>
+                            {
+                           <>
                                 {!responseIa? (
                                     <div className="h-full flex items-center justify-center text-gray-400 text-center">
                                         <p className="text-lg">Comece uma conversa...</p>
@@ -242,7 +260,6 @@ export default function BibleIA() {
                                     onChange={(e) => setTextSelected(e.target.value)}
                                     value={textSelected}
                                     className="max-h-32 text-wrap"
-                                    disabled={!textSelected || loading}
                                 />
                                 <Button
                                     className='cursor-pointer'
