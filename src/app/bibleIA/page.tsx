@@ -41,7 +41,7 @@ type PropsChapters = {
     number: number;
 }
 export default function BibleIA() {
-    const [maintenance, setMaintenance] = useState<boolean>(false)
+    const [maintenance, setMaintenance] = useState<boolean>(true)
 
 
     const bible = ntlh as BibleBook[]
@@ -172,7 +172,7 @@ export default function BibleIA() {
     if (maintenance) {
         return <div className='h-screen justify-center flex-col items-center flex bg-white'>
             <Image alt='logo' src={logo} />
-            <h1 className='text-4xl text-center font-light text-black'>EM DESENVOLVIMENTO</h1>
+            <h1 className='md:text-4xl text-center font-light text-black'>EM DESENVOLVIMENTO</h1>
         </div>
     }
     return (
