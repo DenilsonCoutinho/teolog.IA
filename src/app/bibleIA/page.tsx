@@ -41,7 +41,7 @@ type PropsChapters = {
     number: number;
 }
 export default function BibleIA() {
-    const [maintenance, setMaintenance] = useState<boolean>(true)
+    const [maintenance, setMaintenance] = useState<boolean>(false)
 
 
     const bible = ntlh as BibleBook[]
@@ -52,7 +52,7 @@ export default function BibleIA() {
     const [selectNameBook, setSelectNameBook] = useState<string>('')
     const [selectChapter, setSelectChapter] = useState<PropsChapters[] | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [selectNumberChapter, setSelectNumberChapter] = useState<number | undefined>()
+    const [selectNumberChapter, setSelectNumberChapter] = useState<number>(0)
     function getChapterBible(chapter: string) {
         if (chapter === "") setSelectChapter(null)
         setSelectTextBookBible([])
@@ -114,7 +114,7 @@ export default function BibleIA() {
         setResponseIa("");
 
         const messageUser =
-            `livro: ${selectNameBook} Capítulo: ${selectNumberChapter! + 1}\n\n${textSelected}`.trim();
+            `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${textSelected}`.trim();
 
         try {
             const stream = await fetch("/api/resBible", {
@@ -171,121 +171,127 @@ export default function BibleIA() {
 
     if (maintenance) {
         return <div className='h-screen justify-center flex-col items-center flex bg-white'>
-            <Image alt='logo' src={logo}/>
-           <h1 className='text-4xl text-center font-light text-black'>EM DESENVOLVIMENTO</h1>
+            <Image alt='logo' src={logo} />
+            <h1 className='text-4xl text-center font-light text-black'>EM DESENVOLVIMENTO</h1>
         </div>
     }
     return (
-        <div className="flex flex-col items-center justify-center max-w-[600px] m-auto p-8 pb-20 gap-16 ">
-            {/* <div className='border rounded-full bg-slate-800 h-10 w-10 fixed bottom-10 right-10'></div> */}
-            <div className='flex items-center justify-between flex-row  gap-6 w-full'>
-                <Select value={selectNameBook} onValueChange={(e) => { setSelectNameBook(e); getChapterBible(e); setSelectNumberChapter(undefined) }}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Selecionar Livro" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Selecionar Livro</SelectLabel>
-                            {
-                                bible?.map((e) => {
-                                    return <SelectItem key={e.name} className="text-black" value={e.name}>{e.name}</SelectItem>
-                                })
-                            }
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>
+        <div>
+            <div className='h-14 w-full shadow-md p-3'>
+                <Image alt='logo' src={logo} width={140} height={200}/>
 
-                {<Select value={String(selectNumberChapter)} onValueChange={(e) => setSelectNumberChapter(Number(e))}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Selecionar capítulo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Selecionar capítulo</SelectLabel>
-                            {
-                                selectChapter?.map((e) => {
-                                    return <SelectItem key={e.number} className="text-black" value={String(e.number)}>{e.number + 1}</SelectItem>
-                                })
-                            }
-                        </SelectGroup>
-                    </SelectContent>
-                </Select>}
             </div>
-            <section onCopy={() => handleTouchUp()}
-                ref={ref}>
-                <div className='flex flex-col gap-1  '>
-                    {selectTextBookBible[selectNumberChapter!]?.map((texts, index) => {
-                        return <div key={index} className='flex items-start gap-1'>
-                            <p className='font-medium text-xs'>
-                                {index + 1} - <span className='font-normal text-xs'>{texts}</span>
-                            </p>
+            <div className="flex flex-col items-center justify-center max-w-[600px] m-auto p-8 pb-20 gap-16 ">
+                {/* <div className='border rounded-full bg-slate-800 h-10 w-10 fixed bottom-10 right-10'></div> */}
+                <div className='flex items-center justify-between flex-row  gap-6 w-full'>
+                    <Select value={selectNameBook} onValueChange={(e) => { setSelectNameBook(e); getChapterBible(e); setSelectNumberChapter(0) }}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Selecionar Livro" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Selecionar Livro</SelectLabel>
+                                {
+                                    bible?.map((e) => {
+                                        return <SelectItem key={e.name} className="text-black" value={e.name}>{e.name}</SelectItem>
+                                    })
+                                }
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
 
-                        </div>
-                    })}
+                    {<Select value={String(selectNumberChapter)} onValueChange={(e) => setSelectNumberChapter(Number(e))}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Selecionar capítulo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Selecionar capítulo</SelectLabel>
+                                {
+                                    selectChapter?.map((e) => {
+                                        return <SelectItem key={e.number} className="text-black" value={String(e.number)}>{e.number + 1}</SelectItem>
+                                    })
+                                }
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>}
                 </div>
-            </section>
+                <section onCopy={() => handleTouchUp()}
+                    ref={ref}>
+                    <div className='flex flex-col gap-1'>
+                        {selectTextBookBible[selectNumberChapter]?.map((texts, index) => {
+                            return <div key={index} className='flex items-start gap-1'>
+                                <p className='font-medium text-xs'>
+                                    {index + 1} - <span className='font-normal text-xs'>{texts}</span>
+                                </p>
 
-            <Dialog onOpenChange={(val) => {
-                if (val === false) {
-                    return
-                }
-                setIsDrawerOpen(val)
-            }} open={isDrawerOpen}>
-                <DialogContent className='px-3'>
-                    <DialogHeader className='flex'>
-                        <DialogTitle className='flex items-center  justify-between'>
-                            Pergunte a nossa IA
-                            <div className='cursor-pointer' onClick={() => setIsDrawerOpen(!isDrawerOpen)}><X className='w-5 bg text-black' /></div>
-                        </DialogTitle>
-                    </DialogHeader>
+                            </div>
+                        })}
+                    </div>
+                </section>
 
-                    <div className="mx-auto w-full h-[26rem] flex flex-col border rounded-xl ">
-                        {/* Área das mensagens */}
-                        <div className="flex-1 h-full overflow-y-auto p-4 bg-gray-100">
-                            {
-                                <>
-                                    {!responseIa ? (
-                                        <div className="h-full flex items-center justify-center text-gray-400 text-center">
-                                            <p className="text-lg">Comece uma conversa...</p>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4 h-full">
-                                            <div
-                                                className={` max-w-[100%] p-3 rounded-xl ${"bg-white text-gray-800 self-start mr-auto border"
-                                                    }`}
-                                            >
-                                                <div className='text-sm leading-6'>
-                                                    <ReactMarkdown>{responseIa}</ReactMarkdown>
+                <Dialog onOpenChange={(val) => {
+                    if (val === false) {
+                        return
+                    }
+                    setIsDrawerOpen(val)
+                }} open={isDrawerOpen}>
+                    <DialogContent className='px-3'>
+                        <DialogHeader className='flex'>
+                            <DialogTitle className='flex items-center  justify-between'>
+                                Pergunte a nossa IA
+                                <div className='cursor-pointer' onClick={() => setIsDrawerOpen(!isDrawerOpen)}><X className='w-5 bg text-black' /></div>
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="mx-auto w-full h-[26rem] flex flex-col border rounded-xl ">
+                            {/* Área das mensagens */}
+                            <div className="flex-1 h-full overflow-y-auto p-4 bg-gray-100">
+                                {
+                                    <>
+                                        {!responseIa ? (
+                                            <div className="h-full flex items-center justify-center text-gray-400 text-center">
+                                                <p className="text-lg">Comece uma conversa...</p>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4 h-full">
+                                                <div
+                                                    className={` max-w-[100%] p-3 rounded-xl ${"bg-white text-gray-800 self-start mr-auto border"
+                                                        }`}
+                                                >
+                                                    <div className='text-sm leading-6'>
+                                                        <ReactMarkdown>{responseIa}</ReactMarkdown>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </>}
-                        </div>
+                                        )}
+                                    </>}
+                            </div>
 
-                        {/* Input e botões */}
-                        <div className="p-4 border-t bg-white">
-                            <div className="flex gap-4 flex-col">
+                            {/* Input e botões */}
+                            <div className="p-4 border-t bg-white">
+                                <div className="flex gap-4 flex-col">
 
-                                <Textarea
-                                    onChange={(e) => setTextSelected(e.target.value)}
-                                    value={textSelected}
-                                    className="max-h-32 text-wrap"
-                                />
-                                <Button
-                                    className='cursor-pointer'
-                                    id="buttoReq"
-                                    onClick={() => send()}
-                                    disabled={!textSelected || loading}
-                                >
-                                    Pesquisar
-                                </Button>
+                                    <Textarea
+                                        onChange={(e) => setTextSelected(e.target.value)}
+                                        value={textSelected}
+                                        className="max-h-32 text-wrap"
+                                    />
+                                    <Button
+                                        className='cursor-pointer'
+                                        id="buttoReq"
+                                        onClick={() => send()}
+                                        disabled={!textSelected || loading}
+                                    >
+                                        Pesquisar
+                                    </Button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                </DialogContent>
-            </Dialog>
+                    </DialogContent>
+                </Dialog>
+            </div>
         </div>
     )
 }
