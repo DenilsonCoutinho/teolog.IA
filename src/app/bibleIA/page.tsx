@@ -4,6 +4,7 @@ import acf from '../../../pt_acf.json' assert { type: "json" };
 import nvi from '../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../pt_ntlh.json' assert { type: "json" };
 import logo from '../../assets/logo-teologia.svg'
+import mark from '../../assets/mark.svg'
 
 import {
     Select,
@@ -30,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Loader from '../components/loading';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
+import ShinyText from '../components/ShinyText';
 
 
 export interface BibleBook {
@@ -41,18 +43,20 @@ type PropsChapters = {
     number: number;
 }
 export default function BibleIA() {
-    const [maintenance, setMaintenance] = useState<boolean>(true)
+    const [maintenance, setMaintenance] = useState<boolean>(false)
 
 
     const bible = ntlh as BibleBook[]
     const [textSelected, setTextSelected] = useState<string>("")
-    const [loading, setLoading] = useState<boolean>(false)
+    const [loading, setLoading] = useState<boolean>(true)
     const [responseIa, setResponseIa] = useState<string>("")
     const [selectTextBookBible, setSelectTextBookBible] = useState<string[][]>([])
     const [selectNameBook, setSelectNameBook] = useState<string>('')
     const [selectChapter, setSelectChapter] = useState<PropsChapters[] | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectNumberChapter, setSelectNumberChapter] = useState<number>(0)
+    const [selectedText, setSelectedText] = useState<string[]>([])
+
     function getChapterBible(chapter: string) {
         if (chapter === "") setSelectChapter(null)
         setSelectTextBookBible([])
@@ -75,29 +79,33 @@ export default function BibleIA() {
         setSelectTextBookBible(versicleData?.chapters)
     }
 
+    function getTextSelected(index: number, text: string) {
+        setSelectedText((prev) => prev.find(e => e === `${index + 1}` + " - " + text) ? prev.filter(e => e !== `${index + 1}` + " - " + text) : [...prev, `${index + 1}` + " - " + text])
+    }
+
     const ref = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        const handleMouseUp = () => {
-            const selection = window.getSelection();
-            if (!selection || selection.isCollapsed) return;
+    // useEffect(() => {
+    //     const handleMouseUp = () => {
+    //         const selection = window.getSelection();
+    //         if (!selection || selection.isCollapsed) return;
 
-            const selectedText = selection.toString().trim();
-            const anchorNode = selection.anchorNode;
+    //         const selectedText = selection.toString().trim();
+    //         const anchorNode = selection.anchorNode;
 
-            if (ref.current?.contains(anchorNode)) {
-                setIsDrawerOpen(true)
-                setTextSelected(selectedText);
-            }
-        };
-        document.addEventListener("mouseup", handleMouseUp);
-        document.addEventListener("touchend", handleMouseUp); // Para mobile
+    //         if (ref.current?.contains(anchorNode)) {
+    //             setIsDrawerOpen(true)
+    //             setTextSelected(selectedText);
+    //         }
+    //     };
+    //     document.addEventListener("mouseup", handleMouseUp);
+    //     document.addEventListener("touchend", handleMouseUp); // Para mobile
 
-        return () => {
-            document.removeEventListener("mouseup", handleMouseUp);
-            document.removeEventListener("touchend", handleMouseUp);
-        };
-    }, []);
+    //     return () => {
+    //         document.removeEventListener("mouseup", handleMouseUp);
+    //         document.removeEventListener("touchend", handleMouseUp);
+    //     };
+    // }, []);
 
     useEffect(() => {
         setSelectNumberChapter(0)
@@ -110,12 +118,12 @@ export default function BibleIA() {
     }, [])
 
     const send = async () => {
-        // setLoading(true)
+        setLoading(true)
         setResponseIa("");
-
+        const TEXT_SELECTED_FORMATED = selectedText.join(" ")
+        console.log(TEXT_SELECTED_FORMATED)
         const messageUser =
-            `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${textSelected}`.trim();
-
+            `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
         try {
             const stream = await fetch("/api/resBible", {
                 method: "POST",
@@ -143,7 +151,7 @@ export default function BibleIA() {
                 setResponseIa(fullResponse); // Atualiza a UI em tempo real
             }
 
-            setTextSelected("");
+            // setTextSelected("");
         } catch (error: unknown) {
             if (error instanceof Error) {
                 alert(error.message)
@@ -156,18 +164,6 @@ export default function BibleIA() {
     };
 
 
-    const handleTouchUp = () => {
-        const selection = window.getSelection();
-        if (!selection || selection.isCollapsed) return;
-
-        const selectedText = selection.toString().trim();
-        const anchorNode = selection.anchorNode;
-
-        if (ref.current?.contains(anchorNode)) {
-            setIsDrawerOpen(true)
-            setTextSelected(selectedText);
-        }
-    };
 
     if (maintenance) {
         return <div className='h-screen justify-center flex-col items-center flex bg-white'>
@@ -177,12 +173,13 @@ export default function BibleIA() {
     }
     return (
         <div>
-            <div className='h-14 w-full shadow-md p-3'>
-                <Image alt='logo' src={logo} width={140} height={200}/>
-
+            <div className='h-14 w-full shadow-md p-3 fixed top-0 bg-white z-50'>
+                <Image alt='logo' src={logo} width={140} height={200} />
             </div>
-            <div className="flex flex-col items-center justify-center max-w-[600px] m-auto p-8 pb-20 gap-16 ">
-                {/* <div className='border rounded-full bg-slate-800 h-10 w-10 fixed bottom-10 right-10'></div> */}
+            <div className=" flex flex-col items-center justify-center max-w-[600px] mx-auto p-3 pb-28 md:gap-16 gap-10 mt-14">
+                {selectedText.length > 0 && <div onClick={() => { setIsDrawerOpen(!isDrawerOpen); send() }} className='border-1 cursor-pointer rounded-full border-purple-800 shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
+                    <Image alt='logo' src={mark} width={140} height={200} />
+                </div>}
                 <div className='flex items-center justify-between flex-row  gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => { setSelectNameBook(e); getChapterBible(e); setSelectNumberChapter(0) }}>
                         <SelectTrigger className="w-[180px]">
@@ -215,14 +212,16 @@ export default function BibleIA() {
                             </SelectGroup>
                         </SelectContent>
                     </Select>}
+
+
                 </div>
-                <section onCopy={() => handleTouchUp()}
+                <section
                     ref={ref}>
-                    <div className='flex flex-col gap-1'>
+                    <div className='flex flex-col gap-2'>
                         {selectTextBookBible[selectNumberChapter]?.map((texts, index) => {
-                            return <div key={index} className='flex items-start gap-1'>
-                                <p className='font-medium text-xs'>
-                                    {index + 1} - <span className='font-normal text-xs'>{texts}</span>
+                            return <div key={index} onClick={() => getTextSelected(index, texts)} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white" : ""} flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
+                                <p className='font-medium text-[16px]'>
+                                    {index + 1} - <span className='font-normal '>{texts}</span>
                                 </p>
 
                             </div>
@@ -240,13 +239,13 @@ export default function BibleIA() {
                         <DialogHeader className='flex'>
                             <DialogTitle className='flex items-center  justify-between'>
                                 Pergunte a nossa IA
-                                <div className='cursor-pointer' onClick={() => setIsDrawerOpen(!isDrawerOpen)}><X className='w-5 bg text-black' /></div>
+                                <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}><X className='w-5 bg text-black' /></div>
                             </DialogTitle>
                         </DialogHeader>
 
-                        <div className="mx-auto w-full h-[26rem] flex flex-col border rounded-xl ">
+                        <div className="mx-auto w-full h-[27rem] flex flex-col border rounded-xl ">
                             {/* Área das mensagens */}
-                            <div className="flex-1 h-full overflow-y-auto p-4 bg-gray-100">
+                            <div className="flex-1 h-full overflow-y-auto mb-5 p-4 bg-gray-100">
                                 {
                                     <>
                                         {!responseIa ? (
@@ -254,12 +253,12 @@ export default function BibleIA() {
                                                 <p className="text-lg">Comece uma conversa...</p>
                                             </div>
                                         ) : (
-                                            <div className="space-y-4 h-full">
+                                            <div className="space-y-  h-full">
                                                 <div
-                                                    className={` max-w-[100%] p-3 rounded-xl ${"bg-white text-gray-800 self-start mr-auto border"
+                                                    className={` max-w-[100%] p-3  rounded-xl ${"bg-white mb-20 text-gray-800 self-start mr-auto border"
                                                         }`}
                                                 >
-                                                    <div className='text-sm leading-6'>
+                                                    <div className='text-sm leading-6 '>
                                                         <ReactMarkdown>{responseIa}</ReactMarkdown>
                                                     </div>
                                                 </div>
@@ -269,10 +268,12 @@ export default function BibleIA() {
                             </div>
 
                             {/* Input e botões */}
-                            <div className="p-4 border-t bg-white">
+                            <div className="py- border-t bg-white rounded-xl ">
+                                {loading && <div className='bg-slate-600 rounded-xl px-2'>
+                                    <ShinyText text="Buscando sabedoria nas Escrituras..." speed={3} />
+                                </div>}
                                 <div className="flex gap-4 flex-col">
-
-                                    <Textarea
+                                    {/* <Textarea
                                         onChange={(e) => setTextSelected(e.target.value)}
                                         value={textSelected}
                                         className="max-h-32 text-wrap"
@@ -284,7 +285,7 @@ export default function BibleIA() {
                                         disabled={!textSelected || loading}
                                     >
                                         Pesquisar
-                                    </Button>
+                                    </Button> */}
                                 </div>
                             </div>
                         </div>
