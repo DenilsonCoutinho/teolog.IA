@@ -1,8 +1,9 @@
 "use client"
 import { useEffect, useRef, useState } from 'react';
-import data from '../../../pt_acf.json' assert { type: "json" };
+import acf from '../../../pt_acf.json' assert { type: "json" };
 import nvi from '../../../pt_nvi.json' assert { type: "json" };
-import logo from '../assets/logo-teologia.svg'
+import ntlh from '../../../pt_ntlh.json' assert { type: "json" };
+import logo from '../../assets/logo-teologia.svg'
 
 import {
     Select,
@@ -17,11 +18,8 @@ import {
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog"
 
 import { Button } from '@/components/ui/button';
@@ -34,13 +32,19 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 
 
+export interface BibleBook {
+    abbrev: string;
+    name: string;
+    chapters: string[][];
+}
 type PropsChapters = {
     number: number;
 }
 export default function BibleIA() {
+    const [maintenance, setMaintenance] = useState<boolean>(true)
 
-    const bible = nvi
 
+    const bible = ntlh as BibleBook[]
     const [textSelected, setTextSelected] = useState<string>("")
     const [loading, setLoading] = useState<boolean>(false)
     const [responseIa, setResponseIa] = useState<string>("")
@@ -53,7 +57,7 @@ export default function BibleIA() {
         if (chapter === "") setSelectChapter(null)
         setSelectTextBookBible([])
 
-        const versicleData = bible.find(e => e?.name === chapter)
+        const versicleData = bible.find((e: BibleBook) => e?.name === chapter)
         const chapters = versicleData?.chapters
         if (!chapters) return
         const formatedChapters = Object?.entries(chapters)?.map((_, index) => {
@@ -109,37 +113,37 @@ export default function BibleIA() {
         // setLoading(true)
         setResponseIa("");
 
-    const messageUser =
-      `livro: ${selectNameBook} Capítulo: ${selectNumberChapter! + 1}\n\n${textSelected}`.trim();
+        const messageUser =
+            `livro: ${selectNameBook} Capítulo: ${selectNumberChapter! + 1}\n\n${textSelected}`.trim();
 
-    try {
-      const stream = await fetch("/api/resBible", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({messageUser }),
-      });
+        try {
+            const stream = await fetch("/api/resBible", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ messageUser }),
+            });
 
-      if (!stream.ok) {
-        throw new Error(`Erro ao gerar resposta: ${stream.statusText}`);
-      }
+            if (!stream.ok) {
+                throw new Error(`Erro ao gerar resposta: ${stream.statusText}`);
+            }
 
-      if (!stream.body) {
-        throw new Error("Resposta da API não contém um corpo de stream válido");
-      }
+            if (!stream.body) {
+                throw new Error("Resposta da API não contém um corpo de stream válido");
+            }
 
-      const reader = stream.body.getReader();
-      const decoder = new TextDecoder();
-      let fullResponse = "";
+            const reader = stream.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        fullResponse += chunk;
-        setResponseIa(fullResponse); // Atualiza a UI em tempo real
-      }
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+                fullResponse += chunk;
+                setResponseIa(fullResponse); // Atualiza a UI em tempo real
+            }
 
-      setTextSelected("");
+            setTextSelected("");
         } catch (error: unknown) {
             if (error instanceof Error) {
                 alert(error.message)
@@ -164,6 +168,13 @@ export default function BibleIA() {
             setTextSelected(selectedText);
         }
     };
+
+    if (maintenance) {
+        return <div className='h-screen justify-center flex-col items-center flex bg-white'>
+            <Image alt='logo' src={logo}/>
+           <h1 className='text-4xl text-center font-light text-black'>EM DESENVOLVIMENTO</h1>
+        </div>
+    }
     return (
         <div className="flex flex-col items-center justify-center max-w-[600px] m-auto p-8 pb-20 gap-16 ">
             {/* <div className='border rounded-full bg-slate-800 h-10 w-10 fixed bottom-10 right-10'></div> */}
@@ -214,7 +225,7 @@ export default function BibleIA() {
                 </div>
             </section>
 
-            <Dialog  onOpenChange={(val) => {
+            <Dialog onOpenChange={(val) => {
                 if (val === false) {
                     return
                 }
@@ -232,24 +243,24 @@ export default function BibleIA() {
                         {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto p-4 bg-gray-100">
                             {
-                           <>
-                                {!responseIa? (
-                                    <div className="h-full flex items-center justify-center text-gray-400 text-center">
-                                        <p className="text-lg">Comece uma conversa...</p>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4 h-full">
-                                        <div
-                                            className={` max-w-[100%] p-3 rounded-xl ${"bg-white text-gray-800 self-start mr-auto border"
-                                                }`}
-                                        >
-                                            <div className='text-sm leading-6'>
-                                                <ReactMarkdown>{responseIa}</ReactMarkdown>
+                                <>
+                                    {!responseIa ? (
+                                        <div className="h-full flex items-center justify-center text-gray-400 text-center">
+                                            <p className="text-lg">Comece uma conversa...</p>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4 h-full">
+                                            <div
+                                                className={` max-w-[100%] p-3 rounded-xl ${"bg-white text-gray-800 self-start mr-auto border"
+                                                    }`}
+                                            >
+                                                <div className='text-sm leading-6'>
+                                                    <ReactMarkdown>{responseIa}</ReactMarkdown>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
-                            </>}
+                                    )}
+                                </>}
                         </div>
 
                         {/* Input e botões */}
