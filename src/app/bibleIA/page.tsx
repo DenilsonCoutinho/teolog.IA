@@ -150,7 +150,7 @@ export default function BibleIA() {
                 fullResponse += chunk;
                 setResponseIa(fullResponse); // Atualiza a UI em tempo real
             }
-
+            setSelectedText([])
             // setTextSelected("");
         } catch (error: unknown) {
             if (error instanceof Error) {
