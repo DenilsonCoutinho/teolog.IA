@@ -23,16 +23,13 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 
-import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import ReactMarkdown from "react-markdown";
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import Loader from '../components/loading';
-import { DialogClose } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import ShinyText from '../components/ShinyText';
 import Link from 'next/link';
+import { Session } from 'next-auth';
+import { useSession } from 'next-auth/react';
 
 
 export interface BibleBook {
@@ -44,6 +41,7 @@ type PropsChapters = {
     number: number;
 }
 export default function BibleIA() {
+    const { data: session, status } = useSession();
     const [maintenance, setMaintenance] = useState<boolean>(false)
 
 

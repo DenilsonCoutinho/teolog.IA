@@ -8,7 +8,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 5,
+    maxAge: 60 * 60 * 60,
   },
 	...authConfig,
   
