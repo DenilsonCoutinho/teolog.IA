@@ -32,6 +32,7 @@ import Loader from '../components/loading';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import ShinyText from '../components/ShinyText';
+import Link from 'next/link';
 
 
 export interface BibleBook {
@@ -121,7 +122,6 @@ export default function BibleIA() {
         setLoading(true)
         setResponseIa("");
         const TEXT_SELECTED_FORMATED = selectedText.join(" ")
-        console.log(TEXT_SELECTED_FORMATED)
         const messageUser =
             `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
         try {
@@ -174,14 +174,21 @@ export default function BibleIA() {
     return (
         <div>
             <div className='h-14 w-full shadow-md p-3 fixed top-0 bg-white z-50'>
-                <Image alt='logo' src={logo} width={140} height={200} />
+                <Link href={'/'}>
+                    <Image alt='logo' src={logo} width={140} height={200} />
+                </Link>
             </div>
             <div className=" flex flex-col items-center justify-center max-w-[600px] mx-auto p-3 pb-28 md:gap-16 gap-10 mt-14">
-                {selectedText.length > 0 && <div onClick={() => { setIsDrawerOpen(!isDrawerOpen); send() }} className='border-1 cursor-pointer rounded-full border-purple-800 shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
+                {selectedText.length > 0 && <div onClick={() => { setIsDrawerOpen(!isDrawerOpen); send() }} className='border-1 cursor-pointer rounded-full border-black shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
                     <Image alt='logo' src={mark} width={140} height={200} />
                 </div>}
                 <div className='flex items-center justify-between flex-row  gap-6 w-full'>
-                    <Select value={selectNameBook} onValueChange={(e) => { setSelectNameBook(e); getChapterBible(e); setSelectNumberChapter(0) }}>
+                    <Select value={selectNameBook} onValueChange={(e) => {
+                        setSelectNameBook(e);
+                        getChapterBible(e);
+                        setSelectNumberChapter(0);
+                        setSelectedText([])
+                    }}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Selecionar Livro" />
                         </SelectTrigger>
@@ -197,7 +204,7 @@ export default function BibleIA() {
                         </SelectContent>
                     </Select>
 
-                    {<Select value={String(selectNumberChapter)} onValueChange={(e) => setSelectNumberChapter(Number(e))}>
+                    {<Select value={String(selectNumberChapter)} onValueChange={(e) => { setSelectNumberChapter(Number(e)); setSelectedText([]) }}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Selecionar capítulo" />
                         </SelectTrigger>
@@ -245,7 +252,7 @@ export default function BibleIA() {
 
                         <div className="mx-auto w-full h-[27rem] flex flex-col border rounded-xl ">
                             {/* Área das mensagens */}
-                            <div className="flex-1 h-full overflow-y-auto mb-5 p-4 bg-gray-100">
+                            <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
                                 {
                                     <>
                                         {!responseIa ? (
@@ -253,7 +260,7 @@ export default function BibleIA() {
                                                 <p className="text-lg">Comece uma conversa...</p>
                                             </div>
                                         ) : (
-                                            <div className="space-y-  h-full">
+                                            <div className="h-full">
                                                 <div
                                                     className={` max-w-[100%] p-3  rounded-xl ${"bg-white mb-20 text-gray-800 self-start mr-auto border"
                                                         }`}
@@ -267,26 +274,10 @@ export default function BibleIA() {
                                     </>}
                             </div>
 
-                            {/* Input e botões */}
-                            <div className="py- border-t bg-white rounded-xl ">
+                            <div className="border-t bg-white rounded-xl ">
                                 {loading && <div className='bg-slate-600 rounded-xl px-2'>
-                                    <ShinyText text="Buscando sabedoria nas Escrituras..." speed={3} />
+                                    <ShinyText text="✝Buscando sabedoria nas Escrituras..." speed={3} className='md:text-xl text-sm' />
                                 </div>}
-                                <div className="flex gap-4 flex-col">
-                                    {/* <Textarea
-                                        onChange={(e) => setTextSelected(e.target.value)}
-                                        value={textSelected}
-                                        className="max-h-32 text-wrap"
-                                    />
-                                    <Button
-                                        className='cursor-pointer'
-                                        id="buttoReq"
-                                        onClick={() => send()}
-                                        disabled={!textSelected || loading}
-                                    >
-                                        Pesquisar
-                                    </Button> */}
-                                </div>
                             </div>
                         </div>
 
