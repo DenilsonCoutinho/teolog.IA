@@ -8,22 +8,16 @@ import { LoginBtn } from "../auth/loginButton";
 export function Hero() {
 
     const handleScroll = async (id: any) => {
-        // try {
-        //     const res = await fetch('/api/limitRate')
-        //     const data = await res.json()
-      
-        //     if (!res.ok) {
-        //       console.log(`🚫 ${data.error || 'Erro desconhecido'}`)
-        //     } else {
-        //         console.log(`✅ ${data.message} | Tentativas restantes: ${data.remaining}`)
-        //     }
-        //   } catch (err) {
-        //     console.log('Erro ao conectar com o servidor')
-        //   }
-      
         const element = document.getElementById(id);
         if (element) {
             element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
+
+    const handleScrollTest = async (id: any) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth",block:"start" });
         }
     };
     return (
@@ -34,17 +28,17 @@ export function Hero() {
                     <LoginBtn />
                 </div>
                 <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r max-w-4xl mx-auto from-purple-800 to-blue-600 text-transparent bg-clip-text mb-6">
-                    Compreensão Espiritual com um Clique
+                    Compreensão Espiritual facilitada
                 </h1>
                 <p className="text-xl md:text-2xl text-slate-600 mb-8">
                     Selecione um versículo. Deixe a IA explicar o contexto. Aprofunde sua fé com facilidade.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-12 max-w-[400px] mx-auto">
-                    <Link className="w-full" href={"/bibleIA"}>
-                        <Button size="lg" className="bg-purple-800 hover:bg-purple-900 cursor-pointer w-[200px]">
+                    {/* <Link className="w-full" href={"/bibleIA"}> */}
+                        <Button onClick={()=>handleScrollTest("test")} size="lg" className="bg-purple-800 hover:bg-purple-900 cursor-pointer w-[200px]">
                             Teste Grátis Agora
                         </Button>
-                    </Link>
+                    {/* </Link> */}
                     <Button onClick={() => handleScroll('howItwork')} className="cursor-pointer hover:brightness-75 w-[200px]" size="lg">
                         Como Funciona
                     </Button>

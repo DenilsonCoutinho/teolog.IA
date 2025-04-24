@@ -1,0 +1,291 @@
+"use client"
+import { useEffect, useRef, useState } from 'react';
+import acf from '../../../../pt_acf.json' assert { type: "json" };
+import nvi from '../../../../pt_nvi.json' assert { type: "json" };
+import ntlh from '../../../../pt_ntlh.json' assert { type: "json" };
+import mark from '../../../assets/mark.svg'
+import logo from '../../../assets/logo-teologia-2.svg'
+import { toast } from "sonner"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+
+import Image from 'next/image';
+import ReactMarkdown from "react-markdown";
+import { X } from 'lucide-react';
+import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import ShinyText from '../ui/ShinyText';
+import { Lora } from 'next/font/google';
+const lora = Lora({
+    subsets: ["latin"],
+});
+export interface BibleBook {
+    abbrev: string;
+    name: string;
+    chapters: string[][];
+}
+type PropsChapters = {
+    number: number;
+}
+export default function BibleIAForTest() {
+
+    const [maintenance, setMaintenance] = useState<boolean>(false)
+
+    const bible = ntlh as BibleBook[]
+    const [loading, setLoading] = useState<boolean>(true)
+    const [responseIa, setResponseIa] = useState<string>("")
+    const [selectTextBookBible, setSelectTextBookBible] = useState<string[][]>([])
+    const [selectNameBook, setSelectNameBook] = useState<string>('')
+    const [selectChapter, setSelectChapter] = useState<PropsChapters[] | null>(null)
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [selectNumberChapter, setSelectNumberChapter] = useState<number>(0)
+    const [selectedText, setSelectedText] = useState<string[]>([])
+
+    function getChapterBible(chapter: string) {
+        if (chapter === "") setSelectChapter(null)
+        setSelectTextBookBible([])
+
+        const versicleData = bible.find((e: BibleBook) => e?.name === chapter)
+        const chapters = versicleData?.chapters
+        if (!chapters) return
+        const formatedChapters = Object?.entries(chapters)?.map((_, index) => {
+            return {
+                number: index,
+            }
+        })
+        setSelectChapter(formatedChapters || null)
+        getTextBookBible(chapter)
+    }
+
+    function getTextBookBible(nameBook: string) {
+        const versicleData = bible.find(e => e?.name === nameBook)
+        if (!versicleData) return
+        setSelectTextBookBible(versicleData?.chapters)
+    }
+
+    function getTextSelected(index: number, text: string) {
+        setSelectedText((prev) => prev.find(e => e === `${index + 1}` + " - " + text) ? prev.filter(e => e !== `${index + 1}` + " - " + text) : [...prev, `${index + 1}` + " - " + text])
+    }
+
+    useEffect(() => {
+        setSelectNumberChapter(0)
+        const chapters = bible[0].chapters.map((_, index) => {
+            return { number: index }
+        })
+        setSelectChapter(chapters)
+        setSelectNameBook(bible[0].name)
+        setSelectTextBookBible(bible[0].chapters)
+    }, [])
+
+    const send = async () => {
+
+
+        // console.log(`✅ ${limitData?.message} | Tentativas restantes: ${limitData.remaining}`)
+
+        const TEXT_SELECTED_FORMATED = selectedText.join(" ")
+        const messageUser =
+            `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
+        const limit = await fetch('/api/limitRate')
+        const limitData = await limit.json()
+
+        function formatSecond(seconds: number) {
+            const horas = Math.floor(seconds / 3600)
+            const minutos = Math.floor((seconds % 3600) / 60)
+            const restoSegundos = seconds % 60
+
+            return `${horas}h ${minutos}m ${restoSegundos}s`
+        }
+        try {
+
+            if (!limit.ok) {
+                throw new Error(`🚫 ${limitData?.error || 'Erro desconhecido'}`)
+            }
+
+            if (limitData >= 3) {
+                toast("Você atingiu o limite de 3/3 tentativas", {
+                    duration: 3000,
+                    // description: "Sunday, December 03, 2023 at 9:00 AM",
+                    action: {
+                        label: "ok",
+                        onClick: () => console.log("Undo"),
+                    },
+                })
+                return
+            }
+            setLoading(true)
+            setIsDrawerOpen(!isDrawerOpen);
+            setResponseIa("");
+            const stream = await fetch("/api/resBible", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ messageUser }),
+            });
+
+            if (!stream.ok) {
+                throw new Error(`Erro ao gerar resposta: ${stream.statusText}`);
+            }
+
+            if (!stream.body) {
+                throw new Error("Resposta da API não contém um corpo de stream válido");
+            }
+
+            const reader = stream.body.getReader();
+            const decoder = new TextDecoder();
+            let fullResponse = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                const chunk = decoder.decode(value, { stream: true });
+                fullResponse += chunk;
+                setResponseIa(fullResponse); // Atualiza a UI em tempo real
+            }
+            setSelectedText([])
+
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                toast(error.message, {
+                    duration: 3000,
+                    description: <span className='text-black pr-3'>Você atingiu o seu limite de teste, volte em <span className='font-semibold'>{formatSecond(limitData.ttl)}</span> </span>,
+                    
+                })
+            }
+            setSelectedText([])
+
+        } finally {
+            setLoading(false)
+        }
+
+        return
+    };
+
+
+
+    return (
+        <div id='test' className='mb-16'>
+            <h2 className="text-3xl md:text-4xl font-bold text-center my-16">
+                Faça um teste agora
+            </h2>
+            <div className=" border rounded-md shadow-md flex flex-col items-center justify-center max-w-[600px] mx-auto p-3 pb-2 md:gap-16 gap-10 ">
+                {selectedText.length > 0 && <div onClick={() => { send() }} className='border-1 cursor-pointer rounded-full border-black shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
+                    <Image alt='logo' src={mark} width={140} height={200} />
+                </div>}
+                <div className='flex items-center justify-between flex-row  gap-6 w-full'>
+                    <Select value={selectNameBook} onValueChange={(e) => {
+                        setSelectNameBook(e);
+                        getChapterBible(e);
+                        setSelectNumberChapter(0);
+                        setSelectedText([])
+                    }}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Selecionar Livro" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Selecionar Livro</SelectLabel>
+                                {
+                                    bible?.map((e) => {
+                                        return <SelectItem key={e.name} className="text-black" value={e.name}>{e.name}</SelectItem>
+                                    })
+                                }
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+
+                    {<Select value={String(selectNumberChapter)} onValueChange={(e) => { setSelectNumberChapter(Number(e)); setSelectedText([]) }}>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Selecionar capítulo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Selecionar capítulo</SelectLabel>
+                                {
+                                    selectChapter?.map((e) => {
+                                        return <SelectItem key={e.number} className="text-black" value={String(e.number)}>{e.number + 1}</SelectItem>
+                                    })
+                                }
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>}
+
+
+                </div>
+                <section>
+                    <div className='flex flex-col gap-2'>
+                        {selectTextBookBible[selectNumberChapter]?.map((texts, index) => {
+                            return <div key={index} onClick={() => getTextSelected(index, texts)} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white" : " "} cursor-pointer flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
+                                <p className={`${lora.className} font-medium text-[16px]`}>
+                                    {index + 1} - <span className='font-normal '>{texts}</span>
+                                </p>
+                                {/* <ShinyText text={`${index + 1} - ${texts}`} speed={3} className='md:text-xl text-sm' /> */}
+
+                            </div>
+                        })}
+                    </div>
+                </section>
+
+                <Dialog onOpenChange={(val) => {
+                    if (val === false) {
+                        return
+                    }
+                    setIsDrawerOpen(val)
+                }} open={isDrawerOpen}>
+                    <DialogContent className='px-3'>
+                        <DialogHeader className='flex'>
+                            <DialogTitle className='flex items-center  justify-between'>
+                                Pergunte a nossa IA
+                                <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}><X className='w-5 bg text-black' /></div>
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="mx-auto w-full h-[27rem] flex flex-col border rounded-xl ">
+                            {/* Área das mensagens */}
+                            <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
+                                {
+                                    <>
+                                        {!responseIa ? (
+                                            <div className="h-full flex items-center justify-center text-gray-400 text-center">
+                                                <p className="text-lg">Comece uma conversa...</p>
+                                            </div>
+                                        ) : (
+                                            <div className="h-full">
+                                                <div
+                                                    className={` max-w-[100%] p-3  rounded-xl ${"bg-white mb-20 text-gray-800 self-start mr-auto border"
+                                                        }`}
+                                                >
+                                                    <div className='text-sm leading-6 '>
+                                                        <ReactMarkdown>{responseIa}</ReactMarkdown>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>}
+                            </div>
+
+                            <div className="border-t bg-white rounded-xl ">
+                                {loading && <div className='bg-slate-600 rounded-xl px-2'>
+                                    <ShinyText text="✝Buscando sabedoria nas Escrituras..." speed={3} className='md:text-xl text-sm' />
+                                </div>}
+                            </div>
+                        </div>
+
+                    </DialogContent>
+                </Dialog>
+            </div>
+        </div>
+    )
+}

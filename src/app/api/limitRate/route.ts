@@ -12,13 +12,13 @@ const WINDOW_SECONDS = 60 * 60 * 24; // 1 dia
 export async function GET(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') || 'unknown';
   const key = `rate-limit:${ip}`;
-
+  const ttl = await redis.ttl(key) // em segundos
   // Obtém o número atual de tentativas
   const tries = (await redis.get<number>(key)) ?? 0;
 
   // Verifica se o limite foi atingido
   if (tries >= MAX_TRIES) {
-    return Response.json({ error: 'Limite diário atingido' }, { status: 429 });
+    return Response.json({ error: 'Limite diário atingido',ttl }, { status: 429 });
   }
 
   // Usa uma transação para garantir que o incremento seja atômico
@@ -35,5 +35,5 @@ export async function GET(req: NextRequest) {
   // Calcula as tentativas restantes
   const remaining = MAX_TRIES - newTries;
 
-  return Response.json({ message: 'Acesso concedido', remaining });
+  return Response.json({ message: 'Acesso concedido', remaining ,ttl });
 }

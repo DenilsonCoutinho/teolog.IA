@@ -8,7 +8,7 @@ const benefits = [
     },
     {
       title: "Interface intuitiva",
-      description: "Basta selecionar o texto e a explicação aparece automaticamente"
+      description: "Basta marcar o texto que deseja entender melhor e clicar em pesquisar"
     },
     {
       title: "Respostas embasadas",

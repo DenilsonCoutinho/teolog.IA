@@ -4,7 +4,7 @@ const steps = [
   {
     icon: Book,
     title: "Leia a Bíblia na plataforma",
-    description: "Acesse o texto bíblico completo em nossa interface moderna"
+    description: "Acesse o texto bíblico completo em nossa interface "
   },
   {
     icon: Search,
@@ -20,7 +20,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="howItwork" className="py-24 px-4 bg-gradient-to-b from-white to-purple-50">
+    <section id="howItwork" className="pb-24 px-4 bg-gradient-to-b from-white to-purple-50">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
           Como Funciona
