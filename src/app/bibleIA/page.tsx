@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import acf from '../../../pt_acf.json' assert { type: "json" };
 import nvi from '../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../pt_ntlh.json' assert { type: "json" };
-import logo from '../../assets/logo-teologia.svg'
 import mark from '../../assets/mark.svg'
+import logo from '../../assets/logo-teologia-2.svg'
 
 import {
     Select,
@@ -26,11 +26,9 @@ import {
 import Image from 'next/image';
 import ReactMarkdown from "react-markdown";
 import { X } from 'lucide-react';
-import ShinyText from '../components/ShinyText';
+import ShinyText from '../components/ui/ShinyText';
 import Link from 'next/link';
-import { Session } from 'next-auth';
 import { useSession } from 'next-auth/react';
-
 
 export interface BibleBook {
     abbrev: string;
@@ -42,6 +40,10 @@ type PropsChapters = {
 }
 export default function BibleIA() {
     const { data: session, status } = useSession();
+    console.log(session)
+    console.log(status)
+
+  
     const [maintenance, setMaintenance] = useState<boolean>(false)
 
 
@@ -220,14 +222,14 @@ export default function BibleIA() {
 
 
                 </div>
-                <section
-                    ref={ref}>
+                <section>
                     <div className='flex flex-col gap-2'>
                         {selectTextBookBible[selectNumberChapter]?.map((texts, index) => {
-                            return <div key={index} onClick={() => getTextSelected(index, texts)} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white" : ""} flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
+                            return <div key={index} onClick={() => getTextSelected(index, texts)} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white" : " "} cursor-pointer flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
                                 <p className='font-medium text-[16px]'>
                                     {index + 1} - <span className='font-normal '>{texts}</span>
                                 </p>
+                                {/* <ShinyText text={`${index + 1} - ${texts}`} speed={3} className='md:text-xl text-sm' /> */}
 
                             </div>
                         })}

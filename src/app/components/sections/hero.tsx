@@ -7,14 +7,27 @@ import { LoginBtn } from "../auth/loginButton";
 
 export function Hero() {
 
-    const handleScroll = (id: any) => {
+    const handleScroll = async (id: any) => {
+        // try {
+        //     const res = await fetch('/api/limitRate')
+        //     const data = await res.json()
+      
+        //     if (!res.ok) {
+        //       console.log(`🚫 ${data.error || 'Erro desconhecido'}`)
+        //     } else {
+        //         console.log(`✅ ${data.message} | Tentativas restantes: ${data.remaining}`)
+        //     }
+        //   } catch (err) {
+        //     console.log('Erro ao conectar com o servidor')
+        //   }
+      
         const element = document.getElementById(id);
         if (element) {
             element.scrollIntoView({ behavior: "smooth" });
         }
     };
     return (
-        <section className="min-h-screen flex flex-col items-center justify-center text-center  bg-gradient-to-b from-purple-50 to-white">
+        <section className=" flex flex-col items-center justify-center text-center  bg-gradient-to-b from-purple-50 to-white">
             <div className="w-full mx-auto">
                 <div className='flex items-center justify-between w-full shadow-md p-3 mb-10 top-0 bg-white z-50'>
                     <Image alt='logo' src={logo} width={140} height={200} />
