@@ -30,6 +30,7 @@ import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import ShinyText from '../ui/ShinyText';
 import { Lora } from 'next/font/google';
+import { useBibleTestStore } from '@/zustand/useBible';
 const lora = Lora({
     subsets: ["latin"],
 });
@@ -43,21 +44,28 @@ type PropsChapters = {
 }
 export default function BibleIAForTest() {
 
+    const {
+        setSelectNameBookTest,
+        selectNameBookTest,
+        setSelectChapterTest,
+        selectChapterTest,
+        setSelectTextBookBibleTest,
+        selectTextBookBibleTest,
+        setSelectNumberChapterTest,
+        selectNumberChapterTest,
+        hasHydrated
+    } = useBibleTestStore()
     const [maintenance, setMaintenance] = useState<boolean>(false)
 
     const bible = ntlh as BibleBook[]
     const [loading, setLoading] = useState<boolean>(true)
     const [responseIa, setResponseIa] = useState<string>("")
-    const [selectTextBookBible, setSelectTextBookBible] = useState<string[][]>([])
-    const [selectNameBook, setSelectNameBook] = useState<string>('')
-    const [selectChapter, setSelectChapter] = useState<PropsChapters[] | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [selectNumberChapter, setSelectNumberChapter] = useState<number>(0)
     const [selectedText, setSelectedText] = useState<string[]>([])
 
     function getChapterBible(chapter: string) {
-        if (chapter === "") setSelectChapter(null)
-        setSelectTextBookBible([])
+        if (chapter === "") setSelectChapterTest(null)
+        setSelectTextBookBibleTest([])
 
         const versicleData = bible.find((e: BibleBook) => e?.name === chapter)
         const chapters = versicleData?.chapters
@@ -67,40 +75,41 @@ export default function BibleIAForTest() {
                 number: index,
             }
         })
-        setSelectChapter(formatedChapters || null)
+        setSelectChapterTest(formatedChapters || null)
         getTextBookBible(chapter)
     }
 
     function getTextBookBible(nameBook: string) {
         const versicleData = bible.find(e => e?.name === nameBook)
         if (!versicleData) return
-        setSelectTextBookBible(versicleData?.chapters)
+        setSelectTextBookBibleTest(versicleData?.chapters)
     }
 
     function getTextSelected(index: number, text: string) {
-        setSelectedText((prev) => prev.find(e => e === `${index + 1}` + " - " + text) ? prev.filter(e => e !== `${index + 1}` + " - " + text) : [...prev, `${index + 1}` + " - " + text])
+        setSelectedText((prev) => prev.find(e => e === `${index + 1}` + " - " + text)
+            ? prev.filter(e => e !== `${index + 1}` + " - " + text)
+            :
+            [...prev, `${index + 1}` + " - " + text])
     }
 
     useEffect(() => {
-        setSelectNumberChapter(0)
-        const chapters = bible[0].chapters.map((_, index) => {
-            return { number: index }
-        })
-        setSelectChapter(chapters)
-        setSelectNameBook(bible[0].name)
-        setSelectTextBookBible(bible[0].chapters)
-    }, [])
+        if (!hasHydrated) return; // Espera até o Zustand terminar de hidratar
+
+        if (!selectNameBookTest) {
+            setSelectTextBookBibleTest(bible[0]?.chapters)
+            getChapterBible("Gênesis")
+            setSelectNameBookTest("Gênesis")
+            setSelectNumberChapterTest(0)
+        }
+    }, [hasHydrated])
 
     const send = async () => {
 
-
-        // console.log(`✅ ${limitData?.message} | Tentativas restantes: ${limitData.remaining}`)
-
         const TEXT_SELECTED_FORMATED = selectedText.join(" ")
         const messageUser =
-            `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
-        const limit = await fetch('/api/limitRate')
-        const limitData = await limit.json()
+            `livro: ${selectNameBookTest} Capítulo: ${selectNumberChapterTest + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
+        // const limit = await fetch('/api/limitRate')
+        // const limitData = await limit.json()
 
         function formatSecond(seconds: number) {
             const horas = Math.floor(seconds / 3600)
@@ -111,38 +120,27 @@ export default function BibleIAForTest() {
         }
         try {
 
-            if (!limit.ok) {
-                throw new Error(`🚫 ${limitData?.error || 'Erro desconhecido'}`)
-            }
-
-            if (limitData >= 3) {
-                toast("Você atingiu o limite de 3/3 tentativas", {
-                    duration: 3000,
-                    // description: "Sunday, December 03, 2023 at 9:00 AM",
-                    action: {
-                        label: "ok",
-                        onClick: () => console.log("Undo"),
-                    },
-                })
-                return
-            }
             setLoading(true)
-            setIsDrawerOpen(!isDrawerOpen);
             setResponseIa("");
-            const stream = await fetch("/api/resBible", {
+            const stream = await fetch("/api/resBibleForTest", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ messageUser }),
             });
 
+
             if (!stream.ok) {
-                throw new Error(`Erro ao gerar resposta: ${stream.statusText}`);
+                const errorData = await stream.json(); // ← lê o JSON
+                if (stream.status === 429 && errorData?.error) {
+                    throw new Error(errorData.error); // ← aqui você joga exatamente a mensagem que você mandou
+                }
+                throw new Error('Erro ao gerar resposta');
             }
 
             if (!stream.body) {
                 throw new Error("Resposta da API não contém um corpo de stream válido");
             }
-
+            setIsDrawerOpen(!isDrawerOpen)
             const reader = stream.body.getReader();
             const decoder = new TextDecoder();
             let fullResponse = "";
@@ -159,9 +157,8 @@ export default function BibleIAForTest() {
         } catch (error: unknown) {
             if (error instanceof Error) {
                 toast(error.message, {
-                    duration: 3000,
-                    description: <span className='text-black pr-3'>Você atingiu o seu limite de teste, volte em <span className='font-semibold'>{formatSecond(limitData.ttl)}</span> </span>,
-                    
+                    duration: 8000,
+                    // description: 
                 })
             }
             setSelectedText([])
@@ -173,22 +170,27 @@ export default function BibleIAForTest() {
         return
     };
 
-
+    const handleVibration = () => {
+        if (navigator.vibrate) {
+            navigator.vibrate(90); // Vibra por 100ms
+        }
+    };
 
     return (
         <div id='test' className='mb-16'>
-            <h2 className="text-3xl md:text-4xl font-bold text-center my-16">
-                Faça um teste agora
+            <h2 className="text-3xl text-purple-800 md:text-4xl font-bold text-center mt-10">
+                Faça um teste!
             </h2>
-            <div className=" border rounded-md shadow-md flex flex-col items-center justify-center max-w-[600px] mx-auto p-3 pb-2 md:gap-16 gap-10 ">
-                {selectedText.length > 0 && <div onClick={() => { send() }} className='border-1 cursor-pointer rounded-full border-black shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
+            <p className="mt-2 mb-10 md:text-2xl text-md font-medium text-center text-gray-900">Selecione o versiculo e pesquise</p>
+            <div className=" border rounded-md shadow-md flex flex-col items-center justify-center max-w-[600px] mx-auto p-3 pb-2 md:gap-10 gap-10 ">
+                {selectedText.length > 0 && <div onClick={() => { send(); handleVibration() }} className='border-1 cursor-pointer rounded-full border-black shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
                     <Image alt='logo' src={mark} width={140} height={200} />
                 </div>}
                 <div className='flex items-center justify-between flex-row  gap-6 w-full'>
-                    <Select value={selectNameBook} onValueChange={(e) => {
-                        setSelectNameBook(e);
+                    <Select value={selectNameBookTest} onValueChange={(e) => {
+                        setSelectNameBookTest(e);
                         getChapterBible(e);
-                        setSelectNumberChapter(0);
+                        setSelectNumberChapterTest(0);
                         setSelectedText([])
                     }}>
                         <SelectTrigger className="w-[180px]">
@@ -206,7 +208,7 @@ export default function BibleIAForTest() {
                         </SelectContent>
                     </Select>
 
-                    {<Select value={String(selectNumberChapter)} onValueChange={(e) => { setSelectNumberChapter(Number(e)); setSelectedText([]) }}>
+                    {<Select value={String(selectNumberChapterTest)} onValueChange={(e) => { setSelectNumberChapterTest(Number(e)); setSelectedText([]) }}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Selecionar capítulo" />
                         </SelectTrigger>
@@ -214,7 +216,7 @@ export default function BibleIAForTest() {
                             <SelectGroup>
                                 <SelectLabel>Selecionar capítulo</SelectLabel>
                                 {
-                                    selectChapter?.map((e) => {
+                                    selectChapterTest?.map((e) => {
                                         return <SelectItem key={e.number} className="text-black" value={String(e.number)}>{e.number + 1}</SelectItem>
                                     })
                                 }
@@ -222,16 +224,14 @@ export default function BibleIAForTest() {
                         </SelectContent>
                     </Select>}
 
-
                 </div>
                 <section>
                     <div className='flex flex-col gap-2'>
-                        {selectTextBookBible[selectNumberChapter]?.map((texts, index) => {
-                            return <div key={index} onClick={() => getTextSelected(index, texts)} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white" : " "} cursor-pointer flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
+                        {selectTextBookBibleTest[selectNumberChapterTest]?.map((texts, index) => {
+                            return <div key={index} onClick={() => { getTextSelected(index, texts); handleVibration() }} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white " : " text-black"} cursor-pointer flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
                                 <p className={`${lora.className} font-medium text-[16px]`}>
                                     {index + 1} - <span className='font-normal '>{texts}</span>
                                 </p>
-                                {/* <ShinyText text={`${index + 1} - ${texts}`} speed={3} className='md:text-xl text-sm' /> */}
 
                             </div>
                         })}

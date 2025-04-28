@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   // Verifica se o limite foi atingido
   if (tries >= MAX_TRIES) {
-    return Response.json({ error: 'Limite diário atingido',ttl }, { status: 429 });
+    return Response.json({ error: 'Limite diário atingido',ttl,tries }, { status: 429 });
   }
 
   // Usa uma transação para garantir que o incremento seja atômico

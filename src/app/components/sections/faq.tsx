@@ -10,13 +10,13 @@ import {
       question: "Preciso ter conhecimento bíblico avançado?",
       answer: "Não! Nossa plataforma foi desenvolvida para todos os níveis de conhecimento bíblico, desde iniciantes até estudiosos mais avançados."
     },
-    // {
-    //   question: "A IA explica com base em qual interpretação?",
-    //   answer: "Nossas explicações são baseadas em estudos teológicos sólidos e aceitos pelas principais denominações cristãs, sempre mantendo o respeito à diversidade de interpretações."
-    // },
+    {
+      question: "A IA explica com base em qual interpretação?",
+      answer: "Nossas explicações são baseadas na teologia que você aceita ou está estudando"
+    },
     {
       question: "Preciso criar conta?",
-      answer: "Oferecemos um período de teste gratuito que requer apenas um cadastro simples com e-mail. Após esse período, você pode escolher um de nossos planos acessíveis."
+      answer: "Oferecemos 3 tentativas ao dia gratuito, mas você pode escolher o nosso plano Premium e você terá pesquisa ilimitadas."
     },
     {
       question: "As explicações substituem os estudos bíblicos?",

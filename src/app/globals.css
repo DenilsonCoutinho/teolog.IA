@@ -125,7 +125,6 @@
 	        animation: roll-in-left 0.6s ease-out both;
 }
 
-
  @-webkit-keyframes roll-in-left {
   0% {
     -webkit-transform: translateX(-800px) rotate(-540deg);
@@ -151,9 +150,8 @@
   }
 }
 
-
 .shiny-text {
-  color: #b5b5b5a4; /* Adjust this color to change intensity/style */
+   /* Adjust this color to change intensity/style */
   background: linear-gradient(
     120deg,
     rgba(255, 255, 255, 0) 40%,
@@ -179,5 +177,4 @@
 .shiny-text.disabled {
   animation: none;
 }
-
 

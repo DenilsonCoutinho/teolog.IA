@@ -7,7 +7,7 @@ export default {
     clientSecret: process.env.AUTH_GOOGLE_SECRET,
   })],
   callbacks: {
-    jwt({ token, user }) {
+    jwt({ token, user,}) {
       if (user) { // User is available during sign-in
         token.id = user.id
         
