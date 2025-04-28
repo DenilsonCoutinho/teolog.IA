@@ -52,7 +52,7 @@ export default function Planos() {
         <p className="mt-2 md:text-2xl text-md font-medium text-gray-900">Inicie sua jornada bíblica com nosso plano exclusivo</p>
       </div>
 
-      <div className="mt-12 flex flex-row justify-center gap-6 items-start ">
+      <div className="mt-12 flex md:flex-row flex-col justify-center gap-6 items-center md:items-start ">
         {planos.map((plano, index) => (
           <div
             key={index}
