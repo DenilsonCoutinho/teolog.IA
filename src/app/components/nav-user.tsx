@@ -74,31 +74,31 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={IMAGE_USER || ""} alt={"image-user"} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-semibold">{NAME_USER}</span>
+                  <span className="truncate text-xs">{EMAIL_USER}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <Sparkles />
                 Upgrade to Pro
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            {/* <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <BadgeCheck />
                 Account
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem>
                 <CreditCard />
-                Billing
+                Cobrança
               </DropdownMenuItem>
               {/* <DropdownMenuItem>
                 <Bell />

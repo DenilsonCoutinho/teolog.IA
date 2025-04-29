@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { questionnaire } from '../../../actions/questionnaire';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Loader from '../components/ui/loading';
 
 const options: { id: TypeTheology; label: string }[] = [
     { id: 'BATISTA', label: 'Teologia Batista' },
@@ -19,13 +20,14 @@ export default function Questionario() {
     const { data: session } = useSession()
     const ID_USER = session?.user?.id
     const [selected, setSelected] = useState<TypeTheology | null>(null);
+    const [loading, setLoading] = useState<boolean>();
     const route = useRouter()
     const handleSelect = (id: TypeTheology) => {
         setSelected(id);
     };
 
     const handleSubmit = async () => {
-        console.log(selected)
+        setLoading(true)
         try {
             if (!ID_USER) {
                 throw new Error("Id indisponivel")
@@ -38,7 +40,8 @@ export default function Questionario() {
             route.push('/bibleIA')
         } catch (error) {
             console.error(error)
-
+        }finally{
+            setLoading(false)
         }
     };
 
@@ -67,9 +70,14 @@ export default function Questionario() {
                     <button
                         onClick={handleSubmit}
                         disabled={!selected}
-                        className="w-full mt-4 py-3 bg-blue-600 cursor-pointer text-white rounded-xl font-semibold  transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center gap-3 justify-center w-full mt-4 py-3 bg-blue-600 cursor-pointer text-white rounded-xl font-semibold  transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Confirmar Escolha
+                       {loading?"Salvando...":"Confirmar Escolha"} 
+                        {loading&&
+                        <div className='w-6'>
+                        <Loader/>
+                        </div>
+                        }
                     </button>
                 </>
 

@@ -47,7 +47,6 @@ const lora = Lora({
 export default function BibleIA() {
     const { data: session, status } = useSession();
     const [maintenance, setMaintenance] = useState<boolean>(false)
-
     const {
         setSelectNameBook,
         selectNameBook,

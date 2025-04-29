@@ -1,7 +1,7 @@
 'use client';
-
+import { createCheckoutSessionAction } from "../../../../actions/biling";
 const planos = [
-  
+
   {
     destaque: 'Mais Popular',
     titulo: 'Premium',
@@ -16,6 +16,9 @@ const planos = [
       '✓ Você estará apoiando missões mundiais: 50% de toda a arrecadação é destinada ao campo missionário.',
     ],
     botao: 'Assinar Premium',
+    onclick: async () => {
+      await createCheckoutSessionAction();
+    },
     corBorda: 'border-purple-800',
     corBotao: 'bg-purple-800 text-white hover:bg-purple-600',
     desativado: false,
@@ -72,6 +75,7 @@ export default function Planos() {
               ))}
             </ul>
             <button
+              onClick={plano.onclick}
               disabled={plano.desativado}
               className={`mt-6 border w-full cursor-pointer py-2 px-4 rounded-lg transition ${plano.corBotao} ${plano.desativado ? 'opacity-50 cursor-not-allowed' : ''}`}
             >

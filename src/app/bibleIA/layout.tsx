@@ -28,22 +28,14 @@ export default async function UserLayout({
   children: React.ReactNode
 }) {
 
-  const session = await auth();
-
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <SessionProvider session={session}>
-          <SidebarProvider>
-          <AppSidebar />
-          <SidebarTrigger />
-            {children}
-          </SidebarProvider>
-        </SessionProvider>
-        <Toaster />
-      </body>
-    </html>
+    <>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarTrigger />
+        {children}
+      </SidebarProvider>
+      <Toaster />
+    </>
   );
 }

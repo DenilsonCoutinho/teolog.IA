@@ -21,7 +21,7 @@ export function Hero() {
         if (status === "authenticated") {
             const data = await IsNewUser(USER_ID!)
             if (data?.hasCompletedQuestionnaire) {
-                return route.replace('/bibleIA')
+                // return route.replace('/bibleIA')
             } else {
                 return route.replace('/questionario')
             }

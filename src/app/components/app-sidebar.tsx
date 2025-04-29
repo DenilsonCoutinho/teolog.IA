@@ -48,7 +48,7 @@ const data = {
     },
     {
       title: "Configurações",
-      url: "/la",
+      url: "/bibleIA/settings",
       icon: Settings,
     },
 

@@ -26,7 +26,14 @@ model User {
   email                     String?         @unique
   emailVerified             DateTime?
   image                     String?
+
   hasCompletedQuestionnaire Boolean         @default(false)
+  
+  stripeCustomerId         String?
+  stripeSubscriptionId     String?
+  stripeSubscriptionStatus String?
+  stripePriceId            String?
+  
   accounts                  Account[]
   sessions                  Session[]
   Authenticator             Authenticator[]
