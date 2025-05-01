@@ -1,25 +1,18 @@
 "use client"
 import { useSession } from "next-auth/react"
-import { useEffect, useState } from "react"
-import getDueDateUser from "../../../../service/dueDate"
-export default function Billing() {
+import { useState } from "react"
+import Stripe from "stripe"
+import { cancelBilling } from "../../../../actions/cancel_billing"
+export default function Billing({ dataBilling, dataPriceBilling }: { dataBilling: Stripe.Subscription | undefined, dataPriceBilling: Stripe.Price | undefined }) {
+
     const { data: section } = useSession()
     const [dueDate, setDueDate] = useState<string | null>()
-    async function getdate() {
-        const dueDate = await getDueDateUser()
-        console.log(dueDate)
-        if (dueDate) {
-            // setDueDate(dueDate)
-        }
-    }
 
-    useEffect(() => {
 
-    }, [])
     return (
         <div className="flex flex-col w-full">
             <div className="max-w-[900px] w-full mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-                <h2 className="text-xl font-semibold mb-6" onClick={() => getdate()}>Cobrança</h2>
+                <h2 className="text-xl font-semibold mb-6" onClick={() => console.log(dataBilling)}>Cobrança</h2>
                 {/* Assinatura */}
                 <div className="bg-gray-100 p-6 rounded-lg">
                     <div className="flex items-center justify-between mb-4">
@@ -39,7 +32,7 @@ export default function Billing() {
                         {/* <button className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md">
                             Mudar de plano
                         </button> */}
-                        <button className="flex-1 cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md">
+                        <button onClick={() => cancelBilling()} className="flex-1 cursor-pointer bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md">
                             Cancelar plano
                         </button>
                     </div>

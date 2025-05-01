@@ -1,6 +1,6 @@
 "use server"
 
-import { createCheckoutSession, getDateDue } from "@/lib/stripe"
+import { createCheckoutSession } from "@/lib/stripe"
 import { auth } from "../../auth"
 import { redirect } from "next/navigation"
 

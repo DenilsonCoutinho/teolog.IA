@@ -1,9 +1,9 @@
 "use server"
 
-import { getDueDate } from "@/lib/stripe";
+import { getDataSubscription } from "@/lib/stripe";
 import { auth } from "../../auth";
 import { db as prisma } from "@/lib/db";
-export default async function getDueDateUser() {
+export default async function getDataSubscriptionUser() {
 
     const session = await auth()
     try {
@@ -23,7 +23,7 @@ export default async function getDueDateUser() {
             throw new Error("SubscriptionId not found!")
         }
         
-        const dueDate = await getDueDate(subscriptionId?.stripeSubscriptionId)
+        const dataSubscription = await getDataSubscription(subscriptionId?.stripeSubscriptionId)
         // const nextBillingDate = new Date(dueData)
         // nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
 
@@ -32,7 +32,7 @@ export default async function getDueDateUser() {
         // const year = nextBillingDate.getFullYear();
 
         // return `${day}/${month}/${year}`
-        return dueDate
+        return dataSubscription
     } catch (error) {
         console.error(error)
     }

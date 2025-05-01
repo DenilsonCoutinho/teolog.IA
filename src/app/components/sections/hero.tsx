@@ -31,7 +31,7 @@ export function Hero() {
 
     useEffect(() => {
         isNewUser()
-    }, [session?.user])
+    }, [])
 
     const handleScroll = async (id: any) => {
         const element = document.getElementById(id);

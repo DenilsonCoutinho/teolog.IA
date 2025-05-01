@@ -113,12 +113,32 @@ export const openBillingPortalToUpdatePremiumPlan = async (
 }
 
 
-export const getDueDate = async (userStripeSubscriptionId: string) => {
+export const getDataSubscription = async (userStripeSubscriptionId: string) => {
   const subscription = await stripe.subscriptions.retrieve(userStripeSubscriptionId);
-  console.log(subscription)
-  // const billingAnchor = new Date(subscription.billing_cycle_anchor * 1000);
   return subscription
 
+}
+
+export const getDataPrice = async (userStripeSubscriptionId: string) => {
+  const subscription = await stripe.subscriptions.retrieve(userStripeSubscriptionId);
+  const priceId = subscription.items.data[0].price.id;
+  const price = await stripe.prices.retrieve(priceId);
+  const product = await stripe.products.retrieve(price.product as string);
+  return product
+
+}
+
+export const cancelPlan = async (userStripeCustomerId: string) => {
+
+  const session = await stripe.billingPortal.sessions.create({
+    customer: userStripeCustomerId, // ID do cliente no Stripe
+    return_url: 'http://localhost:3000/bibleIA/settings', // para onde o usuário será redirecionado depois
+  });
+
+  return { url: session.url }
+  // stripe.subscriptions.update(userStripeSubscriptionId, {
+  //   cancel_at_period_end: true,
+  // });
 }
 
 export const handleProcessWebhookUpdatedSubscription = async (event: {
@@ -144,15 +164,25 @@ export const handleProcessWebhookUpdatedSubscription = async (event: {
     throw new Error('user of stripeCustomerId not found')
   }
 
+  const price = await stripe.prices.retrieve(stripePriceId);
+  const stripeNamePlan = (await stripe.products.retrieve(price.product as string)).name;
+  const stripePricePlan = (await stripe.subscriptions.retrieve(stripeSubscriptionId)).items.data[0].price.unit_amount;
+  const stripe_current_period_end = (await stripe.subscriptions.retrieve(stripeSubscriptionId)).items.data[0].current_period_end;
+  const stripe_currency = (await stripe.subscriptions.retrieve(stripeSubscriptionId)).items.data[0].price.currency;
+
   await prisma.user.update({
     where: {
       id: userExists.id,
     },
     data: {
+      stripeNamePlan,
+      stripePricePlan,
       stripeCustomerId,
       stripeSubscriptionId,
       stripeSubscriptionStatus,
       stripePriceId,
+      stripe_current_period_end,
+      stripe_currency
     },
   })
 }
@@ -194,7 +224,7 @@ export const whenUserCancelSubscription = async (event: {
     },
     data: {
       stripeSubscriptionId: freeSubscription.id,
-      stripeSubscriptionStatus:freeSubscription.status,
+      stripeSubscriptionStatus: freeSubscription.status,
       stripePriceId: config.stripe.plans.freePriceId,
     },
   })

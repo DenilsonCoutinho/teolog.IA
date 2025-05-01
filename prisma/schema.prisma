@@ -21,31 +21,36 @@ enum typetheology {
 }
 
 model User {
-  id                        String          @id @default(auto()) @map("_id") @db.ObjectId
-  name                      String?
-  email                     String?         @unique
-  emailVerified             DateTime?
-  image                     String?
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
 
-  hasCompletedQuestionnaire Boolean         @default(false)
-  
-  stripeCustomerId         String?
-  stripeSubscriptionId     String?
-  stripeSubscriptionStatus String?
-  stripePriceId            String?
-  
-  accounts                  Account[]
-  sessions                  Session[]
-  Authenticator             Authenticator[]
-  Typetheology              Typetheology[]
-  createdAt                 DateTime        @default(now())
-  updatedAt                 DateTime        @updatedAt
+  hasCompletedQuestionnaire Boolean @default(false)
+
+  stripeCustomerId          String?
+  stripeSubscriptionId      String?
+  stripeSubscriptionStatus  String?
+  stripePriceId             String?
+  stripeNamePlan            String?
+  stripe_currency           String?
+  stripePricePlan           Int?
+  is_current_period_end Boolean?
+  stripe_current_period_end Int?
+
+  accounts      Account[]
+  sessions      Session[]
+  Authenticator Authenticator[]
+  Typetheology  Typetheology[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
 
 model Typetheology {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @db.ObjectId
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String       @db.ObjectId
   type_theology typetheology
 }
 
