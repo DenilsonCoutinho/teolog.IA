@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 
 export function NavMain({
   items,
@@ -34,17 +35,18 @@ export function NavMain({
     }[]
   }[]
 }) {
-  const getSlug = () => {
-    if (typeof window !== "undefined") { // Verifica se o código está no lado do cliente
-      const path = window.location.pathname; // Pega o caminho da URL
-      const parts = path.split('/'); // Divide o caminho em partes
-      return parts[parts.length - 1]; // Retorna o último item da URL (slug)
+
+  const [slug, setSlug] = useState<string | null>(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      const parts = path.split("/");
+      setSlug(parts[parts.length - 1] || null);
     }
-    return null; // Retorna null se não estiver no lado do cliente
-  };
-  
+  }, []);
+
   // Usando a função
-  console.log(getSlug()); 
+  console.log(slug)
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Plataforma</SidebarGroupLabel>
@@ -59,10 +61,10 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <Link href={`${item.url || "#"}`}>
-                  <SidebarMenuButton tooltip={item.title} className={`${"/"+getSlug() === item.url?"bg-gray-200":""}`}>
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
+                <SidebarMenuButton tooltip={item.title} >
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
                 </Link>
               </CollapsibleTrigger>
               <CollapsibleContent>

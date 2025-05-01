@@ -9,10 +9,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import IsNewUser from "../../../../service/isNewUser";
 import Loader from "../ui/loading";
-
 export function Hero() {
     const [loading, setLoading] = useState<boolean>(true)
     const { data: session, status } = useSession()
+    console.log(session?.user)
     const USER_ID = session?.user?.id
     const route = useRouter()
 
@@ -23,7 +23,7 @@ export function Hero() {
             if (data?.hasCompletedQuestionnaire) {
                 // return route.replace('/bibleIA')
             } else {
-                return route.replace('/questionario')
+                // return route.replace('/questionario')
             }
         }
         setLoading(false)

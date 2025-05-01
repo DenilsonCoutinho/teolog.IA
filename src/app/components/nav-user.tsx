@@ -30,6 +30,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { signOut, useSession } from "next-auth/react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export function NavUser({
   user,
@@ -45,6 +47,11 @@ export function NavUser({
   const IMAGE_USER = session?.user?.image
   const EMAIL_USER = session?.user?.email
   const NAME_USER = session?.user?.name
+
+  const route = useRouter()
+  function redirectTo(path: string) {
+    route.push(path)
+  }
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -96,7 +103,8 @@ export function NavUser({
                 <BadgeCheck />
                 Account
               </DropdownMenuItem> */}
-              <DropdownMenuItem>
+
+              <DropdownMenuItem onClick={()=>redirectTo('/bibleIA/billing')}>
                 <CreditCard />
                 Cobrança
               </DropdownMenuItem>

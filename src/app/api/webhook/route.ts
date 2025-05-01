@@ -1,14 +1,15 @@
 import Stripe from 'stripe'
 
-import { handleProcessWebhookUpdatedSubscription, stripe } from '@/lib/stripe'
+import { handleProcessWebhookUpdatedSubscription, stripe, whenUserCancelSubscription } from '@/lib/stripe'
 import { headers } from 'next/headers'
+import { db as prisma } from '@/lib/db'
 
 export async function POST(req: Request) {
     const signature = (await headers()).get('Stripe-Signature') as string
     const body = await req.text()
     if (!signature) {
         throw new Error("Missing signature");
-      }
+    }
     let event: Stripe.Event
 
     try {
@@ -25,11 +26,13 @@ export async function POST(req: Request) {
     switch (event.type) {
         case 'customer.subscription.created':
         case 'customer.subscription.updated':
-            console.log(event.data)
             await handleProcessWebhookUpdatedSubscription(event.data)
             break
+        case 'customer.subscription.deleted':
+            await whenUserCancelSubscription(event.data)
+            break
         default:
-            console.log(`Unhandled event type ${event.type}`)
+            console.log(` ${event.type}`)
     }
 
     return new Response('{ "received": true }', { status: 200 })
