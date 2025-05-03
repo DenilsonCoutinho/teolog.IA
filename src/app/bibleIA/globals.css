@@ -112,6 +112,119 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Estilização do Draft.js Editor para textos teológicos */
+.DraftEditor-root {
+  font-family: 'Lora', 'Georgia', serif; /* Usa a fonte Lora (já importada no seu projeto) para um visual elegante */
+  color: #2d3748; /* Cor cinza escura para melhor contraste e suavidade */
+  line-height: 1.75; /* Espaçamento geral para maior legibilidade */
+  padding: 16px; /* Espaçamento interno para evitar que o texto toque as bordas */
+  background-color: #f9fafb; /* Fundo claro para destacar o conteúdo */
+  border-radius: 8px; /* Bordas arredondadas para um visual moderno */
+}
+
+/* Estilo para títulos principais (h1) */
+.DraftEditor-root h1 {
+  font-size: 28px; /* Aumentado para destacar o título principal */
+  font-weight: 700; /* Negrito mais forte */
+  margin-bottom: 16px; /* Mais espaço para separar do conteúdo */
+  color: #1a202c; /* Cor mais escura para ênfase */
+  line-height: 1.3; /* Evita que o título pareça apertado */
+}
+
+/* Estilo para subtítulos (h2) */
+.DraftEditor-root h2 {
+  font-size: 22px; /* Ligeiramente maior para manter a hierarquia */
+  font-weight: 600; /* Menos pesado que h1, mas ainda destacado */
+  margin-top: 24px; /* Espaço extra no topo para separar seções */
+  margin-bottom: 12px;
+  color: #2d3748; /* Mesma cor base para consistência */
+}
+
+/* Estilo para parágrafos (p) */
+.DraftEditor-root p {
+  font-size: 16px; /* Mantido para legibilidade */
+  margin-bottom: 12px; /* Aumentado para melhor separação */
+  color: #4a5568; /* Cinza médio para suavidade */
+}
+
+/* Estilo para listas não ordenadas (ul) */
+.DraftEditor-root ul {
+  list-style-type: disc; /* Mantido o estilo de disco */
+  margin-left: 24px; /* Aumentado para melhor indentação */
+  margin-bottom: 12px;
+}
+
+/* Estilo para listas ordenadas (ol) */
+.DraftEditor-root ol {
+  list-style-type: decimal; /* Números para listas ordenadas */
+  margin-left: 24px;
+  margin-bottom: 12px;
+}
+
+/* Estilo para itens de lista (li) */
+.DraftEditor-root li {
+  font-size: 16px;
+  margin-bottom: 8px; /* Espaçamento entre itens */
+  color: #4a5568;
+}
+
+/* Estilo para citações (blockquote) */
+.DraftEditor-root blockquote {
+  border-left: 4px solid #a0aec0; /* Cinza suave para a barra lateral */
+  padding-left: 12px;
+  margin: 16px 0;
+  color: #718096; /* Cinza mais claro para diferenciar */
+  font-style: italic;
+  background-color: #edf2f7; /* Fundo sutil para destacar */
+  padding: 12px 16px; /* Mais espaço interno */
+  border-radius: 4px; /* Bordas arredondadas */
+}
+
+/* Estilo para texto em negrito (strong) */
+.DraftEditor-root strong {
+  font-weight: 700; /* Negrito mais forte */
+  color: #2d3748; /* Mesmo tom do texto para consistência */
+}
+
+/* Estilo para texto em itálico (em) */
+.DraftEditor-root em {
+  font-style: italic;
+  color: #4a5568;
+}
+
+/* Estilo para links (a) */
+.DraftEditor-root a {
+  color: #2b6cb0; /* Azul suave para links */
+  text-decoration: underline;
+  transition: color 0.2s ease; /* Transição suave na cor */
+}
+
+.DraftEditor-root a:hover {
+  color: #2c5282; /* Azul mais escuro ao passar o mouse */
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .DraftEditor-root h1 {
+    font-size: 24px; /* Reduzido para caber em telas menores */
+  }
+  .DraftEditor-root h2 {
+    font-size: 20px;
+  }
+  .DraftEditor-root p,
+  .DraftEditor-root li {
+    font-size: 15px; /* Ligeiramente menor para melhor ajuste */
+  }
+  .DraftEditor-root {
+    padding: 12px; /* Menos padding em telas pequenas */
+  }
+}
+
+/* Acessibilidade: Garantir contraste mínimo */
+.DraftEditor-root *:focus {
+  outline: 2px solid #2b6cb0; /* Destaque azul para foco */
+  outline-offset: 2px;
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;

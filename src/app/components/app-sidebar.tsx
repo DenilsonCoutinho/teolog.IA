@@ -29,6 +29,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
+import Link from "next/link";
 
 // This is sample data.
 const data = {
@@ -60,7 +61,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
+        <Link href={"/"}>
         <Image alt='logo' src={logo} width={140} height={200} />
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

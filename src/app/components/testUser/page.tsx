@@ -5,6 +5,7 @@ import nvi from '../../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../../pt_ntlh.json' assert { type: "json" };
 import mark from '../../../assets/mark.svg'
 import logo from '../../../assets/logo-teologia-2.svg'
+
 import { toast } from "sonner"
 import {
     Select,
@@ -24,16 +25,13 @@ import {
 } from "@/components/ui/dialog"
 
 import Image from 'next/image';
-import ReactMarkdown from "react-markdown";
 import { X } from 'lucide-react';
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
-import ShinyText from '../ui/ShinyText';
-import { Lora } from 'next/font/google';
+
 import { useBibleTestStore } from '@/zustand/useBible';
-const lora = Lora({
-    subsets: ["latin"],
-});
+import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
+
+import DualRingSpinnerLoader from '../ui/DualRingSpinnerLoader';
+
 export interface BibleBook {
     abbrev: string;
     name: string;
@@ -56,13 +54,25 @@ export default function BibleIAForTest() {
         hasHydrated
     } = useBibleTestStore()
     const [maintenance, setMaintenance] = useState<boolean>(false)
+    const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
 
     const bible = ntlh as BibleBook[]
     const [loading, setLoading] = useState<boolean>(true)
     const [responseIa, setResponseIa] = useState<string>("")
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([])
-
+    useEffect(() => {
+        if (responseIa) {
+            const blocksFromHTML = convertFromHTML(responseIa);
+            const contentState = ContentState.createFromBlockArray(
+                blocksFromHTML.contentBlocks,
+                blocksFromHTML.entityMap
+            );
+            setEditorState(EditorState.createWithContent(contentState));
+        } else {
+            setEditorState(EditorState.createEmpty());
+        }
+    }, [responseIa]);
     function getChapterBible(chapter: string) {
         if (chapter === "") setSelectChapterTest(null)
         setSelectTextBookBibleTest([])
@@ -103,42 +113,28 @@ export default function BibleIAForTest() {
         }
     }, [hasHydrated])
 
+
     const send = async () => {
+        setLoading(true);
+        setResponseIa("");
+        const TEXT_SELECTED_FORMATED = selectedText.join(" ");
+        const messageUser = `livro: ${selectNameBookTest} Capítulo: ${selectNumberChapterTest + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
 
-        const TEXT_SELECTED_FORMATED = selectedText.join(" ")
-        const messageUser =
-            `livro: ${selectNameBookTest} Capítulo: ${selectNumberChapterTest + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
-       
-        function formatSecond(seconds: number) {
-            const horas = Math.floor(seconds / 3600)
-            const minutos = Math.floor((seconds % 3600) / 60)
-            const restoSegundos = seconds % 60
-
-            return `${horas}h ${minutos}m ${restoSegundos}s`
-        }
         try {
-
-            setLoading(true)
-            setResponseIa("");
             const stream = await fetch("/api/resBibleForTest", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ messageUser }),
             });
 
-
             if (!stream.ok) {
-                const errorData = await stream.json(); // ← lê o JSON
-                if (stream.status === 429 && errorData?.error) {
-                    throw new Error(errorData.error); // ← aqui você joga exatamente a mensagem que você mandou
-                }
-                throw new Error('Erro ao gerar resposta');
+                throw new Error(`Erro ao gerar resposta: ${stream.statusText}`);
             }
 
             if (!stream.body) {
                 throw new Error("Resposta da API não contém um corpo de stream válido");
             }
-            setIsDrawerOpen(!isDrawerOpen)
+
             const reader = stream.body.getReader();
             const decoder = new TextDecoder();
             let fullResponse = "";
@@ -148,25 +144,20 @@ export default function BibleIAForTest() {
                 if (done) break;
                 const chunk = decoder.decode(value, { stream: true });
                 fullResponse += chunk;
+                console.log(fullResponse)
                 setResponseIa(fullResponse); // Atualiza a UI em tempo real
             }
-            setSelectedText([])
 
+            setSelectedText([]);
         } catch (error: unknown) {
             if (error instanceof Error) {
-                toast(error.message, {
-                    duration: 8000,
-                    // description: 
-                })
+                alert("erro: "+error.message);
             }
-            setSelectedText([])
-
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-
-        return
     };
+
 
     const handleVibration = () => {
         if (navigator.vibrate) {
@@ -181,7 +172,7 @@ export default function BibleIAForTest() {
             </h2>
             <p className="mt-2 mb-10 md:text-2xl text-md font-medium text-center text-gray-900">Selecione o versiculo e pesquise</p>
             <div className=" border rounded-md shadow-md flex flex-col items-center justify-center max-w-[600px] mx-auto p-3 pb-2 md:gap-10 gap-10 ">
-                {selectedText.length > 0 && <div onClick={() => { send(); handleVibration() }} className='border-1 cursor-pointer rounded-full border-black shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
+                {selectedText.length > 0 && <div onClick={() => { send(); setIsDrawerOpen(!isDrawerOpen); handleVibration() }} className='border-1 cursor-pointer rounded-full border-black shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
                     <Image alt='logo' src={mark} width={140} height={200} />
                 </div>}
                 <div className='flex items-center justify-between flex-row  gap-6 w-full'>
@@ -227,7 +218,7 @@ export default function BibleIAForTest() {
                     <div className='flex flex-col gap-2'>
                         {selectTextBookBibleTest[selectNumberChapterTest]?.map((texts, index) => {
                             return <div key={index} onClick={() => { getTextSelected(index, texts); handleVibration() }} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white " : " text-black"} cursor-pointer flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
-                                <p className={`${lora.className} font-medium text-[16px]`}>
+                                <p className={` font-medium text-[16px]`}>
                                     {index + 1} - <span className='font-normal '>{texts}</span>
                                 </p>
 
@@ -236,53 +227,44 @@ export default function BibleIAForTest() {
                     </div>
                 </section>
 
-                <Dialog onOpenChange={(val) => {
-                    if (val === false) {
-                        return
-                    }
-                    setIsDrawerOpen(val)
-                }} open={isDrawerOpen}>
-                    <DialogContent className='px-3'>
-                        <DialogHeader className='flex'>
-                            <DialogTitle className='flex items-center  justify-between'>
-                                Pergunte a nossa IA
-                                <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}><X className='w-5 bg text-black' /></div>
-                            </DialogTitle>
-                        </DialogHeader>
-
-                        <div className="mx-auto w-full h-[27rem] flex flex-col border rounded-xl ">
-                            {/* Área das mensagens */}
-                            <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
-                                {
-                                    <>
-                                        {!responseIa ? (
-                                            <div className="h-full flex items-center justify-center text-gray-400 text-center">
-                                                <p className="text-lg">Comece uma conversa...</p>
-                                            </div>
-                                        ) : (
-                                            <div className="h-full">
-                                                <div
-                                                    className={` max-w-[100%] p-3  rounded-xl ${"bg-white mb-20 text-gray-800 self-start mr-auto border"
-                                                        }`}
-                                                >
-                                                    <div className='text-sm leading-6 '>
-                                                        <ReactMarkdown>{responseIa}</ReactMarkdown>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </>}
-                            </div>
-
-                            <div className="border-t bg-white rounded-xl ">
-                                {loading && <div className='bg-slate-600 rounded-xl px-2'>
-                                    <ShinyText text="✝Buscando sabedoria nas Escrituras..." speed={3} className='md:text-xl text-sm' />
-                                </div>}
-                            </div>
-                        </div>
-
-                    </DialogContent>
-                </Dialog>
+                <Dialog onOpenChange={(val) => { if (val === false) return; setIsDrawerOpen(val); }} open={isDrawerOpen}>
+                               <DialogContent className='px-3'>
+                                   <DialogHeader className='flex'>
+                                       <DialogTitle className='flex items-center justify-between'>
+                                           <Image src={logo} alt='logo' width={100} />
+                                           <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
+                                               <X className='w-5 bg text-black' />
+                                           </div>
+                                       </DialogTitle>
+                                   </DialogHeader>
+               
+                                   <div className="w-full h-[27rem] flex flex-col border rounded-xl">
+                                       {/* Área das mensagens */}
+                                       <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
+                                           {!responseIa ? (
+                                               <div className="h-full flex items-center justify-center text-gray-400 text-center">
+                                                   <div className='flex flex-col items-center'>
+                                                       <DualRingSpinnerLoader />
+                                                       <p>Buscando sabedoria nas Escrituras...</p>
+                                                   </div>
+                                               </div>
+                                           ) : (
+                                               <div className="h-full">
+                                                   <div className={`max-w-[100%] p-3 rounded-xl bg-white mb-20 text-gray-800 self-start mr-auto border`}>
+                                                       <div className='text-sm leading-6'>
+                                                           <Editor
+                                                               editorState={editorState}
+                                                               onChange={setEditorState}
+                                                               readOnly={true}
+                                                           />
+                                                       </div>
+                                                   </div>
+                                               </div>
+                                           )}
+                                       </div>
+                                   </div>
+                               </DialogContent>
+                           </Dialog>
             </div>
         </div>
     )

@@ -12,7 +12,6 @@ import Loader from "../ui/loading";
 export function Hero() {
     const [loading, setLoading] = useState<boolean>(true)
     const { data: session, status } = useSession()
-    console.log(session?.user)
     const USER_ID = session?.user?.id
     const route = useRouter()
 
