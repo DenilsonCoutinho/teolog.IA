@@ -1,20 +1,11 @@
 import Billing from "./billing";
 import getDataSubscriptionUser from "../../../../service/dataSubscription";
-import getDataPriceUser from "../../../../service/dataPrice";
+import billing_data from "../../../../service/billing_data";
 
 export default async function BillingServerSide() {
-    const getDataSubscription = await getDataSubscriptionUser()
-    const plainData = getDataSubscription
-    ? JSON.parse(JSON.stringify(getDataSubscription))
-    : undefined
+    const billingData = await billing_data()
 
-    const getDataPrice = await getDataPriceUser()
-    const plainPriceData = getDataPrice
-    ? JSON.parse(JSON.stringify(getDataPrice))
-    : undefined
-
-    
     return <>
-        <Billing dataBilling={plainData} dataPriceBilling={plainPriceData} />
+        <Billing billingData={billingData}/>
     </>
 }

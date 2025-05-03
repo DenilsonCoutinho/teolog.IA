@@ -1,6 +1,7 @@
 import { config } from "@/config";
 import Stripe from "stripe";
 import { db as prisma } from "./db";
+import { PlanType } from "@prisma/client";
 
 export const stripe = new Stripe(config.stripe.secretKey ?? "", {
   apiVersion: '2025-03-31.basil',
@@ -93,7 +94,7 @@ export const openBillingPortalToUpdatePremiumPlan = async (
       after_completion: {
         type: 'redirect',
         redirect: {
-          return_url: 'http://localhost:3000/bibleIA/billing?success=true',
+          return_url: 'http://localhost:3000/obrigado',
         },
       },
       subscription_update_confirm: {
@@ -116,10 +117,9 @@ export const openBillingPortalToUpdatePremiumPlan = async (
 export const getDataSubscription = async (userStripeSubscriptionId: string) => {
   const subscription = await stripe.subscriptions.retrieve(userStripeSubscriptionId);
   return subscription
-
 }
 
-export const getDataPrice = async (userStripeSubscriptionId: string) => {
+const getDataPrice = async (userStripeSubscriptionId: string) => {
   const subscription = await stripe.subscriptions.retrieve(userStripeSubscriptionId);
   const priceId = subscription.items.data[0].price.id;
   const price = await stripe.prices.retrieve(priceId);
@@ -132,13 +132,10 @@ export const cancelPlan = async (userStripeCustomerId: string) => {
 
   const session = await stripe.billingPortal.sessions.create({
     customer: userStripeCustomerId, // ID do cliente no Stripe
-    return_url: 'http://localhost:3000/bibleIA/settings', // para onde o usuário será redirecionado depois
+    return_url: 'http://localhost:3000/bibleIA/billing', // para onde o usuário será redirecionado depois
   });
 
   return { url: session.url }
-  // stripe.subscriptions.update(userStripeSubscriptionId, {
-  //   cancel_at_period_end: true,
-  // });
 }
 
 export const handleProcessWebhookUpdatedSubscription = async (event: {
@@ -148,6 +145,7 @@ export const handleProcessWebhookUpdatedSubscription = async (event: {
   const stripeSubscriptionId = event.object.id as string
   const stripeSubscriptionStatus = event.object.status
   const stripePriceId = event.object.items.data[0].price.id
+  const is_current_period_end = event.object.cancel_at_period_end;
 
   const userExists = await prisma.user.findFirst({
     where: {
@@ -165,7 +163,7 @@ export const handleProcessWebhookUpdatedSubscription = async (event: {
   }
 
   const price = await stripe.prices.retrieve(stripePriceId);
-  const stripeNamePlan = (await stripe.products.retrieve(price.product as string)).name;
+  const stripeNamePlan = (await stripe.products.retrieve(price.product as string)).name as PlanType
   const stripePricePlan = (await stripe.subscriptions.retrieve(stripeSubscriptionId)).items.data[0].price.unit_amount;
   const stripe_current_period_end = (await stripe.subscriptions.retrieve(stripeSubscriptionId)).items.data[0].current_period_end;
   const stripe_currency = (await stripe.subscriptions.retrieve(stripeSubscriptionId)).items.data[0].price.currency;
@@ -182,7 +180,8 @@ export const handleProcessWebhookUpdatedSubscription = async (event: {
       stripeSubscriptionStatus,
       stripePriceId,
       stripe_current_period_end,
-      stripe_currency
+      stripe_currency,
+      is_current_period_end
     },
   })
 }
@@ -226,6 +225,8 @@ export const whenUserCancelSubscription = async (event: {
       stripeSubscriptionId: freeSubscription.id,
       stripeSubscriptionStatus: freeSubscription.status,
       stripePriceId: config.stripe.plans.freePriceId,
+      stripe_current_period_end: freeSubscription.cancel_at ? freeSubscription.cancel_at : null,
+      is_current_period_end:freeSubscription.cancel_at_period_end? freeSubscription.cancel_at_period_end : null,
     },
   })
 }

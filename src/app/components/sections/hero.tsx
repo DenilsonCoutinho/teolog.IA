@@ -54,14 +54,23 @@ export function Hero() {
             <div className="min-h-screen bg-white flex justify-center items-center fixed w-full z-50 ">
                 <Loader />
             </div>
-            
+
             :
 
             <section className=" flex flex-col items-center justify-center text-center  bg-gradient-to-b from-purple-50 to-white">
                 <div className="w-full mx-auto">
                     <div className='flex items-center justify-between w-full shadow-md p-3 mb-10 top-0 bg-white z-50'>
                         <Image alt='logo' src={logo} width={140} height={200} />
-                        <LoginBtn text="Login / Registro" />
+                        {
+                            session?.user ?
+                                <>
+                                    <button onClick={()=>route.push('/bibleIA')} className="border rounded-md w-32 py-2 bg-purple-800 hover:bg-purple-900 cursor-pointer  text-white">
+                                    Ir para a biblia
+                                    </button>
+                                </>
+                                :
+                                <LoginBtn text="Login / Registro" />
+                        }
                     </div>
                     <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r max-w-4xl mx-auto from-purple-800 to-blue-600 text-transparent bg-clip-text mb-6">
                         Compreensão Espiritual facilitada

@@ -37,13 +37,13 @@ export function NavMain({
 }) {
 
   const [slug, setSlug] = useState<string | null>(null);
-  useEffect(() => {
+  function isSlug(){
     if (typeof window !== "undefined") {
       const path = window.location.pathname;
       const parts = path.split("/");
-      setSlug(parts[parts.length - 1] || null);
+      return parts[parts.length - 1] || null;
     }
-  }, []);
+  }
 
   // Usando a função
   console.log(slug)
@@ -61,7 +61,7 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <Link href={`${item.url || "#"}`}>
-                <SidebarMenuButton tooltip={item.title} >
+                <SidebarMenuButton tooltip={item.title} className={`${isSlug()}`}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </SidebarMenuButton>

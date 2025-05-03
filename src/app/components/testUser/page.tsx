@@ -108,9 +108,7 @@ export default function BibleIAForTest() {
         const TEXT_SELECTED_FORMATED = selectedText.join(" ")
         const messageUser =
             `livro: ${selectNameBookTest} Capítulo: ${selectNumberChapterTest + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
-        // const limit = await fetch('/api/limitRate')
-        // const limitData = await limit.json()
-
+       
         function formatSecond(seconds: number) {
             const horas = Math.floor(seconds / 3600)
             const minutos = Math.floor((seconds % 3600) / 60)

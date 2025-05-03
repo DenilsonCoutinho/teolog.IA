@@ -26,6 +26,40 @@ export async function POST(req: Request) {
     switch (event.type) {
         case 'customer.subscription.created':
         case 'customer.subscription.updated':
+            const isScheduledToCancel = event.data.object.cancel_at_period_end;
+            const dateToCancel = event.data.object.cancel_at;
+            const status = event.data.object.status;
+            const stripeSubscriptionId = event.data.object.id
+            const stripeCustomerId = event.data.object.customer as string
+
+            if (isScheduledToCancel) {
+                const userExists = await prisma.user.findFirst({
+                    where: {
+                        OR: [
+                            { stripeSubscriptionId },
+                            { stripeCustomerId }
+                        ]
+                    },
+                    select: {
+                        id: true,
+                    },
+                })
+                if (!userExists) {
+                    throw new Error('user of stripeCustomerId not found')
+                }
+
+
+                await prisma.user.update({
+                    where: {
+                        id: userExists.id,
+                    },
+                    data: {
+                        stripeSubscriptionStatus: status,
+                        is_current_period_end: isScheduledToCancel,
+                        stripe_current_period_end: dateToCancel ? dateToCancel : null,
+                    },
+                })
+            }
             await handleProcessWebhookUpdatedSubscription(event.data)
             break
         case 'customer.subscription.deleted':
