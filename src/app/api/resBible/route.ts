@@ -1,14 +1,23 @@
 import { generateText, streamText } from "ai";
 import { xai } from "@ai-sdk/xai";
 import { NextRequest, NextResponse } from 'next/server';
+import { limitRatePremium } from "../../../../actions/limitRatePremium";
+import { auth } from "../../../../auth";
+
+function formatSecond(seconds: number) {
+  const min = Math.floor(seconds / 60);
+  const sec = seconds % 60;
+  return `${min}m ${sec}s`;
+}
 
 export async function POST(req: NextRequest) {
 
   const { messageUser } = await req.json();
-
+  const session = await auth()
   if (!messageUser || typeof messageUser !== 'string') {
     return NextResponse.json({ error: 'Pergunta inválida' });
   }
+
   const systemPrompt = `
 Você é um teólogo evangélico com base batista, especializado em estudos bíblicos, com profundo conhecimento tanto do contexto cristão quanto do contexto judaico, que é a raiz de tudo.
 
@@ -23,11 +32,21 @@ Evite doutrinas católicas. Estruture a resposta com títulos, subtítulos e lis
 
 
   try {
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+    }
+    const rate = await limitRatePremium(session?.user?.id);
+
+    if (rate.error) {
+      return NextResponse.json({
+        error: `Você atingiu o limite de 10 requisições. Tente novamente em ${formatSecond(rate.ttl)}.`,
+      }, { status: 429 });
+    }
 
     const stream = await streamText({
       model: xai("grok-3-beta"),
       system: systemPrompt,
-      prompt:messageUser,
+      prompt: messageUser,
       temperature: 0,
     });
 

@@ -18,8 +18,9 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import Link from "next/link"
-import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useEffect, useLayoutEffect, useState } from "react"
+import { usePathname } from "next/navigation"
 
 export function NavMain({
   items,
@@ -35,36 +36,27 @@ export function NavMain({
     }[]
   }[]
 }) {
-
-  const [slug, setSlug] = useState<string | null>(null);
-  function isSlug(){
-    if (typeof window !== "undefined") {
-      const path = window.location.pathname;
-      const parts = path.split("/");
-      return parts[parts.length - 1] || null;
-    }
-  }
-
-  // Usando a função
-  console.log(slug)
+  const pathname = usePathname()
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Plataforma</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
-          <Collapsible
+        {items.map((item) => {
+
+          return <Collapsible
             key={item.title}
             asChild
             defaultOpen={item.isActive}
             className="group/collapsible"
+            onClick={() => console.log(pathname)}
           >
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <Link href={`${item.url || "#"}`}>
-                <SidebarMenuButton tooltip={item.title} className={`${isSlug()}`}>
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
+                  <SidebarMenuButton tooltip={item.title} className={`${pathname=== item.url ? "bg-gray-300" : ""}`}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
                 </Link>
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -82,7 +74,7 @@ export function NavMain({
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
-        ))}
+        })}
       </SidebarMenu>
     </SidebarGroup>
   )
