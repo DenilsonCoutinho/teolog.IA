@@ -3,12 +3,14 @@
 import { getDataSubscription } from "@/lib/stripe";
 import { auth } from "../../auth";
 import { db as prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
 export default async function getDataSubscriptionUser() {
 
     const session = await auth()
     try {
         if (!session?.user?.id) {
-            throw new Error("not authenticated!")
+            redirect('/')
+
         }
         const subscriptionId = await prisma.user.findFirst({
             where: {
@@ -22,7 +24,7 @@ export default async function getDataSubscriptionUser() {
         if (!subscriptionId?.stripeSubscriptionId) {
             throw new Error("SubscriptionId not found!")
         }
-        
+
         const dataSubscription = await getDataSubscription(subscriptionId?.stripeSubscriptionId)
         // const nextBillingDate = new Date(dueData)
         // nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);

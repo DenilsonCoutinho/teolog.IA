@@ -9,9 +9,7 @@ export async function updateBilling() {
     const session = await auth()
 
     if (!session?.user?.id) {
-        return {
-            error: "Não autorizado"
-        }
+        redirect('/')
     }
 
     const subscriptionId = await prisma.user.findFirst({

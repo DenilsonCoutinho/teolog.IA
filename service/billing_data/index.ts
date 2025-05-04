@@ -1,10 +1,11 @@
 "use server"
 import { db as prisma } from "@/lib/db";
 import { auth } from "../../auth";
+import { redirect } from "next/navigation";
 export default async function billing_data() {
     const session = await auth()
     if (!session?.user?.id) {
-        throw new Error("Não autenticado!")
+        redirect('/') 
     }
 
     const userData = await prisma.user.findFirst({
