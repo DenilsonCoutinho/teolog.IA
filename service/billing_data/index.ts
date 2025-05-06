@@ -16,7 +16,9 @@ export default async function billing_data() {
             is_current_period_end: true,
             stripePricePlan: true,
             stripeNamePlan: true,
-            stripe_current_period_end:true
+            stripe_current_period_end:true,
+            image:true,
+            name:true
         }
     })
 

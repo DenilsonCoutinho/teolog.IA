@@ -4,12 +4,12 @@ import { openBillingPortalToUpdatePremiumPlan } from "@/lib/stripe"
 import { auth } from "../../auth"
 import { redirect } from "next/navigation"
 
-export async function updateBilingPremium() {
+export async function updateBilingPremium(return_url:string) {
     const session = await auth()
     if (!session?.user?.id) {
-        return {
-            error: "Não autorizado"
-        }
+
+        redirect("/login?typePlan=Premium")
+        
     }
 
     const dataUser = await prisma.user.findUnique({
@@ -21,7 +21,7 @@ export async function updateBilingPremium() {
             stripeSubscriptionStatus: true
         }
     })
-    const updateCheckoutSession = await openBillingPortalToUpdatePremiumPlan(dataUser?.stripeCustomerId!, dataUser?.stripeSubscriptionId!)
+    const updateCheckoutSession = await openBillingPortalToUpdatePremiumPlan(dataUser?.stripeCustomerId!, dataUser?.stripeSubscriptionId!,return_url)
 
     redirect(updateCheckoutSession.url)
 }

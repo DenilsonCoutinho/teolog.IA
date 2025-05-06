@@ -1,9 +1,25 @@
 'use client';
-import { createCheckoutSessionAction } from "../../../../actions/biling";
 
+import { useRouter } from "next/navigation";
 import { updateBilingPremium } from "../../../../actions/update_Biling_Premim";
+import { useState } from "react";
+import Loader from "../ui/loading";
+import { useSession } from "next-auth/react";
 
 export default function Planos() {
+  const [loading, setLoading] = useState<boolean>()
+  const { data: session } = useSession()
+  async function goToPremium() {
+    setLoading(true)
+    await updateBilingPremium("/")
+  }
+  const route = useRouter()
+  async function freePlan() {
+    if (!session?.user?.id) {
+      return route.replace("/login")
+    }
+    route.push("/bibleIA")
+  }
 
   return (
     <div className="bg-gradient-to-b from-white to-purple-50 min-h-screen pb-16 px-4 sm:px-6 lg:px-8">
@@ -14,7 +30,22 @@ export default function Planos() {
         </p>
       </div>
 
-      <div className="mt-12 flex md:flex-row flex-col justify-center gap-6 items-center md:items-start">
+      <div className="mt-12 grid md:grid-cols-3 grid-cols-1 gap-6 justify-items-center items-stretch mx-auto w-fit">
+        <div className="bg-white border-2 border-purple-800 rounded-xl shadow-lg p-6 relative w-full max-w-md">
+          <h3 className="text-lg font-semibold text-gray-900">Free</h3>
+          <p className="text-2xl font-bold text-gray-900 mt-2">
+            R$0 <span className="text-sm font-normal"></span>
+          </p>
+          <ul className="mt-4 space-y-2 text-sm text-gray-700">
+            <li>✓ 3 Perguntas por dia</li>
+            <li>✓ Respostas completas e fundamentadas</li>
+            <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li>
+          </ul>
+          <button onClick={() => freePlan()} className="mt-6 border w-full py-2 px-4 rounded-lg bg-gradient-to-r cursor-pointer text-black  transition">
+            Assinar Free
+          </button>
+        </div>
+
         <div className="bg-white border-2 border-purple-800 rounded-xl shadow-lg p-6 relative w-full max-w-md">
           <div className="absolute -top-4 left-4 bg-purple-800 text-white text-xs font-semibold px-3 py-1 rounded-full">
             Mais Popular
@@ -31,8 +62,8 @@ export default function Planos() {
             <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li>
             <li>✓ Você estará apoiando missões mundiais: 50% de toda a arrecadação é destinada ao campo missionário.</li>
           </ul>
-          <button onClick={() => updateBilingPremium()} className="mt-6 border w-full py-2 px-4 rounded-lg bg-purple-800 text-white hover:bg-purple-600 transition">
-            Assinar Premium
+          <button onClick={() => goToPremium()} className="mt-6 border cursor-pointer w-full py-2 px-4 rounded-lg bg-gradient-to-r  from-purple-800 to-blue-600 text-white hover:bg-purple-600 transition">
+            {loading ? <Loader /> : "Assinar Premium"}
           </button>
         </div>
 

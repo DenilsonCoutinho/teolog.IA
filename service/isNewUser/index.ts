@@ -1,5 +1,6 @@
 "use server"
 import { db as prisma } from "@/lib/db";
+import { redirect } from "next/navigation";
 export default async function IsNewUser(userId: string) {
 
     const isNewUser = await prisma.user.findUnique({
@@ -8,5 +9,7 @@ export default async function IsNewUser(userId: string) {
             hasCompletedQuestionnaire: true
         }
     })
+
+    
     return isNewUser
 }

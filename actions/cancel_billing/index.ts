@@ -1,5 +1,4 @@
 "use server"
-import { db as prisma } from "@/lib/db";
 
 import { cancelPlan } from "@/lib/stripe"
 import { auth } from "../../auth"
@@ -14,19 +13,11 @@ export async function cancelBilling() {
         }
     }
 
-    const subscriptionId = await prisma.user.findFirst({
-        where: {
-            id: session?.user?.id
-        },
-        select: {
-            stripeCustomerId: true
-        }
-    })
 
-    if (!subscriptionId?.stripeCustomerId) {
+    if (!session.user.stripeCustomerId) {
         throw new Error("SubscriptionId not found!")
     }
-    const url = await cancelPlan(subscriptionId.stripeCustomerId)
+    const url = await cancelPlan(session.user.stripeCustomerId)
 
     redirect(url.url)
 

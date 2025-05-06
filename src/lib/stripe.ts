@@ -79,7 +79,8 @@ export const createCheckoutSession = async (userId: string, userEmail: string) =
 
 export const openBillingPortalToUpdatePremiumPlan = async (
   userStripeCustomerId: string,
-  userStripeSubscriptionId: string
+  userStripeSubscriptionId: string,
+  return_url: string
 ) => {
   const subscriptionItems = await stripe.subscriptionItems.list({
     subscription: userStripeSubscriptionId,
@@ -88,13 +89,13 @@ export const openBillingPortalToUpdatePremiumPlan = async (
 
   const session = await stripe.billingPortal.sessions.create({
     customer: userStripeCustomerId,
-    return_url: 'http://localhost:3000/bibleIA/billing',
+    return_url: `http://localhost:3000/${return_url}`,
     flow_data: {
       type: 'subscription_update_confirm',
       after_completion: {
         type: 'redirect',
         redirect: {
-          return_url: 'http://localhost:3000/obrigado',
+          return_url: `http://localhost:3000/obrigado`,
         },
       },
       subscription_update_confirm: {
@@ -226,7 +227,7 @@ export const whenUserCancelSubscription = async (event: {
       stripeSubscriptionStatus: freeSubscription.status,
       stripePriceId: config.stripe.plans.freePriceId,
       stripe_current_period_end: freeSubscription.cancel_at ? freeSubscription.cancel_at : null,
-      is_current_period_end:freeSubscription.cancel_at_period_end? freeSubscription.cancel_at_period_end : null,
+      is_current_period_end: freeSubscription.cancel_at_period_end ? freeSubscription.cancel_at_period_end : null,
     },
   })
 }

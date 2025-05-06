@@ -41,13 +41,14 @@ export async function POST(req: NextRequest) {
   - Blocos de código (<pre><code>) a menos que explicitamente solicitado.
   - Conteúdo que dependa de recursos externos (e.g., imagens, scripts).
   
-  A resposta deve ser concisa, prática e acessível, com no máximo 1200 palavras, salvo instrução contrária. Garanta que o HTML seja bem formado, com todas as tags corretamente abertas e fechadas, para renderização perfeita no Draft.js.
+  A resposta deve ser concisa, prática e acessível, com no máximo 1000 palavras, salvo instrução contrária. Garanta que o HTML seja bem formado, com todas as tags corretamente abertas e fechadas, para renderização perfeita no Draft.js.
   `;
 
   const limitRate = await LimitRate(req)
 
   try {
     if (limitRate?.error) {
+      
       return NextResponse.json({ 
         error: `Você atingiu o limite de 3/3 tentativas, volte em ${formatSecond(limitRate.ttl)}` 
       }, { status: 429 });
@@ -73,9 +74,7 @@ export async function POST(req: NextRequest) {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   } catch (error) {
-    if (error instanceof Error)
 
-      console.log(error.message)
     return new Response(JSON.stringify({ error: error }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

@@ -42,7 +42,7 @@ Evite:
 - Blocos de código (<pre><code>) a menos que explicitamente solicitado.
 - Conteúdo que dependa de recursos externos (e.g., imagens, scripts).
 
-A resposta deve ser concisa, prática e acessível, com no máximo 1200 palavras, salvo instrução contrária. Garanta que o HTML seja bem formado, com todas as tags corretamente abertas e fechadas, para renderização perfeita no Draft.js.
+A resposta deve ser concisa, prática e acessível, com no máximo 1000 palavras, salvo instrução contrária. Garanta que o HTML seja bem formado, com todas as tags corretamente abertas e fechadas, para renderização perfeita no Draft.js.
 `;
 
 
@@ -68,6 +68,7 @@ A resposta deve ser concisa, prática e acessível, com no máximo 1200 palavras
 
     const readableStream = new ReadableStream({
       async start(controller) {
+        console.log(controller)
         for await (const chunk of stream.textStream) {
           controller.enqueue(new TextEncoder().encode(chunk));
         }

@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         event = stripe.webhooks.constructEvent(
             body,
             signature,
-            process.env.WEBHOOK_SECRET as string,
+            "whsec_cb0f56aa25f1f4006d79407f453b42813eedecd6dc5e33cec251c805348c6154",
         )
     } catch (error: any) {
         console.error(`Webhook Error: ${error.message}`)

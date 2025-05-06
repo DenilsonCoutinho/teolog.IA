@@ -1,22 +1,56 @@
 import { createStripeCustomer } from "@/lib/stripe";
+import { User } from "@prisma/client";
 import { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google";
-
+import { db as prisma } from "@/lib/db";
 export default {
   providers: [Google({
     clientId: process.env.AUTH_GOOGLE_ID,
     clientSecret: process.env.AUTH_GOOGLE_SECRET,
-  })],
+  }),],
   callbacks: {
-    jwt({ token, user, }) {
-      if (user) { // User is available during sign-in
-        token.id = user.id
-      }
+    async jwt({ token }: { token: any }) {
+      const user = await prisma.user.findFirst({
+        where: { email: token.email }
+      }) as User
+      token.id = user.id
+      token.name = user.name
+      token.image = user.image
+      token.email = user.email
+      token.emailVerified = user.emailVerified
+      token.hasCompletedQuestionnaire = user.hasCompletedQuestionnaire
+      token.stripeCustomerId = user.stripeCustomerId
+      token.stripeSubscriptionId = user.stripeSubscriptionId
+      token.stripeSubscriptionStatus = user.stripeSubscriptionStatus
+      token.stripePriceId = user.stripePriceId
+      token.stripeNamePlan = user.stripeNamePlan
+      token.stripe_currency = user.stripe_currency
+      token.stripePricePlan = user.stripePricePlan
+      token.is_current_period_end = user.is_current_period_end
+      token.stripe_current_period_end = user.stripe_current_period_end
       return token
     },
-    session({ session, token }) {
-      session.user.id = token.id as string
+    session({ session, token }: { session: any, token: any }) {
+      // session.user.id = token.id as string
+
+      session.user.id = token.id
+      session.user.name = token.name
+      session.user.image = token.image
+      session.user.email = token.email
+      session.user.emailVerified = token.emailVerified
+      session.user.hasCompletedQuestionnaire = token.hasCompletedQuestionnaire
+      session.user.stripeCustomerId = token.stripeCustomerId
+      session.user.stripeSubscriptionId = token.stripeSubscriptionId
+      session.user.stripeSubscriptionStatus = token.stripeSubscriptionStatus
+      session.user.stripePriceId = token.stripePriceId
+      session.user.stripeNamePlan = token.stripeNamePlan
+      session.user.stripe_currency = token.stripe_currency
+      session.user.stripePricePlan = token.stripePricePlan
+      session.user.is_current_period_end = token.is_current_period_end
+      session.user.stripe_current_period_end = token.stripe_current_period_end
+
       return session
+
     }
 
   },

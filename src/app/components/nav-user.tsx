@@ -1,8 +1,6 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
   CreditCard,
   LogOut,
@@ -30,7 +28,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { signOut, useSession } from "next-auth/react"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 export function NavUser({
@@ -47,7 +44,6 @@ export function NavUser({
   const IMAGE_USER = session?.user?.image
   const EMAIL_USER = session?.user?.email
   const NAME_USER = session?.user?.name
-
   const route = useRouter()
   function redirectTo(path: string) {
     route.push(path)
@@ -62,8 +58,8 @@ export function NavUser({
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
               <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={IMAGE_USER || ''} alt="Image User" />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarImage src={IMAGE_USER ?? ''} alt="Image User" />
+                <AvatarFallback className="rounded-lg font-bold text-black">{NAME_USER?.substring(0, 1) ?? ""}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{NAME_USER}</span>
@@ -91,12 +87,12 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             {/* <DropdownMenuSeparator /> */}
-            <DropdownMenuGroup>
-              {/* <DropdownMenuItem>
+            {/* <DropdownMenuGroup onClick={()=>route.push('/plans')}>
+              <DropdownMenuItem>
                 <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem> */}
-            </DropdownMenuGroup>
+                Assinar Premium
+              </DropdownMenuItem>
+            </DropdownMenuGroup> */}
             {/* <DropdownMenuSeparator /> */}
             <DropdownMenuGroup>
               {/* <DropdownMenuItem>
@@ -104,7 +100,7 @@ export function NavUser({
                 Account
               </DropdownMenuItem> */}
 
-              <DropdownMenuItem onClick={()=>redirectTo('/bibleIA/billing')}>
+              <DropdownMenuItem onClick={() => redirectTo('/bibleIA/billing')}>
                 <CreditCard />
                 Cobrança
               </DropdownMenuItem>
@@ -114,7 +110,7 @@ export function NavUser({
               </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ redirectTo: "/" })}>
+            <DropdownMenuItem onClick={() => signOut({ redirectTo: "/login" })}>
               <LogOut />
               Log out
             </DropdownMenuItem>

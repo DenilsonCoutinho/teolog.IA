@@ -23,7 +23,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-
+const lora = Lora({
+    subsets: ["latin"],
+});
 import Image from 'next/image';
 import { X } from 'lucide-react';
 
@@ -31,17 +33,15 @@ import { useBibleTestStore } from '@/zustand/useBible';
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
 
 import DualRingSpinnerLoader from '../ui/DualRingSpinnerLoader';
+import { Lora } from 'next/font/google';
 
 export interface BibleBook {
     abbrev: string;
     name: string;
     chapters: string[][];
 }
-type PropsChapters = {
-    number: number;
-}
-export default function BibleIAForTest() {
 
+export default function BibleIAForTest() {
     const {
         setSelectNameBookTest,
         selectNameBookTest,
@@ -53,7 +53,6 @@ export default function BibleIAForTest() {
         selectNumberChapterTest,
         hasHydrated
     } = useBibleTestStore()
-    const [maintenance, setMaintenance] = useState<boolean>(false)
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
 
     const bible = ntlh as BibleBook[]
@@ -144,15 +143,17 @@ export default function BibleIAForTest() {
                 if (done) break;
                 const chunk = decoder.decode(value, { stream: true });
                 fullResponse += chunk;
-                console.log(fullResponse)
                 setResponseIa(fullResponse); // Atualiza a UI em tempo real
             }
 
             setSelectedText([]);
         } catch (error: unknown) {
             if (error instanceof Error) {
-                alert("erro: "+error.message);
+                toast.error(error.message)
+                setSelectedText([]);
             }
+            setIsDrawerOpen(false)
+            console.error(error)
         } finally {
             setLoading(false);
         }
@@ -218,7 +219,7 @@ export default function BibleIAForTest() {
                     <div className='flex flex-col gap-2'>
                         {selectTextBookBibleTest[selectNumberChapterTest]?.map((texts, index) => {
                             return <div key={index} onClick={() => { getTextSelected(index, texts); handleVibration() }} className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts) ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white " : " text-black"} cursor-pointer flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
-                                <p className={` font-medium text-[16px]`}>
+                                <p className={` font-medium text-[16px] ${lora.className}`}>
                                     {index + 1} - <span className='font-normal '>{texts}</span>
                                 </p>
 
@@ -228,43 +229,46 @@ export default function BibleIAForTest() {
                 </section>
 
                 <Dialog onOpenChange={(val) => { if (val === false) return; setIsDrawerOpen(val); }} open={isDrawerOpen}>
-                               <DialogContent className='px-3'>
-                                   <DialogHeader className='flex'>
-                                       <DialogTitle className='flex items-center justify-between'>
-                                           <Image src={logo} alt='logo' width={100} />
-                                           <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
-                                               <X className='w-5 bg text-black' />
-                                           </div>
-                                       </DialogTitle>
-                                   </DialogHeader>
-               
-                                   <div className="w-full h-[27rem] flex flex-col border rounded-xl">
-                                       {/* Área das mensagens */}
-                                       <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
-                                           {!responseIa ? (
-                                               <div className="h-full flex items-center justify-center text-gray-400 text-center">
-                                                   <div className='flex flex-col items-center'>
-                                                       <DualRingSpinnerLoader />
-                                                       <p>Buscando sabedoria nas Escrituras...</p>
-                                                   </div>
-                                               </div>
-                                           ) : (
-                                               <div className="h-full">
-                                                   <div className={`max-w-[100%] p-3 rounded-xl bg-white mb-20 text-gray-800 self-start mr-auto border`}>
-                                                       <div className='text-sm leading-6'>
-                                                           <Editor
-                                                               editorState={editorState}
-                                                               onChange={setEditorState}
-                                                               readOnly={true}
-                                                           />
-                                                       </div>
-                                                   </div>
-                                               </div>
-                                           )}
-                                       </div>
-                                   </div>
-                               </DialogContent>
-                           </Dialog>
+                    <DialogContent className='px-3'>
+                        <DialogHeader className='flex'>
+                            <DialogTitle className='flex items-center justify-between'>
+                                <Image src={logo} alt='logo' width={100} />
+                                {
+                                    !loading &&
+                                        <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
+                                            <X className='w-5 bg text-black' />
+                                        </div>
+                                }
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="w-full h-[27rem] flex flex-col border rounded-xl">
+                            {/* Área das mensagens */}
+                            <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
+                                {!responseIa ? (
+                                    <div className="h-full flex items-center justify-center text-gray-400 text-center">
+                                        <div className='flex flex-col items-center'>
+                                            <DualRingSpinnerLoader />
+                                            <p>Buscando sabedoria nas Escrituras...</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="h-full">
+                                        <div className={`max-w-[100%] p-3 rounded-xl bg-white mb-20 text-gray-800 self-start mr-auto border`}>
+                                            <div className='text-sm leading-6'>
+                                                <Editor
+                                                    editorState={editorState}
+                                                    onChange={setEditorState}
+                                                    readOnly={true}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     )

@@ -5,6 +5,7 @@ import nvi from '../../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../../pt_ntlh.json' assert { type: "json" };
 import mark from '../../../assets/mark.svg';
 import logo from '../../../assets/logo-teologia-2.svg';
+import Confetti from 'react-confetti'
 
 import {
     Select,
@@ -30,15 +31,12 @@ import { useBibleStore } from '@/zustand/useBible';
 import DualRingSpinnerLoader from '../ui/DualRingSpinnerLoader';
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface BibleBook {
     abbrev: string;
     name: string;
     chapters: string[][]; // Representação dos capítulos como um array de arrays de strings
-}
-
-type PropsChapters = {
-    number: number;
 }
 
 const lora = Lora({
@@ -48,7 +46,6 @@ const lora = Lora({
 export default function BibleIA() {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const { data: session, status } = useSession();
-
     const [maintenance, setMaintenance] = useState<boolean>(false);
     const {
         setSelectNameBook,
@@ -64,10 +61,15 @@ export default function BibleIA() {
 
     const bible = ntlh as BibleBook[];
     const [textSelected, setTextSelected] = useState<string>("");
+    const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
     const [responseIa, setResponseIa] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([]);
+
+    useEffect(() => {
+
+    }, [])
 
     // Atualiza o editorState quando responseIa mudar
     useEffect(() => {
@@ -133,14 +135,15 @@ export default function BibleIA() {
         const messageUser = `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
 
         try {
-            const stream = await fetch("/api/resBible", {
+            const stream = await fetch(`${session?.user.stripeNamePlan === "Free" ? "/api/resBibleForTest" : "/api/resBible"}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ messageUser }),
             });
-
+            // Isso é essencial!
             if (!stream.ok) {
-                throw new Error(`Erro ao gerar resposta: ${stream.statusText}`);
+                const data = await stream.json();
+                throw new Error(`Erro ao gerar resposta: ${data.error}`);
             }
 
             if (!stream.body) {
@@ -160,9 +163,10 @@ export default function BibleIA() {
             }
 
             setSelectedText([]);
-        } catch (error: unknown) {
+        } catch (error: any) {
             if (error instanceof Error) {
-                alert("erro: "+error.message);
+                setIsDrawerOpen(false)
+                toast.error(error.message)
             }
         } finally {
             setLoading(false);
@@ -187,6 +191,9 @@ export default function BibleIA() {
 
     return (
         <div>
+            {/* <Confetti
+            className='w-full'
+            /> */}
             {/* Botão de envio */}
             {selectedText.length > 0 && (
                 <button
@@ -277,7 +284,7 @@ export default function BibleIA() {
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div className="w-full h-[27rem] flex flex-col border rounded-xl">
+                    <div className="w-full h-[29rem] flex flex-col border rounded-xl">
                         {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
                             {!responseIa ? (
