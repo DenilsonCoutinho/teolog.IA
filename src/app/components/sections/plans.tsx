@@ -54,7 +54,7 @@ export default function Planos() {
           <p className="text-2xl font-bold text-gray-900 mt-2">
             R$22,90 <span className="text-sm font-normal">/por mês</span>
           </p>
-          <p className="mt-2 text-gray-600">Apenas R$0,93 centavos por dia.</p>
+          <p className="mt-2 text-gray-600">Apenas R$0,76 centavos por dia.</p>
           <ul className="mt-4 space-y-2 text-sm text-gray-700">
             <li>✓ Perguntas ilimitadas</li>
             <li>✓ Acesso a todo conteúdo bíblico</li>
