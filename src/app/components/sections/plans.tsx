@@ -12,6 +12,8 @@ export default function Planos() {
   async function goToPremium() {
     setLoading(true)
     await updateBilingPremium("/")
+    setLoading(false)
+
   }
   const route = useRouter()
   async function freePlan() {
