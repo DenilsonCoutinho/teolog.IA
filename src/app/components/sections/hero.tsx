@@ -50,10 +50,10 @@ export function Hero() {
                     Selecione um versículo. Deixe a IA explicar o contexto. Aprofunde sua fé com facilidade.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-12 max-w-[400px] mx-auto">
-                    <Button onClick={() => handleScrollTest("test")} size="lg" className="bg-purple-800 hover:bg-purple-900 cursor-pointer w-[200px]">
+                    <Button onClick={() => handleScrollTest("test")} size="lg" className="bg-purple-800 text-white hover:bg-purple-900 cursor-pointer w-[200px]">
                         Teste Grátis Agora
                     </Button>
-                    <Button onClick={() => handleScroll('howItwork')} className="cursor-pointer hover:brightness-75 w-[200px]" size="lg">
+                    <Button onClick={() => handleScroll('howItwork')} className="cursor-pointer bg-gray-950 text-white hover:brightness-75 w-[200px]" size="lg">
                         Como Funciona
                     </Button>
                 </div>

@@ -13,7 +13,7 @@ export default function Home() {
       <Hero />
       <Benefits />
       <HowItWorks />
-      <BibleIAForTest />
+      {/* <BibleIAForTest /> */}
       <Planos/>
       <FAQ />
       <Footer />

@@ -2,6 +2,9 @@ import { User } from '@prisma/client'
 
 declare module 'next-auth' {
   interface Session {
-    user: User
+    user: User& {
+      typetheology: Typetheology | null
+    }
+    
   }
 }

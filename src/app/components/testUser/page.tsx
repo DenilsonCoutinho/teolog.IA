@@ -167,7 +167,7 @@ export default function BibleIAForTest() {
     };
 
     return (
-        <div id='test' className='mb-16'>
+        <div id='' className='mb-16'>
             <h2 className="text-3xl text-purple-800 md:text-4xl font-bold text-center mt-10">
                 Faça um teste!
             </h2>

@@ -1,7 +1,34 @@
-export default function Settings(){
-    return(
+
+import { typetheology, Typetheology } from "@prisma/client"
+import Settings from "./settings"
+import { cookies } from "next/headers"
+
+type Theology = {
+    data: {
+        type_theology: typetheology
+    }
+}
+
+export default async function SettingsServerSide() {
+    const cookieHeader = await cookies();
+
+    // Realiza a requisição para buscar o tipo de teologia
+    const typetheology = await fetch("https://teolog-ia.vercel.app/api/revalidates/typeTheology", {
+        headers: {
+            cookie: cookieHeader.toString(),  // Envia os cookies como string no cabeçalho
+        },
+        next: { tags: ['type-theology'] },
+    }).then(async res => {
+        if (!res.ok) {
+            console.error(res.statusText)
+            return 
+        }
+        return await res.json() as Promise<Theology>;
+    });
+
+    return (
         <>
-        
+            <Settings typetheology={typetheology} />
         </>
     )
 }

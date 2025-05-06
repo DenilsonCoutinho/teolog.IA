@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react'
 export default function ObrigadoPage() {
     const router = useRouter()
     const { data: session } = useSession()
+    console.log(session)
     useEffect(() => {
         if (!session?.user?.id) {
             alert("Usuário não autenticado!")

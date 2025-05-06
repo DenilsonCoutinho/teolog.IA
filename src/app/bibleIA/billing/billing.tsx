@@ -4,10 +4,17 @@ import { cancelBilling } from "../../../../actions/cancel_billing"
 import { updateBilingPremium } from "../../../../actions/update_Biling_Premim"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Loader from "@/app/components/ui/loading";
 
 export default function Billing() {
+    const route = useRouter()
+
+     useEffect(() => {
+            if (!session?.user.id) {
+                return route.replace("/")
+            }
+        }, [])
     const [loading, setLoading] = useState<boolean>()
     const { data: session } = useSession()
     const formatPrice = (amount: number, currency = 'BRL') => {

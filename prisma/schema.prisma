@@ -47,7 +47,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   Authenticator Authenticator[]
-  Typetheology  Typetheology[]
+  typetheology  Typetheology[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 }

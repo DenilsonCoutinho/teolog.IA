@@ -1,7 +1,7 @@
 export function Footer() {
     return (
       <footer className="py-12 px-4 bg-slate-900 text-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+        {/* <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="font-bold text-lg mb-4">Sobre</h3>
             <ul className="space-y-2">
@@ -34,8 +34,8 @@ export function Footer() {
               <li><a href="#" className="hover:text-purple-300">Twitter</a></li>
             </ul>
           </div>
-        </div>
-        <div className="mt-12 text-center text-slate-400">
+        </div> */}
+        <div className="mt- text-center text-slate-400">
           <p>&copy; 2025 BíbliaIA. Todos os direitos reservados.</p>
         </div>
       </footer>

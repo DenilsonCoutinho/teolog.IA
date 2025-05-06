@@ -1,5 +1,5 @@
 import { createStripeCustomer } from "@/lib/stripe";
-import { User } from "@prisma/client";
+import { Typetheology, typetheology, User } from "@prisma/client";
 import { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google";
 import { db as prisma } from "@/lib/db";
@@ -11,23 +11,45 @@ export default {
   callbacks: {
     async jwt({ token }: { token: any }) {
       const user = await prisma.user.findFirst({
-        where: { email: token.email }
-      }) as User
-      token.id = user.id
-      token.name = user.name
-      token.image = user.image
-      token.email = user.email
-      token.emailVerified = user.emailVerified
-      token.hasCompletedQuestionnaire = user.hasCompletedQuestionnaire
-      token.stripeCustomerId = user.stripeCustomerId
-      token.stripeSubscriptionId = user.stripeSubscriptionId
-      token.stripeSubscriptionStatus = user.stripeSubscriptionStatus
-      token.stripePriceId = user.stripePriceId
-      token.stripeNamePlan = user.stripeNamePlan
-      token.stripe_currency = user.stripe_currency
-      token.stripePricePlan = user.stripePricePlan
-      token.is_current_period_end = user.is_current_period_end
-      token.stripe_current_period_end = user.stripe_current_period_end
+        where: { email: token.email },
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          email: true,
+          emailVerified: true,
+          hasCompletedQuestionnaire: true,
+          stripeCustomerId: true,
+          stripeSubscriptionId: true,
+          stripeSubscriptionStatus: true,
+          stripePriceId: true,
+          stripeNamePlan: true,
+          stripe_currency: true,
+          stripePricePlan: true,
+          is_current_period_end: true,
+          stripe_current_period_end: true,
+          typetheology: true
+        },
+      })
+
+      token.id = user?.id
+      token.name = user?.name
+      token.image = user?.image
+      token.email = user?.email
+      token.typ = user?.email
+      token.emailVerified = user?.emailVerified
+      token.hasCompletedQuestionnaire = user?.hasCompletedQuestionnaire
+      token.stripeCustomerId = user?.stripeCustomerId
+      token.stripeSubscriptionId = user?.stripeSubscriptionId
+      token.stripeSubscriptionStatus = user?.stripeSubscriptionStatus
+      token.stripePriceId = user?.stripePriceId
+      token.stripeNamePlan = user?.stripeNamePlan
+      token.stripe_currency = user?.stripe_currency
+      token.stripePricePlan = user?.stripePricePlan
+      token.is_current_period_end = user?.is_current_period_end
+      token.stripe_current_period_end = user?.stripe_current_period_end
+      token.typetheology = user?.typetheology
+
       return token
     },
     session({ session, token }: { session: any, token: any }) {
@@ -48,9 +70,8 @@ export default {
       session.user.stripePricePlan = token.stripePricePlan
       session.user.is_current_period_end = token.is_current_period_end
       session.user.stripe_current_period_end = token.stripe_current_period_end
-
+      session.user.typetheology = token.typetheology
       return session
-
     }
 
   },

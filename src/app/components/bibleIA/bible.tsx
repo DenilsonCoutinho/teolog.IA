@@ -32,6 +32,7 @@ import DualRingSpinnerLoader from '../ui/DualRingSpinnerLoader';
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export interface BibleBook {
     abbrev: string;
@@ -58,16 +59,21 @@ export default function BibleIA() {
         selectNumberChapter,
         hasHydrated,
     } = useBibleStore();
-
+    const route = useRouter()
     const bible = ntlh as BibleBook[];
     const [textSelected, setTextSelected] = useState<string>("");
     const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
+    const [loadingLayout, setLoadingLayout] = useState<boolean>(false);
     const [responseIa, setResponseIa] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([]);
-
     useEffect(() => {
+        setLoadingLayout(true)
+        if (!session?.user.id) {
+            return route.replace("/")
+        }
+        setLoadingLayout(false)
 
     }, [])
 
@@ -189,8 +195,19 @@ export default function BibleIA() {
         );
     }
 
+
+
     return (
         <div>
+            {
+                loadingLayout &&
+                <div className='fixed bg-gray-50 opacity-40 top-0 right-0 left-0 z-50 h-full w-full'>
+                    <div className='min-h-screen flex flex-col justify-center items-center'>
+                        <Image src={logo} alt='logo' />
+                        <DualRingSpinnerLoader />
+                    </div>
+                </div>
+            }
             {/* <Confetti
             className='w-full'
             /> */}
