@@ -38,7 +38,8 @@ export const createStripeCustomer = async (input: {
       stripeCustomerId: createdCustomer.id,
       stripeSubscriptionId: createdCustomerSubscription.id,
       stripeSubscriptionStatus: createdCustomerSubscription.status,
-      stripePriceId: config.stripe.plans.premiumPriceId,
+      stripeNamePlan:"Free",
+      stripePriceId: config.stripe.plans.freePriceId,
     },
   })
 
