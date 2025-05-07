@@ -59,8 +59,8 @@ export const createCheckoutSession = async (userId: string, userEmail: string) =
       mode: 'subscription',
       client_reference_id: userId,
       customer: customer.id,
-      success_url: `https://teolog-ia.vercel.app/bibleIA`,
-      cancel_url: `https://teolog-ia.vercel.app/`,
+      success_url: `${process.env.NEXT_PUBLIC_URL}bibleIA`,
+      cancel_url: `${process.env.NEXT_PUBLIC_URL}`,
       line_items: [{
         price: config.stripe.plans.premiumPriceId,
         quantity: 1
@@ -90,13 +90,13 @@ export const openBillingPortalToUpdatePremiumPlan = async (
 
   const session = await stripe.billingPortal.sessions.create({
     customer: userStripeCustomerId,
-    return_url: `https://teolog-ia.vercel.app/${return_url}`,
+    return_url: `${process.env.NEXT_PUBLIC_URL}${return_url}`,
     flow_data: {
       type: 'subscription_update_confirm',
       after_completion: {
         type: 'redirect',
         redirect: {
-          return_url: `https://teolog-ia.vercel.app/obrigado`,
+          return_url: `${process.env.NEXT_PUBLIC_URL}obrigado`,
         },
       },
       subscription_update_confirm: {
@@ -134,7 +134,7 @@ export const cancelPlan = async (userStripeCustomerId: string) => {
 
   const session = await stripe.billingPortal.sessions.create({
     customer: userStripeCustomerId, // ID do cliente no Stripe
-    return_url: 'https://teolog-ia.vercel.app/bibleIA/billing', // para onde o usuário será redirecionado depois
+    return_url: `${process.env.NEXT_PUBLIC_URL}bibleIA/billing`, // para onde o usuário será redirecionado depois
   });
 
   return { url: session.url }

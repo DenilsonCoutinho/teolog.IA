@@ -295,9 +295,9 @@ export default function BibleIA() {
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center justify-between'>
                             <Image src={logo} alt='logo' width={100} />
-                            <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
+                            {!loading&&<div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
                                 <X className='w-5 bg text-black' />
-                            </div>
+                            </div>}
                         </DialogTitle>
                     </DialogHeader>
 

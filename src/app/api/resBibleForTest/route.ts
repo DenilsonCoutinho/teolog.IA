@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   }
   const cookieHeader = await cookies();
   
-    const typetheology = await fetch("https://teolog-ia.vercel.app/api/revalidates/typeTheology", {
+    const typetheology = await fetch(`${process.env.NEXT_PUBLIC_URL}api/revalidates/typeTheology`, {
       headers: {
         cookie: cookieHeader.toString(),  // Envia os cookies como string no cabeçalho
       },
