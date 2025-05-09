@@ -24,9 +24,9 @@ export default function Planos() {
   }
 
   return (
-    <div id="test" className="bg-gradient-to-b from-white to-purple-50 min-h-screen pb-16 px-4 sm:px-6 lg:px-8">
+    <div id="test" className="bg-gradient-to-b from-white to-purple-50  pb-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="mt-2 md:text-3xl text-xl font-bold text-purple-800">Plano Exclusivo</h2>
+        <h2 className="pt-3 md:text-3xl text-xl font-bold text-purple-800">Plano Exclusivo</h2>
         <p className="mt-2 md:text-2xl text-md font-medium text-gray-900">
           Inicie sua jornada bíblica com nosso plano exclusivo
         </p>

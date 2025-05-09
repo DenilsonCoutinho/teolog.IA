@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "../components/app-sidebar";
+import { ThemeProvider } from "./components/theme-provider";
 
 
 export const metadata: Metadata = {
@@ -18,12 +19,19 @@ export default async function UserLayout({
 
   return (
     <>
-      <SidebarProvider >
-        <AppSidebar />
-        <SidebarTrigger />
-        {children}
-      </SidebarProvider>
-      <Toaster />
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <SidebarProvider >
+          <AppSidebar />
+          <SidebarTrigger />
+          {children}
+        </SidebarProvider>
+        <Toaster />
+      </ThemeProvider>
     </>
   );
 }

@@ -22,7 +22,7 @@ export function HowItWorks() {
   return (
     <section id="howItwork" className="pb-24 px-4 bg-gradient-to-b from-white to-purple-50">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-black">
           Como Funciona
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -33,13 +33,8 @@ export function HowItWorks() {
                   <step.icon className="h-8 w-8 text-purple-800" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">{step.title}</h3>
               <p className="text-slate-600">{step.description}</p>
-              {index < steps.length - 1 && (
-                <div className="hidden md:block absolute right-0 top-1/2 transform -translate-y-1/2">
-                  <ArrowRight className="h-6 w-6 text-slate-300" />
-                </div>
-              )}
             </div>
           ))}
         </div>

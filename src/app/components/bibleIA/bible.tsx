@@ -33,6 +33,7 @@ import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 
 export interface BibleBook {
     abbrev: string;
@@ -68,6 +69,7 @@ export default function BibleIA() {
     const [responseIa, setResponseIa] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([]);
+    
     useEffect(() => {
         setLoadingLayout(true)
         if (!session?.user.id) {
@@ -208,10 +210,7 @@ export default function BibleIA() {
                     </div>
                 </div>
             }
-            {/* <Confetti
-            className='w-full'
-            /> */}
-            {/* Botão de envio */}
+            
             {selectedText.length > 0 && (
                 <button
                     disabled={loading}
@@ -279,7 +278,7 @@ export default function BibleIA() {
                                 onClick={() => getTextSelected(index, texts)}
                                 className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts)
                                     ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white"
-                                    : " "} cursor-pointer flex items-start gap-1 border border-slate-50 rounded-md p-1 shadow-xs`}>
+                                    : " "} cursor-pointer flex items-start gap-1 border dark:border dark:border-gray-700  rounded-md p-1 shadow-xs`}>
                                 <p className={`${lora.className} text-[16px] text-left`}>
                                     {index + 1} - <span className='font-normal'>{texts}</span>
                                 </p>

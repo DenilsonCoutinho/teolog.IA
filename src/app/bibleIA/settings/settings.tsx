@@ -71,23 +71,23 @@ export default function Settings({ typetheology }: { typetheology: Theology | un
                 </div>
             }
             <div className="border-gray-100 mt-20 space-y-2 rounded-lg p-4 border shadow-md h-40 max-w-96 w-full">
-                <h1 className="font-bold text-xl text-gray-700">Sua linha teológica</h1>
+                <h1 className="font-bold text-xl text-gray-700 dark:text-zinc-200">Sua linha teológica</h1>
                 <Select onValueChange={(e: TypeTheologyProps) => setTheologySelected(e)}>
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder={typetheology?.data.type_theology} />
+                        <SelectValue className="dark:text-zinc-200" placeholder={typetheology?.data.type_theology} />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectGroup>
                             <SelectLabel></SelectLabel>
                             {options?.map((e) => (
-                                <SelectItem key={e.id} className="text-black" value={e.id}>
+                                <SelectItem key={e.id} className="text-black dark:text-zinc-200" value={e.id}>
                                     {e.id}
                                 </SelectItem>
                             ))}
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-                <Button disabled={theologySelected ? false : true} onClick={() => changeTheology()} className="bg-gray-900 text-white max-w-2xl">{loading ? <Loader /> : "Alterar"}</Button>
+                <Button disabled={theologySelected ? false : true} onClick={() => changeTheology()} className="bg-gray-900 dark:text-zinc-200 text-white max-w-2xl cursor-pointer">{loading ? <Loader /> : "Alterar"}</Button>
             </div>
         </>
     )
