@@ -224,7 +224,7 @@ export default function BibleIA() {
                 </button>
             )}
 
-            <div className="flex flex-col items-center md:pl-20 justify-center max-w-[800px] mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
+            <div className="flex flex-col items-center md:pl-20 justify-center md:max-w-[800px] sm:max-w-[800px] max-w-[290px] mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 {/* Seletor de livro */}
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
@@ -240,7 +240,7 @@ export default function BibleIA() {
                             <SelectGroup>
                                 <SelectLabel>Selecionar Livro</SelectLabel>
                                 {bible?.map((e) => (
-                                    <SelectItem key={e.name} className="text-black" value={e.name}>
+                                    <SelectItem key={e.name} className="text-black dark:text-white" value={e.name}>
                                         {e.name}
                                     </SelectItem>
                                 ))}
@@ -260,7 +260,7 @@ export default function BibleIA() {
                             <SelectGroup>
                                 <SelectLabel>Selecionar capítulo</SelectLabel>
                                 {selectChapter?.map((e) => (
-                                    <SelectItem key={e.number} className="text-black" value={String(e.number)}>
+                                    <SelectItem key={e.number} className="text-black dark:text-white" value={String(e.number)}>
                                         {e.number + 1}
                                     </SelectItem>
                                 ))}
