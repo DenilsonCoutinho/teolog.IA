@@ -2,17 +2,7 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
   Book,
-  SquareTerminal,
   Settings
 } from "lucide-react";
 import logo from '../../assets/logo-teologia-2.svg'
@@ -62,7 +52,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { setTheme, theme } = useTheme()
+  const { setTheme, theme,themes } = useTheme()
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
