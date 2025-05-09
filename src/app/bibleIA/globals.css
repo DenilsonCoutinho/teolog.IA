@@ -324,3 +324,37 @@
   background-position: right;
 }
 
+.my-selects {
+  max-width: 890px;
+}
+
+@media (min-width: 768px) {
+  .my-selects {
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 640px) {
+  .my-selects {
+    max-width: 800px;
+  }
+}
+
+@media (max-width:426px) {
+  .my-selects {
+    max-width: 356px;
+  }
+}
+
+@media (max-width: 370px) {
+  .my-selects {
+    max-width: 260px;
+  }
+}
+
+
+@media (max-width: 321px) {
+  .my-selects {
+    max-width: 294px;
+  }
+}

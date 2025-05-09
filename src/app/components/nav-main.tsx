@@ -53,7 +53,7 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <Link href={`${item.url || "#"}`}>
-                  <SidebarMenuButton tooltip={item.title} className={`${pathname=== item.url ? "bg-gray-300" : ""}`}>
+                  <SidebarMenuButton tooltip={item.title} className={`${pathname=== item.url ? "dark:bg-gray-600 bg-gray-300" : ""}`}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                   </SidebarMenuButton>

@@ -6,6 +6,7 @@ import ntlh from '../../../../pt_ntlh.json' assert { type: "json" };
 import mark from '../../../assets/mark.svg';
 import logo from '../../../assets/logo-teologia-2.svg';
 import Confetti from 'react-confetti'
+import logo_white from '../../../assets/logo-teologia-white.svg'
 
 import {
     Select,
@@ -47,8 +48,10 @@ const lora = Lora({
 
 export default function BibleIA() {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [maintenance, setMaintenance] = useState<boolean>(false);
+    const { setTheme, theme } = useTheme()
+
     const {
         setSelectNameBook,
         selectNameBook,
@@ -69,7 +72,7 @@ export default function BibleIA() {
     const [responseIa, setResponseIa] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([]);
-    
+
     useEffect(() => {
         setLoadingLayout(true)
         if (!session?.user.id) {
@@ -205,12 +208,12 @@ export default function BibleIA() {
                 loadingLayout &&
                 <div className='fixed bg-gray-50 opacity-40 top-0 right-0 left-0 z-50 h-full w-full'>
                     <div className='min-h-screen flex flex-col justify-center items-center'>
-                        <Image src={logo} alt='logo' />
+                        <Image src={theme ==="dark"?logo_white:logo} alt='logo' />
                         <DualRingSpinnerLoader />
                     </div>
                 </div>
             }
-            
+
             {selectedText.length > 0 && (
                 <button
                     disabled={loading}
@@ -224,7 +227,7 @@ export default function BibleIA() {
                 </button>
             )}
 
-            <div className="flex flex-col items-center md:pl-20 justify-center md:max-w-[800px] sm:max-w-[800px] max-w-[290px] mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
+            <div className="flex flex-col items-center md:pl-20 justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 {/* Seletor de livro */}
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
@@ -290,24 +293,24 @@ export default function BibleIA() {
 
             {/* Caixa de diálogo */}
             <Dialog onOpenChange={(val) => { if (val === false) return; setIsDrawerOpen(val); }} open={isDrawerOpen}>
-                <DialogContent className='px-3'>
+                <DialogContent className='px-3 dark:bg-[#181818]'>
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center justify-between'>
-                            <Image src={logo} alt='logo' width={100} />
-                            {!loading&&<div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
-                                <X className='w-5 bg text-black' />
+                            <Image src={theme ==="dark"?logo_white:logo}  alt='logo' width={130} />
+                            {!loading && <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
+                                <X className='w-5 bg text-black dark:text-white' />
                             </div>}
                         </DialogTitle>
                     </DialogHeader>
 
                     <div className="w-full h-[29rem] flex flex-col border rounded-xl">
                         {/* Área das mensagens */}
-                        <div className="flex-1 h-full overflow-y-auto mb-5 p-2 bg-gray-100">
+                        <div className="flex-1 h-full overflow-y-auto mb-5 p-2 dark:bg-[#181818] bg-gray-100">
                             {!responseIa ? (
                                 <div className="h-full flex items-center justify-center text-gray-400 text-center">
                                     <div className='flex flex-col items-center'>
                                         <DualRingSpinnerLoader />
-                                        <p>Buscando sabedoria nas Escrituras...</p>
+                                        <p className='dark:text-white'>Buscando sabedoria nas Escrituras...</p>
                                     </div>
                                 </div>
                             ) : (
