@@ -93,7 +93,7 @@ export function NavMain({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Selecionar Livro</SelectLabel>
+                <SelectLabel>Selecionar Tradução</SelectLabel>
                 <SelectItem className="text-black dark:text-white" value={"NTLH"}>
                   NTLH
                 </SelectItem>
