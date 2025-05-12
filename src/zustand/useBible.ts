@@ -18,18 +18,6 @@ type bibleStore = {
 
 }
 
-type bibleTestStore = {
-    selectNameBookTest: string
-    selectChapterTest: PropsChapters[] | null
-    selectTextBookBibleTest: string[][]
-    selectNumberChapterTest: number,
-    hasHydrated: boolean
-    setSelectNameBookTest: (namebook: string) => void
-    setSelectChapterTest: (number: PropsChapters[] | null) => void
-    setSelectTextBookBibleTest: (texts: string[][]) => void
-    setSelectNumberChapterTest: (chapter: number) => void
-    setHasHydrated: (value: boolean) => void
-}
 
 
 export const useBibleStore = create<bibleStore>()(
@@ -47,31 +35,7 @@ export const useBibleStore = create<bibleStore>()(
             setSelectNumberChapter: (number) => set({ selectNumberChapter: number })
         }),
         {
-            name: 'bible-storage', // localStorage: question-storage
-            onRehydrateStorage: () => (state) => {
-                state?.setHasHydrated(true)
-              },
-        }
-    )
-)
-
-
-export const useBibleTestStore = create<bibleTestStore>()(
-    persist(
-        (set) => ({
-            selectNameBookTest: '',
-            selectChapterTest: [{ number: 0 }],
-            selectTextBookBibleTest: [],
-            selectNumberChapterTest: 0,
-            hasHydrated: false,
-            setHasHydrated: (value) => set({ hasHydrated: value }),
-            setSelectNameBookTest: (nameBook) => set({ selectNameBookTest: nameBook }),
-            setSelectChapterTest: (number) => set({ selectChapterTest: number }),
-            setSelectTextBookBibleTest: (texts: string[][]) => set({ selectTextBookBibleTest: texts }),
-            setSelectNumberChapterTest: (number) => set({ selectNumberChapterTest: number })
-        }),
-        {
-            name: 'bible-test-storage', // localStorage: question-storage
+            name: 'bible-storage', 
             onRehydrateStorage: () => (state) => {
                 state?.setHasHydrated(true)
               },

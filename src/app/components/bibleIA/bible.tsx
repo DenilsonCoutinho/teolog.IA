@@ -45,8 +45,13 @@ export interface BibleBook {
 const lora = Lora({
     subsets: ["latin"],
 });
-
-export default function BibleIA() {
+type TypeTranslations = "ACF" | "NTLH" | "NVI"
+type Translations = {
+    data: {
+        type_translations: TypeTranslations
+    }
+}
+export default function BibleIA({ typeTranslations }: { typeTranslations: Translations | undefined }) {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const { data: session } = useSession();
     const [maintenance, setMaintenance] = useState<boolean>(false);
@@ -64,7 +69,11 @@ export default function BibleIA() {
         hasHydrated,
     } = useBibleStore();
     const route = useRouter()
-    const bible = ntlh as BibleBook[];
+
+    const bible = typeTranslations?.data.type_translations === "ACF" ? acf as BibleBook[] :
+        typeTranslations?.data.type_translations === "NTLH" ? ntlh as BibleBook[] :
+            typeTranslations?.data.type_translations === "NVI" ? nvi as BibleBook[] : ntlh as BibleBook[]
+  
     const [textSelected, setTextSelected] = useState<string>("");
     const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -101,7 +110,7 @@ export default function BibleIA() {
         if (chapter === "") setSelectChapter(null);
         setSelectTextBookBible([]);
 
-        const versicleData = bible.find((e: BibleBook) => e?.name === chapter);
+        const versicleData = bible?.find((e: BibleBook) => e?.name === chapter);
         const chapters = versicleData?.chapters;
         if (!chapters) return;
 
@@ -114,7 +123,7 @@ export default function BibleIA() {
 
     // Função que obtém os textos de um livro específico
     function getTextBookBible(nameBook: string) {
-        const versicleData = bible.find(e => e?.name === nameBook);
+        const versicleData = bible?.find(e => e?.name === nameBook);
         if (!versicleData) return;
         setSelectTextBookBible(versicleData?.chapters);
     }
@@ -208,7 +217,7 @@ export default function BibleIA() {
                 loadingLayout &&
                 <div className='fixed bg-gray-50 opacity-40 top-0 right-0 left-0 z-50 h-full w-full'>
                     <div className='min-h-screen flex flex-col justify-center items-center'>
-                        <Image src={theme ==="dark"?logo_white:logo} alt='logo' />
+                        <Image src={theme === "dark" ? logo_white : logo} alt='logo' />
                         <DualRingSpinnerLoader />
                     </div>
                 </div>
@@ -250,7 +259,7 @@ export default function BibleIA() {
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-
+                    {typeTranslations?.data.type_translations}
                     {/* Seletor de capítulo */}
                     <Select value={String(selectNumberChapter)} onValueChange={(e) => {
                         setSelectNumberChapter(Number(e));
@@ -296,7 +305,7 @@ export default function BibleIA() {
                 <DialogContent className='px-3 dark:bg-[#181818]'>
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center justify-between'>
-                            <Image src={theme ==="dark"?logo_white:logo}  alt='logo' width={130} />
+                            <Image src={theme === "dark" ? logo_white : logo} alt='logo' width={130} />
                             {!loading && <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
                                 <X className='w-5 bg text-black dark:text-white' />
                             </div>}

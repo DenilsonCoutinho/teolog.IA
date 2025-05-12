@@ -19,6 +19,13 @@ enum typetheology {
   PENTECOSTAL
   BATISTA
 }
+
+enum typetranslations {
+  ACF
+  NTLH
+  NVI
+}
+
 enum PlanType {
   Free
   Premium
@@ -41,15 +48,16 @@ model User {
   stripeNamePlan            PlanType?
   stripe_currency           String?
   stripePricePlan           Int?
-  is_current_period_end Boolean?
+  is_current_period_end     Boolean?
   stripe_current_period_end Int?
 
-  accounts      Account[]
-  sessions      Session[]
-  Authenticator Authenticator[]
-  typetheology  Typetheology[]
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  accounts         Account[]
+  sessions         Session[]
+  Authenticator    Authenticator[]
+  typetheology     Typetheology[]
+  TypeTranslations TypeTranslations[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
 }
 
 model Typetheology {
@@ -57,6 +65,13 @@ model Typetheology {
   user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId        String       @db.ObjectId
   type_theology typetheology
+}
+
+model TypeTranslations {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String       @db.ObjectId
+  type_translations typetranslations 
 }
 
 model Account {

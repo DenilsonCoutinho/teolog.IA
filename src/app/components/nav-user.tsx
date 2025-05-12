@@ -46,7 +46,7 @@ export function NavUser({
   const NAME_USER = session?.user?.name
   const route = useRouter()
   function redirectTo(path: string) {
-    route.push(path)
+    window.location.href = path
   }
   return (
     <SidebarMenu>
