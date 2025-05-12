@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "../components/app-sidebar";
 import { ThemeProvider } from "../components/theme-provider";
+import { ResizeProvider } from "../../../context/triggerResizeContext";
 
 
 export const metadata: Metadata = {
@@ -27,7 +28,9 @@ export default async function UserLayout({
         <SidebarProvider >
           <AppSidebar />
           <SidebarTrigger />
-          {children}
+          <ResizeProvider>
+            {children}
+          </ResizeProvider>
         </SidebarProvider>
         <Toaster />
       </ThemeProvider>

@@ -35,6 +35,7 @@ import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { useResize } from '../../../../context/triggerResizeContext';
 
 export interface BibleBook {
     abbrev: string;
@@ -150,7 +151,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     }, [hasHydrated]);
 
-   
+
     useEffect(() => {
         if (!selectNameBook) {
             setSelectTextBookBible(bible[0]?.chapters);
@@ -158,7 +159,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
             setSelectNameBook("Gênesis");
             setSelectNumberChapter(0);
         }
-    }, [selectTranslation,selectNameBook]);
+    }, [selectTranslation, selectNameBook]);
     // Função que envia o texto selecionado para o backend e recebe a resposta da IA
     const send = async () => {
         setLoading(true);
@@ -222,7 +223,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }
 
 
-
+    const { innerHeight } = useResize()
     return (
         <div>
             {
@@ -313,7 +314,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
 
             {/* Caixa de diálogo */}
             <Dialog onOpenChange={(val) => { if (val === false) return; setIsDrawerOpen(val); }} open={isDrawerOpen}>
-                <DialogContent className='px-3 dark:bg-[#181818]'>
+                <DialogContent className='px-3 dark:bg-[#181818] '>
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center justify-between'>
                             <Image src={theme === "dark" ? logo_white : logo} alt='logo' width={130} />
@@ -323,7 +324,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div className="w-full h-[29rem] flex flex-col border rounded-xl">
+                    <div style={{ height: `${ innerHeight - 110}px` }} className="w-full  flex flex-col border rounded-xl">
                         {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto mb-5 p-2 dark:bg-[#181818] bg-gray-100">
                             {!responseIa ? (
