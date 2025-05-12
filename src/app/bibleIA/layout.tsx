@@ -7,7 +7,7 @@ import { ThemeProvider } from "../components/theme-provider";
 
 
 export const metadata: Metadata = {
-  title: "Bible IA",
+  title: "Teolog.IA",
   description: "para um aprendizado continuo da palavra",
 };
 

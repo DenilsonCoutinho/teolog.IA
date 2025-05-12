@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bible IA",
+  title: "Teolog.IA",
   description: "para um aprendizado continuo da palavra",
 };
 
