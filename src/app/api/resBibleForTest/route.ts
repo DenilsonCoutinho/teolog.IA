@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { LimitRate } from "../../../../actions/limitRate";
 import { cookies } from "next/headers";
 import { typetheology } from "@prisma/client";
-import { systemPromptArminiana, systemPromptbatista, systemPromptPentecostal, systemPromptReformada } from "@/prompts/prompt";
+import { systemPromptArminiana, systemPromptBatista, systemPromptPentecostal, systemPromptReformada } from "@/prompts/prompt";
 type Theology = {
   data: {
     type_theology: typetheology
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Você precisa selecionar uma Teologia!' }, { status: 401 });
     }
     const theology = typetheology?.data.type_theology
-    const systemPrompt = theology === "BATISTA" ? systemPromptbatista :
+    const systemPrompt = theology === "BATISTA" ? systemPromptBatista :
       theology === "ARMINIANA" ? systemPromptArminiana :
         theology === "PENTECOSTAL" ? systemPromptPentecostal : systemPromptReformada
 

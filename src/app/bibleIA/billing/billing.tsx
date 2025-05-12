@@ -41,10 +41,10 @@ export default function Billing() {
 
     return (
         <div className="flex flex-col w-full">
-            <div className="max-w-[900px] w-full mx-auto mt-10 p-6 dark:bg-transparent dark:border dark:border-gray-700 bg-white rounded-xl shadow-md">
-                <h2 className="text-xl font-semibold mb-6">Cobrança</h2>
+            <div className="max-w-[900px] w-full mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
+                <h2 className="text-xl font-semibold mb-6" onClick={() => console.log("")}>Cobrança</h2>
                 {/* Assinatura */}
-                <div className="dark:bg-transparent dark:border dark:border-gray-700 bg-gray-100 p-6 rounded-lg">
+                <div className="bg-gray-100 p-6 rounded-lg">
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex m items-center gap-4">
                             <Avatar className="h-8 w-8 rounded-lg bg-gray-400">
@@ -54,11 +54,13 @@ export default function Billing() {
                             <div>
                                 <p className="font-semibold">{session?.user?.stripeNamePlan}</p>
                                 {session?.user?.stripeNamePlan === "Premium" ? <>
-                                    {session?.user?.stripePricePlan &&
+                                    {session?.user?.stripePricePlan ?
                                         <p className={`text-sm ${session?.user.is_current_period_end && "line-through"} text-gray-500`}>{formatPrice(session?.user?.stripePricePlan)} cobrados mensalmente</p>
-
+                                        :
+                                        <>
+                                        </>
                                     }
-                                    {session?.user?.stripe_current_period_end && <p className={`text-sm ${session?.user.is_current_period_end && ""} text-gray-500 dark:text-white`}>{session?.user.is_current_period_end ? "Vence em" : "Próxima data de cobrança"}: <span className="font-bold">{formatCancelDate(session?.user?.stripe_current_period_end)}</span></p>}
+                                    {session?.user?.stripe_current_period_end && <p className={`text-sm ${session?.user.is_current_period_end && ""} text-gray-500`}>{session?.user.is_current_period_end ? "Vence em" : "Próxima data de cobrança"}: <span className="font-bold">{formatCancelDate(session?.user?.stripe_current_period_end)}</span></p>}
                                 </> : <></>}
                             </div>
                         </div>
