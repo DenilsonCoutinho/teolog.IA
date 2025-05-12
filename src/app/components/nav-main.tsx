@@ -87,6 +87,7 @@ export function NavMain({
         >
           <Select value={selectTranslation} onValueChange={(e) => {
             setSelectTranslation(e)
+             setSelectNameBook(undefined)
           }}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Selecionar Livro" />

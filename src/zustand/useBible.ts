@@ -5,13 +5,13 @@ type PropsChapters = {
     number: number;
 }
 type bibleStore = {
-    selectNameBook: string
+    selectNameBook: string | undefined
     selectTranslation: string
     selectChapter: PropsChapters[] | null
     selectTextBookBible: string[][]
     selectNumberChapter: number,
     hasHydrated: boolean
-    setSelectNameBook: (namebook: string) => void
+    setSelectNameBook: (namebook: string| undefined) => void
     setSelectTranslation: (namebook: string) => void
     setSelectChapter: (number: PropsChapters[] | null) => void
     setSelectTextBookBible: (texts: string[][]) => void
@@ -25,7 +25,7 @@ type bibleStore = {
 export const useBibleStore = create<bibleStore>()(
     persist(
         (set) => ({
-            selectNameBook: '',
+            selectNameBook: 'Gênesis',
             selectTranslation: '',
             selectChapter: null,
             selectTextBookBible: [],

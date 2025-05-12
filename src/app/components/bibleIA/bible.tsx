@@ -84,7 +84,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     const [responseIa, setResponseIa] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([]);
-   
+
     useEffect(() => {
         setLoadingLayout(true)
         if (!session?.user.id) {
@@ -150,13 +150,15 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     }, [hasHydrated]);
 
-
+   
     useEffect(() => {
-        setSelectTextBookBible(bible[0]?.chapters);
-        getChapterBible("Gênesis");
-        setSelectNameBook("Gênesis");
-        setSelectNumberChapter(0);
-    }, [selectTranslation]);
+        if (!selectNameBook) {
+            setSelectTextBookBible(bible[0]?.chapters);
+            getChapterBible("Gênesis");
+            setSelectNameBook("Gênesis");
+            setSelectNumberChapter(0);
+        }
+    }, [selectTranslation,selectNameBook]);
     // Função que envia o texto selecionado para o backend e recebe a resposta da IA
     const send = async () => {
         setLoading(true);
@@ -245,7 +247,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                     <Image alt='logo' src={mark} width={140} height={200} />
                 </button>
             )}
-            
+
             <div className="flex flex-col items-center md:pl-20 justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 {/* Seletor de livro */}
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
