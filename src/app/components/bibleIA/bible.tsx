@@ -67,13 +67,16 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         setSelectNumberChapter,
         selectNumberChapter,
         hasHydrated,
+        setHasHydrated,
+        selectTranslation,
+        setSelectTranslation
     } = useBibleStore();
     const route = useRouter()
 
-    const bible = typeTranslations?.data.type_translations === "ACF" ? acf as BibleBook[] :
-        typeTranslations?.data.type_translations === "NTLH" ? ntlh as BibleBook[] :
-            typeTranslations?.data.type_translations === "NVI" ? nvi as BibleBook[] : ntlh as BibleBook[]
-  
+    const bible = selectTranslation === "ACF" ? acf as BibleBook[] :
+        selectTranslation === "NTLH" ? ntlh as BibleBook[] :
+            selectTranslation === "NVI" ? nvi as BibleBook[] : ntlh as BibleBook[]
+
     const [textSelected, setTextSelected] = useState<string>("");
     const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
@@ -81,7 +84,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     const [responseIa, setResponseIa] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([]);
-
+   
     useEffect(() => {
         setLoadingLayout(true)
         if (!session?.user.id) {
@@ -147,6 +150,13 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     }, [hasHydrated]);
 
+
+    useEffect(() => {
+        setSelectTextBookBible(bible[0]?.chapters);
+        getChapterBible("Gênesis");
+        setSelectNameBook("Gênesis");
+        setSelectNumberChapter(0);
+    }, [selectTranslation]);
     // Função que envia o texto selecionado para o backend e recebe a resposta da IA
     const send = async () => {
         setLoading(true);
@@ -235,7 +245,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                     <Image alt='logo' src={mark} width={140} height={200} />
                 </button>
             )}
-
+            
             <div className="flex flex-col items-center md:pl-20 justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 {/* Seletor de livro */}
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
@@ -259,7 +269,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    {typeTranslations?.data.type_translations}
                     {/* Seletor de capítulo */}
                     <Select value={String(selectNumberChapter)} onValueChange={(e) => {
                         setSelectNumberChapter(Number(e));

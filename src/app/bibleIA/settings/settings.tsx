@@ -94,28 +94,28 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
 
     }
 
-    async function changeTranslation() {
-        try {
-            setLoading(true)
-            if (!translationSelected) {
-                throw new Error('Você precisa selecionar uma teologia.')
-            }
-            await updateTranslation(translationSelected)
-            toast.success('Tradução atualizada com sucesso!')
-            setLoading(false)
-            setHasHydrated(false)
-            setTranslationSelected(null)
-           useBibleStore.persist.clearStorage() 
-           return location.reload()
+    // async function changeTranslation() {
+    //     try {
+    //         setLoading(true)
+    //         if (!translationSelected) {
+    //             throw new Error('Você precisa selecionar uma teologia.')
+    //         }
+    //         await updateTranslation(translationSelected)
+    //         toast.success('Tradução atualizada com sucesso!')
+    //         setLoading(false)
+    //         setHasHydrated(false)
+    //         setTranslationSelected(null)
+    //        useBibleStore.persist.clearStorage() 
+    //        return location.reload()
 
-        } catch (error: unknown) {
-            setLoading(false)
-            if (error instanceof Error) {
-                return toast.error(error.message || 'Ocorreu um erro inesperado.')
-            }
-        }
+    //     } catch (error: unknown) {
+    //         setLoading(false)
+    //         if (error instanceof Error) {
+    //             return toast.error(error.message || 'Ocorreu um erro inesperado.')
+    //         }
+    //     }
 
-    }
+    // }
 
     return (
         <>
@@ -150,7 +150,7 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
                     <Button disabled={theologySelected ? false : true} onClick={() => changeTheology()} className="bg-gray-900 dark:text-zinc-200 text-white max-w-2xl cursor-pointer">{loading ? <Loader /> : "Alterar"}</Button>
                 </div>
 
-                <div className="border-gray-100 space-y-2 rounded-lg p-4 border shadow-md h-40 max-w-96 w-full">
+                {/* <div className="border-gray-100 space-y-2 rounded-lg p-4 border shadow-md h-40 max-w-96 w-full">
                     <h1 className="font-bold text-xl text-gray-700 dark:text-zinc-200">Tradução Bíblica</h1>
                     <Select onValueChange={(e: TypeTranslations) => setTranslationSelected(e)}>
                         <SelectTrigger className="w-[180px]">
@@ -168,7 +168,7 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
                         </SelectContent>
                     </Select>
                     <Button disabled={translationSelected ? false : true} onClick={() => changeTranslation()} className="bg-gray-900 dark:text-zinc-200 text-white max-w-2xl cursor-pointer">{loading ? <Loader /> : "Alterar"}</Button>
-                </div>
+                </div> */}
             </div>
         </>
     )
