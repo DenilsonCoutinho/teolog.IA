@@ -56,8 +56,19 @@ model User {
   Authenticator    Authenticator[]
   typetheology     Typetheology[]
   TypeTranslations TypeTranslations[]
+  sharedResponse   SharedResponse[]
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+}
+
+model SharedResponse {
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String           @db.ObjectId
+  prompt           String // Texto original enviado pelo usuário
+  htmlContent      String // Conteúdo renderizado (HTML do Draft.js)
+  plainText        String // Versão em texto plano
+  createdAt        DateTime         @default(now())
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Typetheology {
@@ -68,10 +79,10 @@ model Typetheology {
 }
 
 model TypeTranslations {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId        String       @db.ObjectId
-  type_translations typetranslations 
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String           @db.ObjectId
+  type_translations typetranslations
 }
 
 model Account {

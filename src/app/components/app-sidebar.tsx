@@ -52,12 +52,12 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { setTheme, theme,themes } = useTheme()
+  const { setTheme, theme,resolvedTheme } = useTheme()
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <Link href={"/"}>
-          <Image alt='logo' src={theme === "light" ? logo : logo_white} width={140} height={200} />
+          <Image alt='logo' src={resolvedTheme === "light" ? logo : logo_white} width={140} height={200} />
         </Link>
       </SidebarHeader>
       <SidebarContent>

@@ -2,7 +2,8 @@
 import { typetheology, Typetheology, typetranslations } from "@prisma/client"
 import Settings from "./settings"
 import { cookies } from "next/headers"
-
+import { Suspense } from "react"
+import SettingsWrapper from "./settingsWrapper"
 type Theology = {
     data: {
         type_theology: typetheology
@@ -45,9 +46,9 @@ export default async function SettingsServerSide() {
         }
         return await res.json() as Promise<Translation>;
     });
+
+   
     return (
-        <>
-            <Settings typetranslations={typeTranslations} typetheology={typetheology} />
-        </>
+            <SettingsWrapper typetranslations={typeTranslations} typetheology={typetheology} />
     )
 }

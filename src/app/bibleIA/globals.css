@@ -111,7 +111,9 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
-
+.notranslate {
+  translate: no;
+}
 /* Estilização do Draft.js Editor para textos teológicos */
 .DraftEditor-root {
   font-family: 'Lora', 'Georgia', serif; /* Usa a fonte Lora (já importada no seu projeto) para um visual elegante */

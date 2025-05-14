@@ -5,7 +5,6 @@ import nvi from '../../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../../pt_ntlh.json' assert { type: "json" };
 import mark from '../../../assets/mark.svg';
 import logo from '../../../assets/logo-teologia-2.svg';
-import Confetti from 'react-confetti'
 import logo_white from '../../../assets/logo-teologia-white.svg'
 
 import {
@@ -31,11 +30,12 @@ import { Lora } from 'next/font/google';
 import { useBibleStore } from '@/zustand/useBible';
 import DualRingSpinnerLoader from '../ui/DualRingSpinnerLoader';
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
-import { X } from 'lucide-react';
+import { Share, Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useResize } from '../../../../context/triggerResizeContext';
+import { Button } from '@/components/ui/button';
 
 export interface BibleBook {
     abbrev: string;
@@ -56,8 +56,8 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const { data: session } = useSession();
     const [maintenance, setMaintenance] = useState<boolean>(false);
-    const { setTheme, theme } = useTheme()
-
+    const { resolvedTheme } = useTheme()
+    const { innerHeight } = useResize()
     const {
         setSelectNameBook,
         selectNameBook,
@@ -68,9 +68,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         setSelectNumberChapter,
         selectNumberChapter,
         hasHydrated,
-        setHasHydrated,
         selectTranslation,
-        setSelectTranslation
     } = useBibleStore();
     const route = useRouter()
 
@@ -78,7 +76,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         selectTranslation === "NTLH" ? ntlh as BibleBook[] :
             selectTranslation === "NVI" ? nvi as BibleBook[] : ntlh as BibleBook[]
 
-    const [textSelected, setTextSelected] = useState<string>("");
     const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingLayout, setLoadingLayout] = useState<boolean>(false);
@@ -223,14 +220,13 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }
 
 
-    const { innerHeight } = useResize()
     return (
         <div>
             {
                 loadingLayout &&
                 <div className='fixed bg-gray-50 opacity-40 top-0 right-0 left-0 z-50 h-full w-full'>
                     <div className='min-h-screen flex flex-col justify-center items-center'>
-                        <Image src={theme === "dark" ? logo_white : logo} alt='logo' />
+                        <Image src={resolvedTheme === "dark" ? logo_white : logo} alt='logo' />
                         <DualRingSpinnerLoader />
                     </div>
                 </div>
@@ -317,14 +313,14 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                 <DialogContent className='px-3 dark:bg-[#181818] '>
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center justify-between'>
-                            <Image src={theme === "dark" ? logo_white : logo} alt='logo' width={130} />
+                            <Image src={resolvedTheme === "dark" ? logo_white : logo} alt='logo' width={130} />
                             {!loading && <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
                                 <X className='w-5 bg text-black dark:text-white' />
                             </div>}
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div style={{ height: `${ innerHeight - 110}px` }} className="w-full  flex flex-col border rounded-xl">
+                    <div style={{ height: `${innerHeight - 200}px` }} className="w-full  flex flex-col border rounded-xl">
                         {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto mb-5 p-2 dark:bg-[#181818] bg-gray-100">
                             {!responseIa ? (
@@ -349,6 +345,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                             )}
                         </div>
                     </div>
+                    {!loading && <Button>Compartilhar<Share2 /></Button>}
                 </DialogContent>
             </Dialog>
         </div>

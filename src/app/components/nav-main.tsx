@@ -40,18 +40,11 @@ export function NavMain({
 }) {
   const {
     setSelectNameBook,
-    selectNameBook,
-    setSelectChapter,
-    selectChapter,
-    setSelectTextBookBible,
-    selectTextBookBible,
-    setSelectNumberChapter,
-    selectNumberChapter,
-    hasHydrated,
-    setHasHydrated,
     selectTranslation,
     setSelectTranslation
   } = useBibleStore();
+  const router = useRouter()
+ 
   const pathname = usePathname()
   return (
     <SidebarGroup>
@@ -80,14 +73,14 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         })}
-      <SidebarGroupLabel>Tradução</SidebarGroupLabel>
+        <SidebarGroupLabel>Tradução</SidebarGroupLabel>
         <Collapsible
           asChild
           className="group/collapsible"
         >
           <Select value={selectTranslation} onValueChange={(e) => {
             setSelectTranslation(e)
-             setSelectNameBook(undefined)
+            setSelectNameBook(undefined)
           }}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Selecionar Livro" />
