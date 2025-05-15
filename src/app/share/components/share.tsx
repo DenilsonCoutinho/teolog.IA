@@ -1,5 +1,4 @@
 "use client"
-import { useRouter } from 'next/navigation'
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
 import { useEffect, useState } from 'react';
 import { HasAskExisting } from '../../../../service/getResExist';
@@ -8,20 +7,20 @@ import Image from 'next/image';
 import { useResize } from '../../../../context/triggerResizeContext';
 import DualRingSpinnerLoader from '@/app/components/ui/DualRingSpinnerLoader';
 
-type PropsShare = {
-    id: string;
-    userId: string;
-    htmlContent: string;
-    teologia: string;
-    perguntaHash: string;
-    likes: number;
-    dislikes: number;
-    createdAt: Date;
-    updatedAt: Date;
-}
-export default function Share({ id }: {  id: string } ) {
-    console.log(id)
-    const router = useRouter()
+import Link from "next/link"
+
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+
+export default function Share({ id }: { id: string }) {
+
+
     const { innerHeight } = useResize()
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -46,15 +45,30 @@ export default function Share({ id }: {  id: string } ) {
 
     }, [])
     return <div className='bg-[#181818] w-full px-3 pt-4'>
-        <div className='max-w-[900px] border rounded-2xl p-4 m-auto space-y-4 bg'>
+
+        <div className='max-w-[900px] border border-gray-500 rounded-2xl p-4 m-auto space-y-4 bg'>
             {!loading && <div>
+                <Breadcrumb className='pb-5'>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink className='text-white'>
+                                <Link href="/">Home</Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbPage className='text-white'>Compartilhar</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
                 <Image alt='logo' src={logo} />
             </div>}
             {
                 loading ? <>
                     <div style={{ height: `${innerHeight - 130}px` }} className=''>
                         <div className=' h-full flex flex-col justify-center items-center'>
-                            <Image src={logo} alt='logo' width={200}/>
+                            <Image src={logo} alt='logo' width={200} />
                             <DualRingSpinnerLoader />
                         </div>
                     </div>
