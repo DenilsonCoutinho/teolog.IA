@@ -15,7 +15,7 @@ Formate sua resposta com HTML compatível com Draft.js, usando apenas:
 
 Todas as tags devem estar bem formadas. Nenhuma classe CSS deve ser usada. Use a estrutura semântica para guiar o leitor.
 
-Limite-se a 1000 palavras. Foque em clareza, teologia bíblica, e aplicação fiel.
+Limite-se a 700 palavras. Foque em clareza, teologia bíblica, e aplicação fiel.
 `;
 
 
@@ -53,7 +53,7 @@ Evite:
 - Blocos de código (exceto sob orientação explícita)
 - Conteúdos externos como imagens, scripts ou embeds
 
-A resposta deve conter no máximo 1000 palavras, com HTML bem formado para renderização perfeita no Draft.js. Priorize clareza espiritual, integridade bíblica e edificação prática.
+A resposta deve conter no máximo 700 palavras, com HTML bem formado para renderização perfeita no Draft.js. Priorize clareza espiritual, integridade bíblica e edificação prática.
 `;
 
 
@@ -112,5 +112,5 @@ Evite:
 - Blocos de código, salvo instrução explícita
 - Conteúdos externos como imagens ou scripts
 
-A resposta deve ser prática, evangelística e centrada na graça, com até 1000 palavras. Garanta que o HTML seja bem formado para renderização perfeita no Draft.js.
+A resposta deve ser prática, evangelística e centrada na graça, com até 700 palavras. Garanta que o HTML seja bem formado para renderização perfeita no Draft.js.
 `;

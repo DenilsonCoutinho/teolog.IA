@@ -1,5 +1,6 @@
 import { streamText } from "ai";
 import { xai } from "@ai-sdk/xai";
+
 import { NextRequest, NextResponse } from 'next/server';
 import { limitRatePremium } from "../../../../actions/limitRatePremium";
 import { auth } from "../../../../auth";
@@ -17,6 +18,8 @@ function formatSecond(seconds: number) {
   const sec = seconds % 60;
   return `${min}m ${sec}s`;
 }
+
+
 
 export async function POST(req: NextRequest) {
 
@@ -67,11 +70,11 @@ export async function POST(req: NextRequest) {
       prompt: messageUser,
       temperature: 0,
     });
-
+    let fullResponse = '';
     const readableStream = new ReadableStream({
       async start(controller) {
-        console.log(controller)
         for await (const chunk of stream.textStream) {
+           fullResponse += chunk;
           controller.enqueue(new TextEncoder().encode(chunk));
         }
         controller.close();

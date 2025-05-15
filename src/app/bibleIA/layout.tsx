@@ -28,9 +28,7 @@ export default async function UserLayout({
         <SidebarProvider >
           <AppSidebar />
           <SidebarTrigger />
-          <ResizeProvider>
             {children}
-          </ResizeProvider>
         </SidebarProvider>
         <Toaster />
       </ThemeProvider>

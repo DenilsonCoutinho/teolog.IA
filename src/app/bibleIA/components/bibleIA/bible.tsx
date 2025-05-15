@@ -1,11 +1,10 @@
 "use client";
 import { useEffect, useState } from 'react';
-import acf from '../../../../pt_acf.json' assert { type: "json" };
-import nvi from '../../../../pt_nvi.json' assert { type: "json" };
-import ntlh from '../../../../pt_ntlh.json' assert { type: "json" };
-import mark from '../../../assets/mark.svg';
-import logo from '../../../assets/logo-teologia-2.svg';
-import logo_white from '../../../assets/logo-teologia-white.svg'
+import acf from '../../../../../pt_acf.json' assert { type: "json" };
+import nvi from '../../../../../pt_nvi.json' assert { type: "json" };
+import ntlh from '../../../../../pt_ntlh.json' assert { type: "json" };
+import logo from '@/assets/logo-teologia-2.svg';
+import logo_white from '@/assets/logo-teologia-white.svg'
 
 import {
     Select,
@@ -16,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import crypto from 'crypto';
 
 import {
     Dialog,
@@ -28,15 +28,23 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Lora } from 'next/font/google';
 import { useBibleStore } from '@/zustand/useBible';
-import DualRingSpinnerLoader from '../ui/DualRingSpinnerLoader';
+import DualRingSpinnerLoader from '../../../components/ui/DualRingSpinnerLoader';
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
-import { Share, Share2, X } from 'lucide-react';
+import { Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { useResize } from '../../../../context/triggerResizeContext';
+import { useResize } from '../../../../../context/triggerResizeContext';
 import { Button } from '@/components/ui/button';
-
+import { HasAskExisting, resCreated } from '../../../../../service/getResExist';
+import {
+    FacebookIcon,
+    FacebookShareButton,
+    TwitterIcon,
+    TwitterShareButton,
+    WhatsappIcon,
+    WhatsappShareButton,
+} from "react-share";
 export interface BibleBook {
     abbrev: string;
     name: string;
@@ -80,6 +88,8 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     const [loading, setLoading] = useState<boolean>(false);
     const [loadingLayout, setLoadingLayout] = useState<boolean>(false);
     const [responseIa, setResponseIa] = useState<string>("");
+    const [currentHash, setCurrentHash] = useState<string>("");
+    const [currentTitle, setCurrentTitle] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedText, setSelectedText] = useState<string[]>([]);
 
@@ -106,7 +116,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     }, [responseIa]);
 
-    // Função que obtém os capítulos do livro
+
     function getChapterBible(chapter: string) {
         if (chapter === "") setSelectChapter(null);
         setSelectTextBookBible([]);
@@ -122,19 +132,35 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         getTextBookBible(chapter);
     }
 
-    // Função que obtém os textos de um livro específico
     function getTextBookBible(nameBook: string) {
         const versicleData = bible?.find(e => e?.name === nameBook);
         if (!versicleData) return;
         setSelectTextBookBible(versicleData?.chapters);
     }
 
-    // Função que marca ou desmarca um texto selecionado
-    function getTextSelected(index: number, text: string) {
-        setSelectedText((prev) => prev.find(e => e === `${index + 1}` + " - " + text)
-            ? prev.filter(e => e !== `${index + 1}` + " - " + text)
-            : [...prev, `${index + 1}` + " - " + text]);
+
+    async function animateWords(text: string,
+        onUpdate: (partial: any) => void,
+        onComplete: () => void) {
+        setResponseIa('');
+
+        const words = text.split(" ");
+        let index = 0;
+
+        function next() {
+
+            if (index < words.length) {
+                onUpdate((prev: any) => prev + (index === 0 ? "" : " ") + words[index]);
+                index++;
+                setTimeout(next, 34); // tempo entre palavras
+            } else {
+                onComplete();
+            }
+        }
+
+        next();
     }
+
 
     // Efeito que é chamado após a hidratação do Zustand
     useEffect(() => {
@@ -157,19 +183,32 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
             setSelectNumberChapter(0);
         }
     }, [selectTranslation, selectNameBook]);
-    // Função que envia o texto selecionado para o backend e recebe a resposta da IA
-    const send = async () => {
+    const typeTheology = session?.user.typetheology[0]?.type_theology
+    function generateHash(ask: string) {
+        const chave = `${typeTheology.trim().toLowerCase()}::${ask.trim().toLowerCase()}`
+        return crypto.createHash('sha256').update(chave).digest('hex')
+    }
+
+    const askIA = async (verse: number) => {
         setLoading(true);
         setResponseIa("");
-        const TEXT_SELECTED_FORMATED = selectedText.join(" ");
-        const messageUser = `livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1}\n\n${TEXT_SELECTED_FORMATED}`.trim();
-
+        const ASK_USER = `Livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1} Versículo: ${verse + 1}`.trim();
+        const askHash = generateHash(ASK_USER)
+        setCurrentHash(askHash)
+        const dataHasAskExisting = await HasAskExisting(askHash)
+        setCurrentTitle(ASK_USER)
+        if (dataHasAskExisting) {
+            await new Promise((resolve) => setTimeout(resolve, 3000))
+            await animateWords(dataHasAskExisting.htmlContent, (updateFn) => setResponseIa(updateFn), () => setLoading(false));
+            return
+        }
         try {
             const stream = await fetch(`${session?.user.stripeNamePlan === "Free" ? "/api/resBibleForTest" : "/api/resBible"}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messageUser }),
+                body: JSON.stringify({ messageUser: ASK_USER }),
             });
+
             // Isso é essencial!
             if (!stream.ok) {
                 const data = await stream.json();
@@ -191,7 +230,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                 fullResponse += chunk;
                 setResponseIa(fullResponse); // Atualiza a UI em tempo real
             }
-
+            await resCreated(askHash, fullResponse)
             setSelectedText([]);
         } catch (error: any) {
             if (error instanceof Error) {
@@ -210,14 +249,9 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     };
 
-    if (maintenance) {
-        return (
-            <div className='h-screen justify-center flex-col items-center flex bg-white'>
-                <Image alt='logo' src={logo} />
-                <h1 className='md:text-4xl text-center font-light text-black'>EM DESENVOLVIMENTO</h1>
-            </div>
-        );
-    }
+
+
+
 
 
     return (
@@ -232,21 +266,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                 </div>
             }
 
-            {selectedText.length > 0 && (
-                <button
-                    disabled={loading}
-                    onClick={() => {
-                        setIsDrawerOpen(!isDrawerOpen);
-                        send();
-                        handleVibration();
-                    }}
-                    className='border-1 cursor-pointer rounded-full border-black shadow-md h-16 w-16 fixed bottom-10 right-10 roll-in-left'>
-                    <Image alt='logo' src={mark} width={140} height={200} />
-                </button>
-            )}
-
             <div className="flex flex-col items-center md:pl-20 justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
-                {/* Seletor de livro */}
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
                         setSelectNameBook(e);
@@ -268,7 +288,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                             </SelectGroup>
                         </SelectContent>
                     </Select>
-                    {/* Seletor de capítulo */}
                     <Select value={String(selectNumberChapter)} onValueChange={(e) => {
                         setSelectNumberChapter(Number(e));
                         setSelectedText([]);
@@ -288,17 +307,13 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                         </SelectContent>
                     </Select>
                 </div>
-
-                {/* Exibição dos textos selecionados */}
                 <section>
                     <div className='flex flex-col gap-2'>
                         {selectTextBookBible[selectNumberChapter]?.map((texts, index) => (
                             <div
                                 key={index}
-                                onClick={() => getTextSelected(index, texts)}
-                                className={`${selectedText.find(e => e === `${index + 1}` + " - " + texts)
-                                    ? "bg-gradient-to-r from-purple-800 to-blue-600 text-white"
-                                    : " "} cursor-pointer flex items-start gap-1 border dark:border dark:border-gray-700  rounded-md p-1 shadow-xs`}>
+                                onClick={() => { askIA(index); setIsDrawerOpen(!isDrawerOpen); }}
+                                className={`cursor-pointer flex items-start gap-1 border dark:border dark:border-gray-700  rounded-md p-1 shadow-xs`}>
                                 <p className={`${lora.className} text-[16px] text-left`}>
                                     {index + 1} - <span className='font-normal'>{texts}</span>
                                 </p>
@@ -345,7 +360,41 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                             )}
                         </div>
                     </div>
-                    {!loading && <Button>Compartilhar<Share2 /></Button>}
+                    {!loading && <div className='md:flex hidden flex-row items-center gap-3 justify-center'>
+                        <WhatsappShareButton title={currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                            <Button className='flex'>
+                                Compartilhar
+                                <WhatsappIcon />
+                            </Button>
+                        </WhatsappShareButton>
+
+                        <FacebookShareButton url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                            <Button className='flex'>
+                                Compartilhar
+                                <FacebookIcon />
+                            </Button>
+                        </FacebookShareButton>
+                        <TwitterShareButton title='' url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                            <Button className='flex'>
+                                Compartilhar
+                                <TwitterIcon />
+                            </Button>
+                        </TwitterShareButton>
+                    </div>
+                    }
+                    {!loading && <div onClick={() => navigator.share({
+                        title: 'Confira isso!',
+                        text: 'Achei isso interessante!',
+                        url: `${process.env.NEXT_PUBLIC_URL}share/${currentHash}`,
+
+                    })} className='md:hidden flex  flex-row items-center gap-3 justify-center'>
+                        <Button className='flex'>
+                            Compartilhar
+                            <Share2 />
+                        </Button>
+
+                    </div>
+                    }
                 </DialogContent>
             </Dialog>
         </div>

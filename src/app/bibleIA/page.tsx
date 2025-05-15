@@ -1,6 +1,6 @@
 import { typetranslations } from "@prisma/client"
 import { cookies } from "next/headers";
-import BibleIA from "../components/bibleIA/bible"
+import BibleIA from "./components/bibleIA/bible"
 type Translation = {
     data: {
         type_translations: typetranslations

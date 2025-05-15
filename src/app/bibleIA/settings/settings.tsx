@@ -62,6 +62,9 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
     const {
         setHasHydrated,
         hasHydrated,
+        selectTranslation,
+        setSelectTranslation,
+        setSelectNameBook
     } = useBibleStore();
     const { data: session } = useSession()
     const [theologySelected, setTheologySelected] = useState<TypeTheologyProps | null>()
@@ -127,7 +130,31 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
                     <Button disabled={theologySelected ? false : true} onClick={() => changeTheology()} className="bg-gray-900 dark:text-zinc-200 text-white max-w-2xl cursor-pointer">{loading ? <Loader /> : "Alterar"}</Button>
                 </div>
 
-                
+                <div className="border space-y-2 rounded-lg p-4 shadow-md h-40 max-w-96 w-full">
+                    <h1 className="font-bold text-xl text-gray-700 dark:text-zinc-200">Sua linha teológica</h1>
+                    <Select value={selectTranslation} onValueChange={(e) => {
+                        setSelectTranslation(e)
+                        setSelectNameBook(undefined)
+                    }}>
+                        <SelectTrigger className="md:max-w-[180px]">
+                            <SelectValue placeholder="Selecionar Livro" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Selecionar Tradução</SelectLabel>
+                                <SelectItem className="text-black dark:text-white" value={"NTLH"}>
+                                    NTLH
+                                </SelectItem>
+                                <SelectItem className="text-black dark:text-white" value={"NVI"}>
+                                    NVI
+                                </SelectItem>
+                                <SelectItem className="text-black dark:text-white" value={"ACF"}>
+                                    ACF
+                                </SelectItem>
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
         </>
     )

@@ -73,34 +73,7 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         })}
-        <SidebarGroupLabel>Tradução</SidebarGroupLabel>
-        <Collapsible
-          asChild
-          className="group/collapsible"
-        >
-          <Select value={selectTranslation} onValueChange={(e) => {
-            setSelectTranslation(e)
-            setSelectNameBook(undefined)
-          }}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Selecionar Livro" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Selecionar Tradução</SelectLabel>
-                <SelectItem className="text-black dark:text-white" value={"NTLH"}>
-                  NTLH
-                </SelectItem>
-                <SelectItem className="text-black dark:text-white" value={"NVI"}>
-                  NVI
-                </SelectItem>
-                <SelectItem className="text-black dark:text-white" value={"ACF"}>
-                  ACF
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </Collapsible>
+       
       </SidebarMenu>
     </SidebarGroup>
   )

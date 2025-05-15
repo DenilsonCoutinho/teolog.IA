@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "../../auth";
 import { Toaster } from "@/components/ui/sonner"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { ResizeProvider } from "../../context/triggerResizeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +36,9 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider session={session}>
+           <ResizeProvider>
             {children}
+           </ResizeProvider>
         </SessionProvider>
         <Toaster />
       </body>

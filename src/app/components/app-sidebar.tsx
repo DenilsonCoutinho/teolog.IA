@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-import { ModeToggle } from "../bibleIA/components/button-theme/button-theme";
+import { ModeToggle } from "../bibleIA/components/ui/button-theme/button-theme";
 import { useTheme } from "next-themes";
 
 
