@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import acf from '../../../../../pt_acf.json' assert { type: "json" };
 import nvi from '../../../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../../../pt_ntlh.json' assert { type: "json" };
@@ -91,7 +91,12 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     const [currentHash, setCurrentHash] = useState<string>("");
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const isDrawerOpenRef = useRef(isDrawerOpen);
     const [selectedText, setSelectedText] = useState<string[]>([]);
+
+    useEffect(() => {
+        isDrawerOpenRef.current = isDrawerOpen;
+    }, [isDrawerOpen])
 
     useEffect(() => {
         setLoadingLayout(true)
@@ -139,20 +144,20 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }
 
 
-    async function animateWords(text: string,
-        onUpdate: (partial: any) => void,
-        onComplete: () => void) {
+    async function animateWords(text: string, onUpdate: (partial: any) => void, onComplete: () => void) {
         setResponseIa('');
-
-        const words = text.split(" ");
+        let words: string[] = text.split(" ");
         let index = 0;
 
         function next() {
-
+            if (!isDrawerOpenRef.current) {
+                setResponseIa('')
+                words = [""]
+            }
             if (index < words.length) {
                 onUpdate((prev: any) => prev + (index === 0 ? "" : " ") + words[index]);
                 index++;
-                setTimeout(next, 34); // tempo entre palavras
+                setTimeout(next, 4); // tempo entre palavras
             } else {
                 onComplete();
             }
@@ -189,7 +194,8 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         return crypto.createHash('sha256').update(chave).digest('hex')
     }
 
-    const askIA = async (verse: number) => {
+    const askIA = async (verse: number,) => {
+        console.log(isDrawerOpen)
         setLoading(true);
         setResponseIa("");
         const ASK_USER = `Livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1} Versículo: ${verse + 1}`.trim();
@@ -329,7 +335,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center justify-between'>
                             <Image src={resolvedTheme === "dark" ? logo_white : logo} alt='logo' width={130} />
-                            {!loading && <div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
+                            {<div className='cursor-pointer' onClick={() => { setIsDrawerOpen(!isDrawerOpen) }}>
                                 <X className='w-5 bg text-black dark:text-white' />
                             </div>}
                         </DialogTitle>
@@ -361,20 +367,20 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                         </div>
                     </div>
                     {!loading && <div className='md:flex hidden flex-row items-center gap-3 justify-center'>
-                        <WhatsappShareButton title={currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                        <WhatsappShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <Button className='flex'>
                                 Compartilhar
                                 <WhatsappIcon />
                             </Button>
                         </WhatsappShareButton>
 
-                        <FacebookShareButton url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                        <FacebookShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <Button className='flex'>
                                 Compartilhar
                                 <FacebookIcon />
                             </Button>
                         </FacebookShareButton>
-                        <TwitterShareButton title='' url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                        <TwitterShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <Button className='flex'>
                                 Compartilhar
                                 <TwitterIcon />
@@ -383,8 +389,8 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                     </div>
                     }
                     {!loading && <div onClick={() => navigator.share({
-                        title: 'Confira isso!',
-                        text: 'Achei isso interessante!',
+                        title: "Estudo do " + currentTitle,
+                        text: `Estudo do  ${currentTitle}\nVeja a imagem: ${process.env.NEXT_PUBLIC_URL}iconLogo.png`,
                         url: `${process.env.NEXT_PUBLIC_URL}share/${currentHash}`,
 
                     })} className='md:hidden flex  flex-row items-center gap-3 justify-center'>
