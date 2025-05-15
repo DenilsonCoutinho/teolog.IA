@@ -256,9 +256,29 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     };
 
 
+    const share = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_URL}iconLogo.png`);
+            const blob = await response.blob();
 
+            const file = new File([blob], 'iconLogo.png', { type: 'image/png' });
 
+            const data = {
+                files: [file],
+                url: `${process.env.NEXT_PUBLIC_URL}share/${currentHash}`,
+                title: "Estudo do " + currentTitle,
+                text: `Estudo do ${currentTitle}`,
+            };
 
+            if (!navigator.canShare || !navigator.canShare({ files: [file] })) {
+                throw new Error("Seu navegador não suporta compartilhamento de arquivos.");
+            }
+
+            await navigator.share(data);
+        } catch (err: any) {
+            console.error("Erro ao compartilhar:", err.message);
+        }
+    };
 
     return (
         <div>
@@ -388,12 +408,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                         </TwitterShareButton>
                     </div>
                     }
-                    {!loading && <div onClick={() => navigator.share({
-                        title: "Estudo do " + currentTitle,
-                        text: `Estudo do  ${currentTitle}\nVeja a imagem: ${process.env.NEXT_PUBLIC_URL}iconLogo.png`,
-                        url: `${process.env.NEXT_PUBLIC_URL}share/${currentHash}`,
-
-                    })} className='md:hidden flex  flex-row items-center gap-3 justify-center'>
+                    {!loading && <div onClick={() => share()} className='md:hidden flex  flex-row items-center gap-3 justify-center'>
                         <Button className='flex'>
                             Compartilhar
                             <Share2 />
