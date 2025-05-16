@@ -394,7 +394,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                             </Button>
                         </WhatsappShareButton>
 
-                        <FacebookShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                        <FacebookShareButton  title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <Button className='flex'>
                                 Compartilhar
                                 <FacebookIcon />
