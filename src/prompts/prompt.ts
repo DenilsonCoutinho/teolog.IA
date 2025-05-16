@@ -84,7 +84,7 @@ Evite:
 - Blocos de código, salvo instrução explícita
 - Conteúdos externos como imagens ou scripts
 
-A resposta deve ser sólida, teológica e pastoralmente aplicável, com até 1000 palavras. Garanta que o HTML seja bem formado para renderização perfeita no Draft.js.
+A resposta deve ser sólida, teológica e pastoralmente aplicável, com até 750 palavras. Garanta que o HTML seja bem formado para renderização perfeita no Draft.js.
 `;
 
 export const systemPromptArminiana = `
