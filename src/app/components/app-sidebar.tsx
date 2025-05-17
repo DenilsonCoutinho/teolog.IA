@@ -3,15 +3,14 @@
 import * as React from "react";
 import {
   Book,
-  Settings
+  Settings,
+  ScrollText
 } from "lucide-react";
 import logo from '../../assets/logo-teologia-2.svg'
 import logo_white from '../../assets/logo-teologia-white.svg'
 
 import { NavMain } from "./nav-main";
-import { NavProjects } from "./nav-projects";
 import { NavUser } from "./nav-user";
-import { TeamSwitcher } from "./team-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -42,6 +41,12 @@ const data = {
 
     },
     {
+      title: "Meu Devocional",
+      url: "/bibleIA/devotional",
+      icon: ScrollText,
+     
+    },
+    {
       title: "Configurações",
       url: "/bibleIA/settings",
       icon: Settings,
@@ -52,7 +57,8 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { setTheme, theme,resolvedTheme } = useTheme()
+  const { setTheme, theme, resolvedTheme } = useTheme()
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
