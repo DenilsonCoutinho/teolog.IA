@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Book,
   Settings,
@@ -44,7 +44,7 @@ const data = {
       title: "Meu Devocional",
       url: "/bibleIA/devotional",
       icon: ScrollText,
-     
+
     },
     {
       title: "Configurações",
@@ -58,12 +58,15 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { setTheme, theme, resolvedTheme } = useTheme()
-
+  const [myTheme, setMyTheme] = useState<string | undefined>('');
+  useEffect(() => {
+    setMyTheme(resolvedTheme)
+  }, [resolvedTheme])
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <Link href={"/"}>
-          <Image alt='logo' src={resolvedTheme === "light" ? logo : logo_white} width={140} height={200} />
+          <Image alt='logo' src={myTheme === "light" ? logo : logo_white} width={140} height={200} />
         </Link>
       </SidebarHeader>
       <SidebarContent>

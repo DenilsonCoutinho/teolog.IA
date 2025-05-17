@@ -51,8 +51,8 @@ export default function Devotional() {
     }, [])
 
     return (
-        <div className='m-10 w-full'>
-            {!isPending && <h1 className='md:text-3xl text-black dark:text-white font-bold'>Devocional diário</h1>}
+        <div className='md:m-10 mr-4 w-full'>
+            {!isPending && <h1 className='md:text-3xl text-2xl text-black dark:text-white font-bold'>Devocional diário</h1>}
 
             {isPending ?
                 <div className='w-full flex justify-center items-center'>
@@ -63,7 +63,7 @@ export default function Devotional() {
                         </div>
                     </div>
                 </div>
-                : <div className='mt-10'>
+                : <div style={{ height: `${innerHeight - 130}px` }} className='bgre mt-10 overflow-hidden overflow-y-auto shadow-md rounded-lg'>
                     <Editor
                         editorState={editorState}
                         onChange={setEditorState}

@@ -120,7 +120,7 @@
   color: #2d3748; /* Cor cinza escura para melhor contraste e suavidade */
   line-height: 1.75; /* Espaçamento geral para maior legibilidade */
   padding: 16px; /* Espaçamento interno para evitar que o texto toque as bordas */
-  background-color: #f9fafb; /* Fundo claro para destacar o conteúdo */
+  background-color: #f0f7ff; /* Fundo claro para destacar o conteúdo */
   border-radius: 8px; /* Bordas arredondadas para um visual moderno */
 }
 
