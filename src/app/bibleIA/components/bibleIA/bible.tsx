@@ -292,8 +292,8 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }
 
     return (
-        <div>
-            <div className="flex flex-col items-center md:pl-20 justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
+        <div className=" ">
+            <div className="flex flex-col items-center justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
                         setSelectNameBook(e);

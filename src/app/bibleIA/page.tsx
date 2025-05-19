@@ -23,7 +23,7 @@ export default async function BibleIAcomponents() {
         return await res.json() as Promise<Translation>;
     });
 
-    return <div className=" ">
+    return <div className="flex justify-center items-center w-full ">
         <BibleIA typeTranslations={typeTranslations}/>
     </div>
 }
