@@ -122,22 +122,24 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }, [responseIa]);
 
 
-    function getChapterBible(chapter: string) {
-        if (chapter === "") setSelectChapter(null);
+    function getChapterBible(bookName: string) {
+
+        if (bookName === "") setSelectChapter(null);
         setSelectTextBookBible([]);
+        const bookData = bible?.find((e: BibleBook) => e?.name === bookName);
 
-        const versicleData = bible?.find((e: BibleBook) => e?.name === chapter);
-        const chapters = versicleData?.chapters;
-        if (!chapters) return;
+        const chapters = bookData?.chapters;
+        if (!chapters) return console.info("Nenhum capítulo encontrado");
 
-        const formatedChapters = Object?.entries(chapters)?.map((_, index) => {
+        const formatedChapters = Object?.keys(chapters)?.map((_, index) => {
             return { number: index };
         });
         setSelectChapter(formatedChapters || null);
-        getTextBookBible(chapter);
+
+        getTextBookBible(bookName);
     }
 
-    function getTextBookBible(nameBook: string) {
+    function getTextBookBible(nameBook?: string) {
         const versicleData = bible?.find(e => e?.name === nameBook);
         if (!versicleData) return;
         setSelectTextBookBible(versicleData?.chapters);
@@ -279,7 +281,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     };
 
-    if (loading || loadingLayout) {
+    if ( loadingLayout) {
         return <div className='w-full flex justify-center items-center'>
             <div style={{ height: `${innerHeight - 130}px` }} className=''>
                 <div className=' h-full flex flex-col justify-center items-center'>

@@ -61,7 +61,7 @@ export function NavMain({
             <SidebarMenuItem>
               <CollapsibleTrigger asChild>
                 <Link href={`${item.url || "#"}`}>
-                  <SidebarMenuButton onClick={() => { setLoadingLayout(true); setOpen(!open);setOpenMobile(!openMobile) }} tooltip={item.title} className={`${pathname === item.url ? "dark:bg-gray-600 bg-gray-300" : ""} cursor-pointer`}>
+                  <SidebarMenuButton onClick={() => { setLoadingLayout(true); setOpen(false);setOpenMobile(false) }} tooltip={item.title} className={`${pathname === item.url ? "dark:bg-gray-600 bg-gray-300" : ""} cursor-pointer`}>
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>
                     {item.items && <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />}
