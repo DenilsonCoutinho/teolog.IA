@@ -19,7 +19,7 @@ export default async function UserLayout({
 }) {
 
   return (
-    <div className=" w-full bg-[#181818]">
+    <div className=" w-full dark:bg-[#181818]">
       <ThemeProvider
         attribute="class"
         defaultTheme="system"
