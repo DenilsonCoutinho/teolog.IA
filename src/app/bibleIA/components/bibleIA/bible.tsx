@@ -38,8 +38,6 @@ import { useResize } from '../../../../../context/triggerResizeContext';
 import { Button } from '@/components/ui/button';
 import { HasAskExisting, resCreated } from '../../../../../service/getResExist';
 import {
-    FacebookIcon,
-    FacebookShareButton,
     TwitterIcon,
     TwitterShareButton,
     WhatsappIcon,
@@ -77,6 +75,8 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         selectNumberChapter,
         hasHydrated,
         selectTranslation,
+        setLoadingLayout,
+        loadingLayout
     } = useBibleStore();
     const route = useRouter()
 
@@ -86,7 +86,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
 
     const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [loadingLayout, setLoadingLayout] = useState<boolean>(false);
+    // const [loadingLayout, setLoadingLayout] = useState<boolean>(false);
     const [responseIa, setResponseIa] = useState<string>("");
     const [currentHash, setCurrentHash] = useState<string>("");
     const [currentTitle, setCurrentTitle] = useState<string>("");
@@ -195,7 +195,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }
 
     const askIA = async (verse: number,) => {
-        console.log(isDrawerOpen)
         setLoading(true);
         setResponseIa("");
         const ASK_USER = `Livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1} Versículo: ${verse + 1}`.trim();
@@ -280,18 +279,20 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     };
 
+    if (loading || loadingLayout) {
+        return <div className='w-full flex justify-center items-center'>
+            <div style={{ height: `${innerHeight - 130}px` }} className=''>
+                <div className=' h-full flex flex-col justify-center items-center'>
+                    <Image src={resolvedTheme === "dark" ? logo_white : logo} alt='logo' />
+
+                    <DualRingSpinnerLoader />
+                </div>
+            </div>
+        </div>
+    }
+
     return (
         <div>
-            {
-                loadingLayout &&
-                <div className='fixed bg-gray-50 opacity-40 top-0 right-0 left-0 z-50 h-full w-full'>
-                    <div className='min-h-screen flex flex-col justify-center items-center'>
-                        <Image src={resolvedTheme === "dark" ? logo_white : logo} alt='logo' />
-                        <DualRingSpinnerLoader />
-                    </div>
-                </div>
-            }
-
             <div className="flex flex-col items-center md:pl-20 justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
@@ -394,12 +395,12 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                             </Button>
                         </WhatsappShareButton>
 
-                        <FacebookShareButton  title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
+                        {/* <FacebookShareButton  title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <Button className='flex'>
                                 Compartilhar
                                 <FacebookIcon />
                             </Button>
-                        </FacebookShareButton>
+                        </FacebookShareButton> */}
                         <TwitterShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <Button className='flex'>
                                 Compartilhar

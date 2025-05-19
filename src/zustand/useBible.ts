@@ -6,6 +6,7 @@ type PropsChapters = {
 }
 type bibleStore = {
     selectNameBook: string | undefined
+    loadingLayout: boolean|null
     selectTranslation: string
     selectChapter: PropsChapters[] | null
     selectTextBookBible: string[][]
@@ -17,6 +18,7 @@ type bibleStore = {
     setSelectTextBookBible: (texts: string[][]) => void
     setSelectNumberChapter: (chapter: number) => void
     setHasHydrated: (value: boolean) => void
+    setLoadingLayout: (value: boolean) => void
 
 }
 
@@ -25,6 +27,7 @@ type bibleStore = {
 export const useBibleStore = create<bibleStore>()(
     persist(
         (set) => ({
+            loadingLayout: null,
             selectNameBook: 'Gênesis',
             selectTranslation: '',
             selectChapter: null,
@@ -32,6 +35,7 @@ export const useBibleStore = create<bibleStore>()(
             selectNumberChapter: 0,
             hasHydrated: false,
             setHasHydrated: (value) => set({ hasHydrated: value }),
+            setLoadingLayout: (value) => set({ loadingLayout: value }),
             setSelectNameBook: (nameBook) => set({ selectNameBook: nameBook }),
             setSelectChapter: (number) => set({ selectChapter: number }),
             setSelectTextBookBible: (texts: string[][]) => set({ selectTextBookBible: texts }),

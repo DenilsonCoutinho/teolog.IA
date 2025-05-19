@@ -99,15 +99,6 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
 
     return (
         <>
-            {
-                loadingLayout &&
-                <div className='fixed bg-gray-50 opacity-40 top-0 right-0 left-0 z-50 h-full w-full'>
-                    <div className='min-h-screen flex flex-col justify-center items-center'>
-                        <Image src={logo} alt='logo' />
-                        <DualRingSpinnerLoader />
-                    </div>
-                </div>
-            }
 
             <div className="w-full mt-20 flex flex-wrap gap-3">
                 <div className="border space-y-2 rounded-lg p-4 shadow-md h-40 max-w-96 w-full">
@@ -131,7 +122,7 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
                 </div>
 
                 <div className="border space-y-2 rounded-lg p-4 shadow-md h-40 max-w-96 w-full">
-                    <h1 className="font-bold text-xl text-gray-700 dark:text-zinc-200">Sua linha teológica</h1>
+                    <h1 className="font-bold text-xl text-gray-700 dark:text-zinc-200">Selecionar Tradução</h1>
                     <Select value={selectTranslation} onValueChange={(e) => {
                         setSelectTranslation(e)
                         setSelectNameBook(undefined)
