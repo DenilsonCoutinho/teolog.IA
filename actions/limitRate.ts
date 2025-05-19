@@ -6,7 +6,7 @@ export const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 });
 
-const MAX_TRIES = 3;
+const MAX_TRIES = 5;
 const WINDOW_SECONDS = 60 * 60 * 24; // 1 dia
 
 export async function LimitRate(req: NextRequest) {

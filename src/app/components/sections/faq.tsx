@@ -14,10 +14,10 @@ import {
       question: "A IA explica com base em qual interpretação?",
       answer: "Nossas explicações são baseadas na teologia que você aceita ou está estudando"
     },
-    {
-      question: "Preciso criar conta?",
-      answer: "Oferecemos 3 tentativas ao dia gratuito, mas você pode escolher o nosso plano Premium e você terá pesquisa ilimitadas."
-    },
+    // {
+    //   question: "Preciso criar conta?",
+    //   answer: "Oferecemos 3 tentativas ao dia gratuito, mas você pode escolher o nosso plano Premium e você terá pesquisa ilimitadas."
+    // },
     {
       question: "As explicações substituem os estudos bíblicos?",
       answer: "Não! Nossa ferramenta é um complemento para seus estudos e não substitui a orientação pastoral ou a participação em sua igreja local."

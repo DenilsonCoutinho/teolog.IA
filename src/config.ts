@@ -4,7 +4,7 @@ export const config = {
         secretKey: process.env.STRIPE_SECRET_KEY,
         plans: {
             freePriceId: "price_1RLtiaHt6s00L0BLf5Gsl18q",
-            premiumPriceId: 'price_1RLtgFHt6s00L0BL26QKeUPq',
+            premiumPriceId: 'price_1RQcBHHt6s00L0BLMSZH2kQR',
         }
         // price_1RIvC4Ht6s00L0BLY8TCkLm1
         //   webhookSecret: 'whsec_17a14e2622bead06a4132460bb6ea5a4a9b3a14e8c81f7cb7ebaa73f4cd770e5'
