@@ -10,12 +10,12 @@ import Loader from "@/app/components/ui/loading";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import DualRingSpinnerLoader from "@/app/components/ui/DualRingSpinnerLoader";
-import logo from '../../../assets/logo-teologia-2.svg';
-import { updateTranslation } from "../../../../service/updateTranslation";
+import logo from '../../../assets/logo-teologia-2.svg'
+import logo_white from '../../../assets/logo-teologia-white.svg'
 import { useBibleStore } from "@/zustand/useBible";
-import acf from '../../../../pt_acf.json' assert { type: "json" };
-import nvi from '../../../../pt_nvi.json' assert { type: "json" };
-import ntlh from '../../../../pt_ntlh.json' assert { type: "json" };
+
+import { useTheme } from "next-themes";
+import { useResize } from "../../../../context/triggerResizeContext";
 type TypeTheologyProps = "ARMINIANA" | "REFORMADA" | "PENTECOSTAL" | "BATISTA"
 
 type Theology = {
@@ -25,12 +25,8 @@ type Theology = {
 }
 
 type TypeTranslations = "ACF" | "NTLH" | "NVI"
-type Translations = {
-    data: {
-        type_translations: TypeTranslations
-    }
-}
-export default function Settings({ typetheology, typetranslations }: { typetheology: Theology | undefined, typetranslations: Translations | undefined }) {
+
+export default function Settings({ typetheology }: { typetheology: Theology | undefined, }) {
 
     const options: { id: TypeTheologyProps; label: string }[] = [
         { id: 'BATISTA', label: 'Teologia Batista' },
@@ -58,7 +54,7 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
     ];
 
     const route = useRouter()
-    const [loadingLayout, setLoadingLayout] = useState<boolean>(false);
+    const [loadingLayout, setLoadingLayout] = useState<boolean>(true);
     const {
         setHasHydrated,
         hasHydrated,
@@ -69,7 +65,9 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
     const { data: session } = useSession()
     const [theologySelected, setTheologySelected] = useState<TypeTheologyProps | null>()
     const [translationSelected, setTranslationSelected] = useState<TypeTranslations | null>()
-
+    const { setTheme, theme, resolvedTheme } = useTheme()
+    const { innerHeight } = useResize()
+    const [myTheme, setMyTheme] = useState<string | undefined>('');
     const [loading, setLoading] = useState<boolean>()
     useEffect(() => {
         setLoadingLayout(true)
@@ -97,6 +95,23 @@ export default function Settings({ typetheology, typetranslations }: { typetheol
 
     }
 
+    useEffect(() => {
+        setMyTheme(resolvedTheme)
+    }, [resolvedTheme])
+
+
+
+    if (loadingLayout) {
+        return <div className='w-full flex justify-center items-center'>
+            <div style={{ height: `${innerHeight - 130}px` }} className=''>
+                <div className=' h-full flex flex-col justify-center items-center'>
+                    <Image src={myTheme === "dark" ? logo_white : logo} alt='logo' />
+
+                    <DualRingSpinnerLoader />
+                </div>
+            </div>
+        </div>
+    }
     return (
         <>
 

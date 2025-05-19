@@ -17,6 +17,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
@@ -63,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     setMyTheme(resolvedTheme)
   }, [resolvedTheme])
   return (
-    <Sidebar collapsible="icon" {...props}>
+    <Sidebar  collapsible="icon" {...props}>
       <SidebarHeader>
         <Link href={"/"}>
           <Image alt='logo' src={myTheme === "light" ? logo : logo_white} width={140} height={200} />

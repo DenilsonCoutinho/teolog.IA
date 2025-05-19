@@ -52,7 +52,6 @@ export default function Devotional() {
         setLoading(false)
         setLoadingLayout(false)
     }, [])
-
      if (loading || loadingLayout) {
         return <div className='w-full flex justify-center items-center'>
             <div style={{ height: `${innerHeight - 130}px` }} className=''>
@@ -66,7 +65,7 @@ export default function Devotional() {
     }
 
     return (
-        <div className='md:m-10 mr-4 w-full'>
+        <div className='md:m-10 mt-10 mr-5 w-full'>
             <h1 className='md:text-3xl text-2xl text-black dark:text-white font-bold'>Devocional diário</h1>
             <div style={{ height: `${innerHeight - 130}px` }} className='bgre mt-10 overflow-hidden overflow-y-auto shadow-md rounded-lg'>
                 <Editor
