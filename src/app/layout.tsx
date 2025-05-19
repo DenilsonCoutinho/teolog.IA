@@ -31,14 +31,19 @@ export default async function RootLayout({
   const session = await auth();
 
   return (
-    <html lang="en">
+    <html lang="pt-BR">
+      <head>
+        <meta name="googlebot" content="notranslate" />
+        <meta name="google" content="notranslate" />
+      </head>
       <body
+        translate="no"
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider session={session}>
-           <ResizeProvider>
+          <ResizeProvider>
             {children}
-           </ResizeProvider>
+          </ResizeProvider>
         </SessionProvider>
         <Toaster />
       </body>
