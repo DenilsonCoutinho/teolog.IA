@@ -124,7 +124,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
 
     function getChapterBible(bookName: string) {
 
-        if (bookName === "") setSelectChapter(null);
+        // if (bookName === "") return
         setSelectTextBookBible([]);
         const bookData = bible?.find((e: BibleBook) => e?.name === bookName);
 
@@ -134,7 +134,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         const formatedChapters = Object?.keys(chapters)?.map((_, index) => {
             return { number: index };
         });
-        setSelectChapter(formatedChapters || null);
+        setSelectChapter(formatedChapters || { number: 1 });
 
         getTextBookBible(bookName);
     }
@@ -171,14 +171,22 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
 
     // Efeito que é chamado após a hidratação do Zustand
     useEffect(() => {
+        setLoadingLayout(true)
         if (!hasHydrated) return; // Espera até o Zustand terminar de hidratar
-
-        if (!selectNameBook) {
+        if (!selectChapter) {
+            const chapters = bible[0]?.chapters
+            const chaptersInKey = Object?.keys(chapters)?.map((_, index) => {
+                return { number: index };
+            });
             setSelectTextBookBible(bible[0]?.chapters);
+            setSelectChapter(chaptersInKey);
+
             getChapterBible("Gênesis");
             setSelectNameBook("Gênesis");
             setSelectNumberChapter(0);
+            setLoadingLayout(false)
         }
+        setLoadingLayout(false)
     }, [hasHydrated]);
 
 
@@ -281,7 +289,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
     };
 
-    if ( loadingLayout) {
+    if (loadingLayout) {
         return <div className='w-full flex justify-center items-center'>
             <div style={{ height: `${innerHeight - 130}px` }} className=''>
                 <div className=' h-full flex flex-col justify-center items-center'>
