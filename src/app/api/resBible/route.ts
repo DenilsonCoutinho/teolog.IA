@@ -23,7 +23,7 @@ function formatSecond(seconds: number) {
 }
 
 export async function POST(req: NextRequest) {
-  const { messageUser, perguntaHash } = await req.json();
+  const { messageUser, perguntaHash,userId} = await req.json();
   const session = await auth();
 
   if (!messageUser || typeof messageUser !== 'string') {
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   try {
     if (!session?.user?.id) {
       redirect('/');
-      return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
+      // return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
     }
     const existing = await prisma.sharedResponse.findUnique({
       where: { perguntaHash }
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
       // Cria registro pendente
       await prisma.sharedResponse.create({
         data: {
-          userId: session?.user?.id!,
+          userId: userId,
           perguntaHash,
           status: "pending",
           teologia: theology,
