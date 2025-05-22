@@ -27,8 +27,8 @@ export default function Share({ id }: { id: string }) {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     async function getDataToShare() {
         const dataHasAskExisting = await HasAskExisting(id)
-        if (dataHasAskExisting) {
-            const blocksFromHTML = convertFromHTML(dataHasAskExisting.htmlContent);
+        if (dataHasAskExisting?.htmlContent) {
+            const blocksFromHTML = convertFromHTML(dataHasAskExisting?.htmlContent);
             const contentState = ContentState.createFromBlockArray(
                 blocksFromHTML.contentBlocks,
                 blocksFromHTML.entityMap
