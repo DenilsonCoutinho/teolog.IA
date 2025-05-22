@@ -236,7 +236,11 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
             if (!stream.body) {
                 throw new Error("Resposta da API não contém um corpo de stream válido");
             }
-
+            if (stream.status === 202) {
+                setIsDrawerOpen(false)
+                toast.error("Estamos processando sua resposta, dentro de 1 minuto.",{duration: 10000,closeButton: true})
+                return; // não prossegue pois está esperando resposta pronta
+            }
             const reader = stream.body.getReader();
             console.log(reader)
             const decoder = new TextDecoder();

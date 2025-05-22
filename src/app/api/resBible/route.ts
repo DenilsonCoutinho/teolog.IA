@@ -23,7 +23,7 @@ function formatSecond(seconds: number) {
 }
 
 export async function POST(req: NextRequest) {
-  const { messageUser, perguntaHash,userId} = await req.json();
+  const { messageUser, perguntaHash, userId } = await req.json();
   const session = await auth();
 
   if (!messageUser || typeof messageUser !== 'string') {
@@ -51,6 +51,17 @@ export async function POST(req: NextRequest) {
   }
 
   const theology = typetheology.data.type_theology;
+  const redisClient = new Redis("rediss://default:AWxAAAIjcDFjZjZkMzUwZDNiZTc0OGJhYTBjMDNiN2YzZmUyNjQyZnAxMA@desired-rhino-27712.upstash.io:6379");
+
+  const lockKey = `lock:${perguntaHash}`;
+  const lock = await (redisClient.set as any)(lockKey, "locked", "NX", "EX", 20);
+
+  if (!lock) {
+    // Alguém já está gerando essa resposta
+    return NextResponse.json({
+      message: "Essa pergunta já está sendo processada por outro usuário. Aguarde alguns segundos para ver a resposta pronta.",
+    }, { status: 202 });
+  }
 
   try {
     if (!session?.user?.id) {
