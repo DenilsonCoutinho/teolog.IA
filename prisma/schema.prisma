@@ -71,11 +71,12 @@ model Devotional {
 model SharedResponse {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   userId       String   @db.ObjectId
-  htmlContent  String // Rendered content (HTML, e.g., from Draft.js)
+  htmlContent  String? // Rendered content (HTML, e.g., from Draft.js)
   teologia     String // Theological perspective for the response (e.g., "baptist", "calvinist")
+  status       String? // Theological perspective for the response (e.g., "baptist", "calvinist")
   perguntaHash String   @unique // Hash of the question + theology (for caching purposes)
-  likes        Int      @default(0) // Number of likes the response has received
-  dislikes     Int      @default(0) // Number of dislikes the response has received
+  likes        Int?      @default(0) // Number of likes the response has received
+  dislikes     Int?      @default(0) // Number of dislikes the response has received
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)

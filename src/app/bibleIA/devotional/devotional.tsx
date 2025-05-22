@@ -46,11 +46,11 @@ export default function Devotional() {
                 )
                 setEditorState(EditorState.createWithContent(content))
             }
+            setLoading(false)
+            setLoadingLayout(false)
         }
 
         fetchContentDevotional()
-        setLoading(false)
-        setLoadingLayout(false)
     }, [])
      if (loading || loadingLayout) {
         return <div className='w-full flex justify-center items-center'>

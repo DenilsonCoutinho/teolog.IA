@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import acf from '../../../../../pt_acf.json' assert { type: "json" };
 import nvi from '../../../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../../../pt_ntlh.json' assert { type: "json" };
@@ -200,7 +200,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }, [selectTranslation, selectNameBook]);
     const typeTheology = session?.user.typetheology[0]?.type_theology
     function generateHash(ask: string) {
-        const chave = `${typeTheology.trim().toLowerCase()}::${ask.trim().toLowerCase()}`
+        const chave = `${typeTheology.trim().toLowerCase()}::${ask?.trim()?.toLowerCase()}`
         return crypto.createHash('sha256').update(chave).digest('hex')
     }
 
@@ -212,16 +212,19 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         setCurrentHash(askHash)
         const dataHasAskExisting = await HasAskExisting(askHash)
         setCurrentTitle(ASK_USER)
-        if (dataHasAskExisting) {
-            await new Promise((resolve) => setTimeout(resolve, 3000))
-            await animateWords(dataHasAskExisting.htmlContent, (updateFn) => setResponseIa(updateFn), () => setLoading(false));
+        if (dataHasAskExisting?.htmlContent) {
+            await new Promise((resolve) => setTimeout(resolve, 2000))
+            await animateWords(dataHasAskExisting?.htmlContent, (updateFn) => setResponseIa(updateFn), () => setLoading(false));
             return
         }
         try {
+            if (dataHasAskExisting?.status === "pending" && dataHasAskExisting.perguntaHash === askHash) {
+                throw new Error("Resposta em processamento, Volte em alguns minutos.");
+            }
             const stream = await fetch(`${session?.user.stripeNamePlan === "Free" ? "/api/resBibleForTest" : "/api/resBible"}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messageUser: ASK_USER }),
+                body: JSON.stringify({ messageUser: ASK_USER, perguntaHash: askHash, userId: session?.user.id }),
             });
 
             // Isso é essencial!
@@ -235,6 +238,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
             }
 
             const reader = stream.body.getReader();
+            console.log(reader)
             const decoder = new TextDecoder();
             let fullResponse = "";
 
@@ -252,6 +256,8 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                 setIsDrawerOpen(false)
                 toast.error(error.message)
             }
+            toast.error(error.message)
+
         } finally {
             setLoading(false);
         }

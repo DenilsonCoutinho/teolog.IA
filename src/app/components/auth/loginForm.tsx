@@ -5,17 +5,39 @@ import React, { useState } from 'react';
 import { signIn, } from "next-auth/react";
 import Loader from '../ui/loading';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const LoginForm = () => {
-
+    const route = useRouter()
     const [loading, setLoading] = useState<boolean>(false);
     const pathname = useSearchParams()
     const isRegister = pathname.get("Register")
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true)
-        await signIn("google", { redirectTo: "/questionario" })
+        const singin = await signIn("google", { redirectTo: "/questionario", redirect: false })
+        if (singin.ok) {
+            return window.location.href = singin.url as string
+        }
+        if (singin?.error) {
+            switch (singin.error) {
+                case "OAuthAccountNotLinked":
+                    alert("Essa conta já está vinculada a outro método de login.")
+                    break
+                case "OAuthCallback":
+                    alert("Erro ao finalizar o login com Google. Tente novamente.")
+                    break
+                case "OAuthSignin":
+                    alert("Erro ao iniciar o login com Google.")
+                    break
+                case "Configuration":
+                    alert("Erro de configuração do login. Contate o suporte.")
+                    break
+                default:
+                    alert("Erro desconhecido ao tentar login com Google.")
+            }
+            console.error("Erro de login:", singin.error)
+        }
     };
     return (
         <div className="min-h-screen  flex flex-col">
