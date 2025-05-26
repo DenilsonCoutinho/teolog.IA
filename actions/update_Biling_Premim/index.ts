@@ -21,7 +21,8 @@ export async function updateBilingPremium(return_url:string) {
             stripeSubscriptionStatus: true
         }
     })
+    console.log("dataUser", dataUser)
     const updateCheckoutSession = await openBillingPortalToUpdatePremiumPlan(dataUser?.stripeCustomerId!, dataUser?.stripeSubscriptionId!,return_url)
-
+    console.log("updateCheckoutSession", updateCheckoutSession)
     redirect(updateCheckoutSession.url)
 }
