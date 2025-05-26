@@ -66,9 +66,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar  collapsible="icon" {...props}>
       <SidebarHeader>
-        <Link href={"/"}>
+        {/* <Link href={"/"}> */}
           <Image alt='logo' src={myTheme === "light" ? logo : logo_white} width={140} height={200} />
-        </Link>
+        {/* </Link> */}
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

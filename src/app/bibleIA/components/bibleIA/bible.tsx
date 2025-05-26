@@ -30,7 +30,7 @@ import { Lora } from 'next/font/google';
 import { useBibleStore } from '@/zustand/useBible';
 import DualRingSpinnerLoader from '../../../components/ui/DualRingSpinnerLoader';
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
-import { Share2, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
@@ -92,7 +92,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const isDrawerOpenRef = useRef(isDrawerOpen);
-    const [selectedText, setSelectedText] = useState<string[]>([]);
+    // const [selectedText, setSelectedText] = useState<string[]>([]);
 
     useEffect(() => {
         isDrawerOpenRef.current = isDrawerOpen;
@@ -168,7 +168,37 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         next();
     }
 
+    async function nextChapter() {
+        const section = document.querySelector('#top');
+        if (selectNumberChapter + 1 >= selectTextBookBible.length) {
+            toast.error("Você já está no último capítulo deste livro.");
+            // Rola suavemente para o topo da lista de versículos
+            if (section) {
+                section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            return;
+        }
 
+        setSelectNumberChapter(selectNumberChapter + 1);
+        if (section) {
+            section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+    async function previousChapter() {
+        const section = document.querySelector('#top');
+        if (selectNumberChapter === 0) {
+            toast.error("Você já está no capítulo 1 deste livro.");
+            if (section) {
+                section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            return
+        }
+
+        setSelectNumberChapter(selectNumberChapter - 1);
+        if (section) {
+            section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
     // Efeito que é chamado após a hidratação do Zustand
     useEffect(() => {
         setLoadingLayout(true)
@@ -238,7 +268,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
             }
             if (stream.status === 202) {
                 setIsDrawerOpen(false)
-                toast.error("Estamos processando sua resposta, dentro de 1 minuto.",{duration: 10000,closeButton: true})
+                toast.error("Estamos processando sua resposta, dentro de 1 minuto.", { duration: 10000, closeButton: true })
                 return; // não prossegue pois está esperando resposta pronta
             }
             const reader = stream.body.getReader();
@@ -254,7 +284,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                 setResponseIa(fullResponse); // Atualiza a UI em tempo real
             }
             await resCreated(askHash, fullResponse)
-            setSelectedText([]);
+            // setSelectedText([]);
         } catch (error: any) {
             if (error instanceof Error) {
                 setIsDrawerOpen(false)
@@ -312,14 +342,14 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
     }
 
     return (
-        <div className=" ">
+        <div id='top' className=" ">
             <div className="flex flex-col items-center justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
                         setSelectNameBook(e);
                         getChapterBible(e);
                         setSelectNumberChapter(0);
-                        setSelectedText([]);
+                        // setSelectedText([]);
                     }}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Selecionar Livro" />
@@ -337,7 +367,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                     </Select>
                     <Select value={String(selectNumberChapter)} onValueChange={(e) => {
                         setSelectNumberChapter(Number(e));
-                        setSelectedText([]);
+                        // setSelectedText([]);
                     }}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Selecionar capítulo" />
@@ -366,13 +396,22 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                                 </p>
                             </div>
                         ))}
+
+                        <div className='controlls flex items-center justify-between mt-3'>
+                            <div className='flex justify-center cursor-pointer items-center h-10 w-10 border rounded-full dark:border dark:border-gray-700'>
+                                <ArrowLeft onClick={() => previousChapter()} className='text-gray-300' />
+                            </div>
+                            <div onClick={() => nextChapter()} className='flex cursor-pointer justify-center items-center h-10 w-10 border rounded-full dark:border dark:border-gray-700'>
+                                <ArrowRight className='text-gray-300' />
+                            </div>
+                        </div>
                     </div>
                 </section>
             </div>
 
             {/* Caixa de diálogo */}
             <Dialog onOpenChange={(val) => { if (val === false) return; setIsDrawerOpen(val); }} open={isDrawerOpen}>
-                <DialogContent className='px-3 dark:bg-[#181818] '>
+                <DialogContent className='px- dark:bg-[#181818] '>
                     <DialogHeader className='flex'>
                         <DialogTitle className='flex items-center justify-between'>
                             <Image src={resolvedTheme === "dark" ? logo_white : logo} alt='logo' width={130} />
@@ -382,7 +421,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                         </DialogTitle>
                     </DialogHeader>
 
-                    <div style={{ height: `${innerHeight - 200}px` }} className="w-full  flex flex-col border rounded-xl">
+                    <div style={{ height: `${innerHeight - 160}px` }} className="w-full  flex flex-col border rounded-xl">
                         {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto mb-5 p-2 dark:bg-[#181818] bg-gray-100">
                             {!responseIa ? (
@@ -394,7 +433,7 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                                 </div>
                             ) : (
                                 <div className="h-full">
-                                    <div className={`max-w-[100%] p-3 rounded-xl bg-white mb-20 text-gray-800 self-start mr-auto border`}>
+                                    <div className={`max-w-[100%] p- rounded-xl bg-white mb-20  border`}>
                                         <div className='text-sm leading-6'>
                                             <Editor
                                                 editorState={editorState}

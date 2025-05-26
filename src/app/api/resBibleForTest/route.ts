@@ -60,29 +60,7 @@ export async function POST(req: NextRequest) {
 
 
   try {
-    // const existing = await prisma.sharedResponse.findUnique({
-    //       where: { perguntaHash }
-    //     });
-    //     if (existing) {
-    //       if (existing.status === "pending") {
-    //         // Resposta ainda em processamento, pode retornar um status 202 (Accepted)
-    //         return NextResponse.json({ message: "Resposta em processamento, aguarde..." }, { status: 202 });
-    //       } else {
-    //         // Resposta pronta, retorna direto
-    //         return NextResponse.json({ htmlContent: existing.htmlContent });
-    //       }
-    //     } else {
-    //       // Cria registro pendente
-    //       await prisma.sharedResponse.create({
-    //         data: {
-    //           userId: userId,
-    //           perguntaHash,
-    //           status: "pending",
-    //           teologia: theology,
-    //         }
-    //       });
-    //     }
-
+   
     const existingOrCreated = await prisma.sharedResponse.upsert({
       where: { perguntaHash },
       update: {}, // não atualiza nada caso já exista

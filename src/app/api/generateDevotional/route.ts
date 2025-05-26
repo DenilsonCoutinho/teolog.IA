@@ -78,7 +78,7 @@ const REDIS_KEY = `devotional:${new Date().toISOString().slice(0, 10)}`
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      temperature: 0.7,
+      temperature: 0,
     })
 
     const content = result.choices?.[0]?.message?.content

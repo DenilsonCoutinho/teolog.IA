@@ -64,13 +64,14 @@ export default function Planos() {
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900">Premium</h3>
                         <p className="text-2xl font-bold text-gray-900 mt-2">
-                            R$7,99 <span className="text-sm font-normal">/por mês</span>
+                            R$9,99 <span className="text-sm font-normal">/por mês</span>
                         </p>
-                        <p className="mt-2 text-gray-600">Apenas R$0,26 centavos por dia.</p>
+                        <p className="mt-2 text-gray-600">Apenas R$0,32 centavos por dia.</p>
                         <ul className="mt-4 space-y-2 text-sm text-gray-700">
                             <li>✓ Perguntas ilimitadas</li>
                             <li>✓ Acesso a todo conteúdo bíblico</li>
                             <li>✓ Devocional gerado pelo nosso Teólogo IA</li>
+                            <li>✓ Devocionais diários personalizados </li>
                             <li>✓ Respostas completas e fundamentadas</li>
                             <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li>
                             <li>✓ Você estará apoiando missões mundiais: 50% de toda a arrecadação é destinada ao campo missionário.</li>
