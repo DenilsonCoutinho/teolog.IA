@@ -1,14 +1,14 @@
 "use server"
 import { db as prisma } from "@/lib/db";
-export default async function IsNewUser(userId: string) {
+export default async function UpdateNewUser(userId: string) {
 
     const isNewUser = await prisma.user.findUnique({
         where: { id: userId },
         select: {
-            hasCompletedQuestionnaire: true
+            isNewUser: false
         }
     })
 
-    
+
     return isNewUser
 }

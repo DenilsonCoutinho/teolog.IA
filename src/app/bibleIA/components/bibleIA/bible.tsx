@@ -5,7 +5,8 @@ import nvi from '../../../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../../../pt_ntlh.json' assert { type: "json" };
 import logo from '@/assets/logo-teologia-2.svg';
 import logo_white from '@/assets/logo-teologia-white.svg'
-
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 import {
     Select,
     SelectContent,
@@ -43,6 +44,7 @@ import {
     WhatsappIcon,
     WhatsappShareButton,
 } from "react-share";
+import UpdateNewUser from '../../../../../service/updateNewUser';
 export interface BibleBook {
     abbrev: string;
     name: string;
@@ -76,7 +78,9 @@ export default function BibleIA() {
         hasHydrated,
         selectTranslation,
         setLoadingLayout,
-        loadingLayout
+        loadingLayout,
+        isNewUser,
+        setIsNewUser
     } = useBibleStore();
     const route = useRouter()
 
@@ -92,6 +96,7 @@ export default function BibleIA() {
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const isDrawerOpenRef = useRef(isDrawerOpen);
+    const isNewUserRef = useRef(isNewUser);
     // const [selectedText, setSelectedText] = useState<string[]>([]);
 
     useEffect(() => {
@@ -242,6 +247,7 @@ export default function BibleIA() {
         const dataHasAskExisting = await HasAskExisting(askHash)
         setCurrentTitle(ASK_USER)
         if (dataHasAskExisting?.htmlContent) {
+            setIsNewUser(false)
             await new Promise((resolve) => setTimeout(resolve, 2000))
             await animateWords(dataHasAskExisting?.htmlContent, (updateFn) => setResponseIa(updateFn), () => setLoading(false));
             return
@@ -302,7 +308,39 @@ export default function BibleIA() {
             navigator.vibrate(90); // Vibra por 90ms
         }
     };
+    const driverObj = driver({
+        showButtons: [
+            'next',
+            'close'
+        ],
+        steps: [
+            {
+                element: '#verse-0',
+                popover: {
+                    doneBtnText: 'Ok!',
+                    title: 'Selecione um versículo',
+                    description: 'Clique em um versículo para fazer uma pergunta ao nosso Teólogo IA.',
+                }
+            },
+        ]
+    });
+    console.log(isNewUser)
 
+    useEffect(() => {
+
+        // document.addEventListener('DOMContentLoaded', () => {
+            // DOM está carregado
+            async function initializeDriver() {
+                await new Promise(resolve => setTimeout(resolve, 10));
+                if (!isNewUser) {
+                   return driverObj.destroy()
+                    
+                }
+                driverObj.drive()
+            }
+            initializeDriver()
+        // });
+    }, [isNewUser])
 
     const share = async () => {
         try {
@@ -388,9 +426,10 @@ export default function BibleIA() {
                         {selectTextBookBible[selectNumberChapter]?.map((texts, index) => (
                             <div
                                 key={index}
+                                id={`verse-${index}`}
                                 onClick={() => { askIA(index); setIsDrawerOpen(!isDrawerOpen); }}
                                 className={`cursor-pointer flex items-start gap-1 border dark:border dark:border-gray-700  rounded-md p-1 shadow-xs`}>
-                                <p className={`${lora.className} text-[16px] text-left`}>
+                                <p className={`${lora.className} text-[16px] text-left`} >
                                     {index + 1} - <span className='font-normal'>{texts}</span>
                                 </p>
                             </div>

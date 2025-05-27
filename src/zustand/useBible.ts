@@ -13,6 +13,7 @@ type bibleStore = {
     selectTextBookBible: string[][]
     selectNumberChapter: number,
     hasHydrated: boolean
+    isNewUser: boolean | null
     setSelectNameBook: (namebook: string | undefined) => void
     setSelectTranslation: (namebook: string) => void
     setSelectChapter: (number: PropsChapters[] | null) => void
@@ -21,6 +22,7 @@ type bibleStore = {
     setHasHydrated: (value: boolean) => void
     setLoadingLayout: (value: boolean) => void
     setOpenSideBar: (value: boolean) => void
+    setIsNewUser: (value: boolean| null) => void
 
 }
 
@@ -29,6 +31,7 @@ type bibleStore = {
 export const useBibleStore = create<bibleStore>()(
     persist(
         (set) => ({
+            isNewUser: true,
             loadingLayout: null,
             selectNameBook: 'Gênesis',
             selectTranslation: '',
@@ -37,6 +40,7 @@ export const useBibleStore = create<bibleStore>()(
             selectNumberChapter: 0,
             hasHydrated: false,
             openSideBar: false,
+            setIsNewUser: (value) => set({ isNewUser: value }),
             setOpenSideBar: (value) => set({ openSideBar: value }),
             setHasHydrated: (value) => set({ hasHydrated: value }),
             setLoadingLayout: (value) => set({ loadingLayout: value }),
