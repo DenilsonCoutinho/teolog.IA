@@ -58,7 +58,7 @@ type Translations = {
         type_translations: TypeTranslations
     }
 }
-export default function BibleIA({ typeTranslations }: { typeTranslations: Translations | undefined }) {
+export default function BibleIA() {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const { data: session } = useSession();
     const [maintenance, setMaintenance] = useState<boolean>(false);
@@ -218,7 +218,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
         }
         setLoadingLayout(false)
     }, [hasHydrated]);
-
 
     useEffect(() => {
         if (!selectNameBook) {
@@ -409,7 +408,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                 </section>
             </div>
 
-            {/* Caixa de diálogo */}
             <Dialog onOpenChange={(val) => { if (val === false) return; setIsDrawerOpen(val); }} open={isDrawerOpen}>
                 <DialogContent className='px- dark:bg-[#181818] '>
                     <DialogHeader className='flex'>
@@ -422,7 +420,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                     </DialogHeader>
 
                     <div style={{ height: `${innerHeight - 160}px` }} className="w-full  flex flex-col border rounded-xl">
-                        {/* Área das mensagens */}
                         <div className="flex-1 h-full overflow-y-auto mb-5 p-2 dark:bg-[#181818] bg-gray-100">
                             {!responseIa ? (
                                 <div className="h-full flex items-center justify-center text-gray-400 text-center">
@@ -453,13 +450,6 @@ export default function BibleIA({ typeTranslations }: { typeTranslations: Transl
                                 <WhatsappIcon />
                             </Button>
                         </WhatsappShareButton>
-
-                        {/* <FacebookShareButton  title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
-                            <Button className='flex'>
-                                Compartilhar
-                                <FacebookIcon />
-                            </Button>
-                        </FacebookShareButton> */}
                         <TwitterShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <Button className='flex'>
                                 Compartilhar
