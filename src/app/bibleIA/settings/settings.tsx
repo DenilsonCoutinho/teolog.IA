@@ -116,7 +116,7 @@ export default function Settings({ typetheology }: { typetheology: Theology | un
         <>
 
             <div className="w-full mt-20 flex flex-wrap gap-3">
-                <div className="border space-y-2 rounded-lg p-4 shadow-md h-40 max-w-96 w-full">
+                {/* <div className="border space-y-2 rounded-lg p-4 shadow-md h-40 max-w-96 w-full">
                     <h1 className="font-bold text-xl text-gray-700 dark:text-zinc-200">Sua linha teológica</h1>
                     <Select onValueChange={(e: TypeTheologyProps) => setTheologySelected(e)}>
                         <SelectTrigger className="w-[180px]">
@@ -134,7 +134,7 @@ export default function Settings({ typetheology }: { typetheology: Theology | un
                         </SelectContent>
                     </Select>
                     <Button disabled={theologySelected ? false : true} onClick={() => changeTheology()} className="bg-gray-900 dark:text-zinc-200 text-white max-w-2xl cursor-pointer">{loading ? <Loader /> : "Alterar"}</Button>
-                </div>
+                </div> */}
 
                 <div className="border space-y-2 rounded-lg p-4 shadow-md h-40 max-w-96 w-full">
                     <h1 className="font-bold text-xl text-gray-700 dark:text-zinc-200">Selecionar Tradução</h1>

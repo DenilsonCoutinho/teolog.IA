@@ -90,14 +90,11 @@ export default function BibleIA() {
 
     const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
-    // const [loadingLayout, setLoadingLayout] = useState<boolean>(false);
     const [responseIa, setResponseIa] = useState<string>("");
     const [currentHash, setCurrentHash] = useState<string>("");
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const isDrawerOpenRef = useRef(isDrawerOpen);
-    const isNewUserRef = useRef(isNewUser);
-    // const [selectedText, setSelectedText] = useState<string[]>([]);
 
     useEffect(() => {
         isDrawerOpenRef.current = isDrawerOpen;
@@ -234,7 +231,7 @@ export default function BibleIA() {
     }, [selectTranslation, selectNameBook]);
     const typeTheology = session?.user.typetheology[0]?.type_theology
     function generateHash(ask: string) {
-        const chave = `${typeTheology.trim().toLowerCase()}::${ask?.trim()?.toLowerCase()}`
+        const chave = `${ask?.trim()?.toLowerCase()}`
         return crypto.createHash('sha256').update(chave).digest('hex')
     }
 
@@ -273,11 +270,10 @@ export default function BibleIA() {
             }
             if (stream.status === 202) {
                 setIsDrawerOpen(false)
-                toast.error("Estamos processando sua resposta, dentro de 1 minuto.", { duration: 10000, closeButton: true })
+                toast.error("Estamos processando sua resposta, volte dentro de 1 minuto.", { duration: 10000, closeButton: true })
                 return; // não prossegue pois está esperando resposta pronta
             }
             const reader = stream.body.getReader();
-            console.log(reader)
             const decoder = new TextDecoder();
             let fullResponse = "";
 
@@ -288,7 +284,7 @@ export default function BibleIA() {
                 fullResponse += chunk;
                 setResponseIa(fullResponse); // Atualiza a UI em tempo real
             }
-            await resCreated(askHash, fullResponse)
+            // await resCreated(askHash, fullResponse)
             // setSelectedText([]);
         } catch (error: any) {
             if (error instanceof Error) {
@@ -327,9 +323,6 @@ export default function BibleIA() {
     console.log(isNewUser)
 
     useEffect(() => {
-
-        // document.addEventListener('DOMContentLoaded', () => {
-            // DOM está carregado
             async function initializeDriver() {
                 await new Promise(resolve => setTimeout(resolve, 10));
                 if (!isNewUser) {
@@ -339,7 +332,6 @@ export default function BibleIA() {
                 driverObj.drive()
             }
             initializeDriver()
-        // });
     }, [isNewUser])
 
     const share = async () => {
