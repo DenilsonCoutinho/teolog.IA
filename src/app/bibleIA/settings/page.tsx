@@ -17,27 +17,8 @@ type Translation = {
 }
 
 export default async function SettingsServerSide() {
-    const cookieHeader = await cookies();
-
-    // Realiza a requisição para buscar o tipo de teologia
-    const typetheology = await fetch(`${process.env.NEXT_PUBLIC_URL}api/revalidates/typeTheology`, {
-        headers: {
-            cookie: cookieHeader.toString(),  // Envia os cookies como string no cabeçalho
-        },
-        next: { tags: ['type-theology'] },
-    }).then(async res => {
-        if (!res.ok) {
-            console.error(res.statusText)
-            return 
-        }
-        return await res.json() as Promise<Theology>;
-    });
-
-
-    
-
    
     return (
-            <Settings  typetheology={typetheology} />
+            <Settings   />
     )
 }

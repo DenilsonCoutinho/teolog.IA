@@ -18,15 +18,9 @@ import { useTheme } from "next-themes";
 import { useResize } from "../../../../context/triggerResizeContext";
 type TypeTheologyProps = "ARMINIANA" | "REFORMADA" | "PENTECOSTAL" | "BATISTA"
 
-type Theology = {
-    data: {
-        type_theology: typetheology
-    }
-}
 
-type TypeTranslations = "ACF" | "NTLH" | "NVI"
 
-export default function Settings({ typetheology }: { typetheology: Theology | undefined, }) {
+export default function Settings() {
 
     const options: { id: TypeTheologyProps; label: string }[] = [
         { id: 'BATISTA', label: 'Teologia Batista' },
@@ -64,7 +58,6 @@ export default function Settings({ typetheology }: { typetheology: Theology | un
     } = useBibleStore();
     const { data: session } = useSession()
     const [theologySelected, setTheologySelected] = useState<TypeTheologyProps | null>()
-    const [translationSelected, setTranslationSelected] = useState<TypeTranslations | null>()
     const { setTheme, theme, resolvedTheme } = useTheme()
     const { innerHeight } = useResize()
     const [myTheme, setMyTheme] = useState<string | undefined>('');

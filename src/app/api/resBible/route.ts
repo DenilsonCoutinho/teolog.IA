@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     if (!lock) {
       // Alguém já está gerando essa resposta
       return NextResponse.json({
-        message: "Essa pergunta já está sendo processada por outro usuário. Aguarde alguns segundos para ver a resposta pronta.",
+        message: "Essa pergunta já está sendo processada. Aguarde alguns segundos para ver a resposta pronta.",
       }, { status: 202 });
     }
     const rate = await limitRatePremium(session?.user?.id);
