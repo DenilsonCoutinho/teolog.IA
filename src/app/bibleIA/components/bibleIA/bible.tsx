@@ -320,7 +320,6 @@ export default function BibleIA() {
             },
         ]
     });
-    console.log(isNewUser)
 
     useEffect(() => {
             async function initializeDriver() {
