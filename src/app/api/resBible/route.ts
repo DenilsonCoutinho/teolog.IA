@@ -4,16 +4,9 @@ import { db as prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from 'next/server';
 import { limitRatePremium } from "../../../../actions/limitRatePremium";
 import { auth } from "../../../../auth";
-import { typetheology } from "@prisma/client";
 import { systemGenericPrompt } from "@/prompts/prompt";
 import { redirect } from "next/navigation";
 import Redis from "ioredis";
-
-type Theology = {
-  data: {
-    type_theology: typetheology
-  }
-}
 
 function formatSecond(seconds: number) {
   const min = Math.floor(seconds / 60);
@@ -36,8 +29,7 @@ export async function POST(req: NextRequest) {
       redirect('/')
       return NextResponse.json({ error: 'Usuário não autenticado' }, { status: 401 });
     }
-    const redisClient = new Redis("rediss://default:AWxAAAIjcDFjZjZkMzUwZDNiZTc0OGJhYTBjMDNiN2YzZmUyNjQyZnAxMA@desired-rhino-27712.upstash.io:6379");
-
+    const redisClient = new Redis(process.env.URL_CONECTION_REDIS as string);
 
     const lockKey = `lock:${perguntaHash}`;
     const lock = await (redisClient.set as any)(lockKey, "locked", "NX", "EX", 20);
