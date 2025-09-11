@@ -5,7 +5,7 @@ import logo from '../../../assets/logo-teologia-2.svg'
 import { LoginBtn } from "../auth/loginButton";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+
 export function Hero() {
     const { data: session, } = useSession()
     const route = useRouter()
@@ -60,7 +60,7 @@ export function Hero() {
                         Como Funciona
                     </Button>
                 </div>
-              
+
             </div>
         </section>
     );

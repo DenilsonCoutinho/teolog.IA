@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import acf from '../../../../../pt_acf.json' assert { type: "json" };
 import nvi from '../../../../../pt_nvi.json' assert { type: "json" };
 import ntlh from '../../../../../pt_ntlh.json' assert { type: "json" };
@@ -44,7 +44,6 @@ import {
     WhatsappIcon,
     WhatsappShareButton,
 } from "react-share";
-import UpdateNewUser from '../../../../../service/updateNewUser';
 export interface BibleBook {
     abbrev: string;
     name: string;
@@ -54,16 +53,10 @@ export interface BibleBook {
 const lora = Lora({
     subsets: ["latin"],
 });
-type TypeTranslations = "ACF" | "NTLH" | "NVI"
-type Translations = {
-    data: {
-        type_translations: TypeTranslations
-    }
-}
+
 export default function BibleIA() {
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const { data: session } = useSession();
-    const [maintenance, setMaintenance] = useState<boolean>(false);
     const { resolvedTheme } = useTheme()
     const { innerHeight } = useResize()
     const {
@@ -147,29 +140,6 @@ export default function BibleIA() {
         setSelectTextBookBible(versicleData?.chapters);
     }
 
-
-    async function animateWords(text: string, onUpdate: (partial: any) => void, onComplete: () => void) {
-        setResponseIa('');
-        let words: string[] = text.split(" ");
-        let index = 0;
-
-        function next() {
-            if (!isDrawerOpenRef.current) {
-                setResponseIa('')
-                words = [""]
-            }
-            if (index < words.length) {
-                onUpdate((prev: any) => prev + (index === 0 ? "" : " ") + words[index]);
-                index++;
-                setTimeout(next, 4); // tempo entre palavras
-            } else {
-                onComplete();
-            }
-        }
-
-        next();
-    }
-
     async function nextChapter() {
         const section = document.querySelector('#top');
         if (selectNumberChapter + 1 >= selectTextBookBible.length) {
@@ -229,7 +199,6 @@ export default function BibleIA() {
             setSelectNumberChapter(0);
         }
     }, [selectTranslation, selectNameBook]);
-    const typeTheology = session?.user.typetheology[0]?.type_theology
     function generateHash(ask: string) {
         const chave = `${ask?.trim()?.toLowerCase()}`
         return crypto.createHash('sha256').update(chave).digest('hex')
@@ -245,21 +214,21 @@ export default function BibleIA() {
         setCurrentTitle(ASK_USER)
         if (dataHasAskExisting?.htmlContent) {
             setIsNewUser(false)
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            await animateWords(dataHasAskExisting?.htmlContent, (updateFn) => setResponseIa(updateFn), () => setLoading(false));
+            // await new Promise((resolve) => setTimeout(resolve, 2000))
+            setResponseIa(dataHasAskExisting?.htmlContent)
+            // await animateWords(dataHasAskExisting?.htmlContent, (updateFn) => setResponseIa(updateFn), () => setLoading(false));
             return
         }
         try {
             if (dataHasAskExisting?.status === "pending" && dataHasAskExisting.perguntaHash === askHash) {
                 throw new Error("Resposta em processamento, Volte em alguns minutos.");
             }
-            const stream = await fetch(`${session?.user.stripeNamePlan === "Free" ? "/api/resBibleForTest" : "/api/resBible"}`, {
+            const stream = await fetch(`${session?.user.stripeNamePlan === "Free" ? "/api/resBibleFree" : "/api/resBible"}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ messageUser: ASK_USER, perguntaHash: askHash, userId: session?.user.id }),
             });
 
-            // Isso é essencial!
             if (!stream.ok) {
                 const data = await stream.json();
                 throw new Error(`Erro ao gerar resposta: ${data.error}`);
@@ -290,6 +259,7 @@ export default function BibleIA() {
             if (error instanceof Error) {
                 setIsDrawerOpen(false)
                 toast.error(error.message)
+                return
             }
             toast.error(error.message)
 
@@ -322,15 +292,15 @@ export default function BibleIA() {
     });
 
     useEffect(() => {
-            async function initializeDriver() {
-                await new Promise(resolve => setTimeout(resolve, 10));
-                if (!isNewUser) {
-                   return driverObj.destroy()
-                    
-                }
-                driverObj.drive()
+        async function initializeDriver() {
+            await new Promise(resolve => setTimeout(resolve, 10));
+            if (!isNewUser) {
+                return driverObj.destroy()
+
             }
-            initializeDriver()
+            driverObj.drive()
+        }
+        initializeDriver()
     }, [isNewUser])
 
     const share = async () => {
@@ -475,16 +445,16 @@ export default function BibleIA() {
                     </div>
                     {!loading && <div className='md:flex hidden flex-row items-center gap-3 justify-center'>
                         <WhatsappShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
-                            <Button className='flex'>
+                            <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive">
                                 Compartilhar
                                 <WhatsappIcon />
-                            </Button>
+                            </div>
                         </WhatsappShareButton>
                         <TwitterShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
-                            <Button className='flex'>
+                            <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive">
                                 Compartilhar
                                 <TwitterIcon />
-                            </Button>
+                            </div>
                         </TwitterShareButton>
                     </div>
                     }

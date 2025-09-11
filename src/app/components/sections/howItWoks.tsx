@@ -1,5 +1,10 @@
+"use client"
 import { Book, Search, Check, ArrowRight } from "lucide-react";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+import { useEffect, useRef } from "react";
 
+gsap.registerPlugin(ScrollTrigger);
 const steps = [
   {
     icon: Book,
@@ -19,10 +24,12 @@ const steps = [
 ];
 
 export function HowItWorks() {
+
   return (
     <section id="howItwork" className="pb-24 px-4 bg-gradient-to-b from-white to-purple-50">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-black">
+      
+        <h2 className="text-3xl pt-20 md:text-4xl font-bold text-center mb-16 text-black">
           Como Funciona
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
