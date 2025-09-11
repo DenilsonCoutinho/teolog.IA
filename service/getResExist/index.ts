@@ -18,7 +18,6 @@ export async function resCreated(perguntaHash: string, htmlContent: string) {
         data: {
             userId: session?.user.id,
             htmlContent,
-            teologia: session?.user.typetheology[0]?.type_theology,
             perguntaHash,
             likes: 0, 
             dislikes: 0, 
