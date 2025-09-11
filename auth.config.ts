@@ -1,5 +1,4 @@
 import { createStripeCustomer } from "@/lib/stripe";
-import { Typetheology, typetheology, User } from "@prisma/client";
 import { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google";
 import { db as prisma } from "@/lib/db";
@@ -28,7 +27,6 @@ export default {
           stripePricePlan: true,
           is_current_period_end: true,
           stripe_current_period_end: true,
-          typetheology: true
         },
       })
 
@@ -48,7 +46,6 @@ export default {
       token.stripePricePlan = user?.stripePricePlan
       token.is_current_period_end = user?.is_current_period_end
       token.stripe_current_period_end = user?.stripe_current_period_end
-      token.typetheology = user?.typetheology
 
       return token
     },

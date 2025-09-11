@@ -15,7 +15,7 @@ const LoginForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true)
-        const singin = await signIn("google", { redirectTo: "/questionario", redirect: false })
+        const singin = await signIn("google", { redirectTo: "/plans", redirect: false })
         if (singin.ok) {
             return window.location.href = singin.url as string
         }
