@@ -1,6 +1,4 @@
-import { ResDevotionalIa } from "../entities/resDevotional"
-
 export type devotionalBibleRepo = {
-    create: (date: Date) => Promise<ResDevotionalIa | null| Error>
-    findByDate: (date: Date) => Promise<ResDevotionalIa | null>
+    create: (date: Date, content: string) => Promise< Error | void>
+    findByDate: (date: Date) => Promise<string | undefined>
 }
