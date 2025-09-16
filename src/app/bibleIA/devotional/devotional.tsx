@@ -10,12 +10,12 @@ import {
     ContentState,
     convertFromHTML,
 } from 'draft-js'
-import { getContentDevotional } from '../../../../service/getContentDevotional'
 import Image from 'next/image'
 import DualRingSpinnerLoader from '@/app/components/ui/DualRingSpinnerLoader'
 import { useResize } from '../../../../context/triggerResizeContext'
 import { useBibleStore } from '@/zustand/useBible'
 import { useTheme } from 'next-themes'
+import { ResDevotionalIa } from '@/app/core/entities/resDevotional'
 
 interface Devotional {
     id: String
@@ -33,26 +33,41 @@ export default function Devotional() {
     const { innerHeight } = useResize()
     const [loading, setLoading] = useState(true)
     const { setLoadingLayout, loadingLayout } = useBibleStore()
-        const { resolvedTheme } = useTheme()
-    
+    const { resolvedTheme } = useTheme()
+
     useEffect(() => {
         async function fetchContentDevotional() {
-            const devotional = await getContentDevotional()
-            if (devotional.content) {
-                const blocksFromHTML = convertFromHTML(devotional.content)
-                const content = ContentState.createFromBlockArray(
-                    blocksFromHTML.contentBlocks,
-                    blocksFromHTML.entityMap
-                )
-                setEditorState(EditorState.createWithContent(content))
+            try {
+                const devotional = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/generateDevotional`, {
+                    next: { tags: ['devotional'] },
+                })
+                console.log(devotional)
+                const data = await devotional.json()
+                if (data.error) {
+                    throw new Error("Usuário não autenticado!")
+                }
+                const devotionalData = data as ResDevotionalIa
+
+                if (devotionalData.content) {
+
+                    const blocksFromHTML = convertFromHTML(devotionalData.content)
+                    const content = ContentState.createFromBlockArray(
+                        blocksFromHTML.contentBlocks,
+                        blocksFromHTML.entityMap
+                    )
+                    setEditorState(EditorState.createWithContent(content))
+                }
+                setLoading(false)
+                setLoadingLayout(false)
+            } catch (error: unknown) {
+                alert(error)
             }
-            setLoading(false)
-            setLoadingLayout(false)
+
         }
 
         fetchContentDevotional()
     }, [])
-     if (loading || loadingLayout) {
+    if (loading || loadingLayout) {
         return <div className='w-full flex justify-center items-center'>
             <div style={{ height: `${innerHeight - 130}px` }} className=''>
                 <div className=' h-full flex flex-col justify-center items-center'>

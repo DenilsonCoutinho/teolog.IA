@@ -1,5 +1,5 @@
-import { validateLimitRate } from "@/application/services/validateLimitRateService";
-import { rateLimitRepo } from "@/domain/repositories/rateLimitRepo";
+import { validateLimitRate } from "@/app/core/services/validateLimitRateService";
+import { rateLimitRepo } from "@/app/core/repositories/rateLimitRepo";
 import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
