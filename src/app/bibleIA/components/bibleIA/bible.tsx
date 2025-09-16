@@ -37,7 +37,7 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useResize } from '../../../../../context/triggerResizeContext';
 import { Button } from '@/components/ui/button';
-import { HasAskExisting, resCreated } from '../../../../../service/getResExist';
+import { HasAskExisting } from '../../../../../service/getResExist';
 import {
     TwitterIcon,
     TwitterShareButton,
