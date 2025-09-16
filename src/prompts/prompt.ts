@@ -178,7 +178,7 @@ Formate sua resposta com HTML compatível com Draft.js, usando apenas:
 
 Todas as tags devem estar bem formadas. Nenhuma classe CSS deve ser usada. Use a estrutura semântica para guiar o leitor.
 
-Limite-se a 800 palavras. Foque em clareza, teologia bíblica e aplicação fiel.
+Limite-se a 500 palavras. Foque em clareza, teologia bíblica e aplicação fiel.
 `
 
 export const userPrompt = `Escolha um versículo bíblico aleatório e gere um devocional profundo e prático baseado nele.`

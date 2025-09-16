@@ -15,13 +15,11 @@ import DualRingSpinnerLoader from '@/app/components/ui/DualRingSpinnerLoader'
 import { useResize } from '../../../../context/triggerResizeContext'
 import { useBibleStore } from '@/zustand/useBible'
 import { useTheme } from 'next-themes'
-import { ResDevotionalIa } from '@/app/core/entities/resDevotional'
 
 interface Devotional {
     id: String
     content: String // conteúdo em HTML
 }
-
 export interface BibleBook {
     abbrev: string;
     name: string;
@@ -39,18 +37,39 @@ export default function Devotional() {
         async function fetchContentDevotional() {
             try {
                 const devotional = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/generateDevotional`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
                     next: { tags: ['devotional'] },
+
                 })
-                console.log(devotional)
-                const data = await devotional.json()
-                if (data.error) {
-                    throw new Error("Usuário não autenticado!")
+                const contentType = devotional.headers.get("content-type") || "";
+                if (!contentType.includes("application/json") && devotional?.body) {
+                    const reader = devotional.body.getReader();
+                    const decoder = new TextDecoder();
+                    let fullResponse = "";
+
+                    while (true) {
+                        setLoading(false)
+                        setLoadingLayout(false)
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        const chunk = decoder.decode(value, { stream: true });
+                        fullResponse += chunk;
+                        const blocksFromHTML = convertFromHTML(fullResponse)
+                        const content = ContentState.createFromBlockArray(
+                            blocksFromHTML.contentBlocks,
+                            blocksFromHTML.entityMap
+                        )
+                        setEditorState(EditorState.createWithContent(content))
+                    }
+                    setLoading(false)
+                    setLoadingLayout(false)
+                    return
                 }
-                const devotionalData = data as ResDevotionalIa
-
-                if (devotionalData.content) {
-
-                    const blocksFromHTML = convertFromHTML(devotionalData.content)
+                const data = await devotional.json()
+                const devotionalData = data as string
+                if (devotionalData) {
+                    const blocksFromHTML = convertFromHTML(data)
                     const content = ContentState.createFromBlockArray(
                         blocksFromHTML.contentBlocks,
                         blocksFromHTML.entityMap
