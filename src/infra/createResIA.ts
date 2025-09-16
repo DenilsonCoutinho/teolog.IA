@@ -1,5 +1,5 @@
-import { CreateResRepo } from "@/domain/repositories/resBibleIaRepo";
-import { ResIaBible } from "../domain/entities/resBible"
+import { CreateResRepo } from "@/app/core/repositories/resBibleIaRepo";
+import { ResIaBible } from "../app/core/entities/resBible"
 
 import { db as prisma } from "@/lib/db";
 

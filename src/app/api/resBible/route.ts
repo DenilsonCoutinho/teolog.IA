@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from "../../../../auth";
 import { systemGenericPrompt } from "@/prompts/prompt";
 import { redirect } from "next/navigation";
-import { CreateResIaUseCase } from "@/application/useCase/createResIaUseCase";
+import { CreateResIaUseCase } from "@/app/core/useCase/createResIaUseCase";
 import { CreateResIaPrisma } from "@/infra/createResIA";
 import { limitRate } from "@/infra/limitRate";
 import { responseInQueue } from '@/infra/responseInQueue';

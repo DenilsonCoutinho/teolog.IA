@@ -1,5 +1,5 @@
-import { validateIfResInQueueService } from "@/application/services/validateIfResInQueueService";
-import { responseInQueueRepo } from "@/domain/repositories/responseInQueueRepo";
+import { validateIfResInQueueService } from "@/app/core/services/validateIfResInQueueService";
+import { responseInQueueRepo } from "@/app/core/repositories/responseInQueueRepo";
 import Redis from "ioredis";
 
 export function responseInQueue(): responseInQueueRepo {

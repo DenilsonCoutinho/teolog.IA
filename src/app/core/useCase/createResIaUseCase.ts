@@ -1,4 +1,4 @@
-import { CreateResRepo } from "@/domain/repositories/resBibleIaRepo";
+import { CreateResRepo } from "@/app/core/repositories/resBibleIaRepo";
 import { streamText } from "ai";
 import { xai } from "@ai-sdk/xai";
 export async function* CreateResIaUseCase(

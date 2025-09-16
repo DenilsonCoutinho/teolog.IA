@@ -1,4 +1,3 @@
-import { typetranslations } from "@prisma/client"
 import BibleIA from "./components/bibleIA/bible"
 
 
