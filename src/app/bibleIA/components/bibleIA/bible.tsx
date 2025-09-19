@@ -119,7 +119,6 @@ export default function BibleIA() {
 
     function getChapterBible(bookName: string) {
 
-        // if (bookName === "") return
         setSelectTextBookBible([]);
         const bookData = bible?.find((e: BibleBook) => e?.name === bookName);
 
@@ -214,9 +213,7 @@ export default function BibleIA() {
         setCurrentTitle(ASK_USER)
         if (dataHasAskExisting?.htmlContent) {
             setIsNewUser(false)
-            // await new Promise((resolve) => setTimeout(resolve, 2000))
             setResponseIa(dataHasAskExisting?.htmlContent)
-            // await animateWords(dataHasAskExisting?.htmlContent, (updateFn) => setResponseIa(updateFn), () => setLoading(false));
             return
         }
         try {
