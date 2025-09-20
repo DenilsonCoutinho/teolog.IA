@@ -4,11 +4,12 @@ import { DevotionalIaPrisma } from '@/infra/createDevotional'
 import { CreateDevotionalIaUseCase } from '@/app/core/useCase/createResDevotionalUseCase'
 import { FindDevotionalIaUseCase } from '@/app/core/useCase/findResDevotionalUseCase'
 import { auth } from '../../../../auth'
+import { notFound } from 'next/navigation'
 
 
 const today = new Date()
 today.setUTCHours(0, 0, 0, 0)
-export async function GET() {
+export async function GET(req: Request) {
   const session = await auth()
 
   try {
@@ -22,7 +23,7 @@ export async function GET() {
     if (findDevotionalIaUseCase) {
       return NextResponse.json(findDevotionalIaUseCase)
     }
-    
+
     const readableStream = new ReadableStream({
       async start(controller) {
         for await (const chunk of CreateDevotionalIaUseCase(devotionalRepo, today)) {

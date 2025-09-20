@@ -16,8 +16,6 @@ export default function Settings() {
     const route = useRouter()
     const [loadingLayout, setLoadingLayout] = useState<boolean>(true);
     const {
-        setHasHydrated,
-        hasHydrated,
         selectTranslation,
         setSelectTranslation,
         setSelectNameBook

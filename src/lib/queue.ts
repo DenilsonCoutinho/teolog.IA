@@ -2,9 +2,9 @@
 import { Queue } from 'bullmq';
 import IORedis from 'ioredis';
 
-const connection = new IORedis("rediss://default:AWxAAAIjcDFjZjZkMzUwZDNiZTc0OGJhYTBjMDNiN2YzZmUyNjQyZnAxMA@desired-rhino-27712.upstash.io:6379",{
+const connection = new IORedis(process.env.URL_CONECTION_REDIS as string, {
     maxRetriesPerRequest: null,
-}); // ou upstash
+});
 
 
 export const aiQueue = new Queue('ask-ai', { connection });
