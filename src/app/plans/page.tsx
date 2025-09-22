@@ -49,7 +49,7 @@ export default function Planos() {
                             <li>✓ 5 Perguntas por dia</li>
                             <li>✓ Devocional gerado pelo nosso Teólogo IA</li>
                             <li>✓ Respostas completas e fundamentadas</li>
-                            <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li>
+                            {/* <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li> */}
                         </ul>
                     </div>
                     <button onClick={() => freePlan()} className="mt-6 border w-full py-2 px-4 border-gray-200 rounded-lg bg-gradient-to-r cursor-pointer text-black  transition">
@@ -73,7 +73,7 @@ export default function Planos() {
                             <li>✓ Devocional gerado pelo nosso Teólogo IA</li>
                             <li>✓ Devocionais diários personalizados </li>
                             <li>✓ Respostas completas e fundamentadas</li>
-                            <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li>
+                            {/* <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li> */}
                             <li>✓ Você estará apoiando missões mundiais: 50% de toda a arrecadação é destinada ao campo missionário.</li>
                         </ul>
                     </div>
@@ -107,7 +107,7 @@ export default function Planos() {
                             <li>✓ Perguntas ilimitadas</li>
                             <li>✓ Acesso a todo conteúdo bíblico</li>
                             <li>✓ Respostas completas e fundamentadas</li>
-                            <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li>
+                            {/* <li>✓ Resposta de acordo com a sua teologia (Batista, Pentecostal, Presbiteriana, Arminiana)</li> */}
                             <li>✓ Você estará apoiando missões mundiais: 50% de toda a arrecadação é destinada ao campo missionário.</li>
                             <li>Gerador de estudos bíblicos (Em breve)</li>
                             <li>Devocionais diários personalizados (Em breve)</li>
