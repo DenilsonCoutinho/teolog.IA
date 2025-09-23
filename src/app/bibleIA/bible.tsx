@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useRef, useState } from 'react';
-import acf from '../../../../../pt_acf.json' assert { type: "json" };
-import nvi from '../../../../../pt_nvi.json' assert { type: "json" };
-import ntlh from '../../../../../pt_ntlh.json' assert { type: "json" };
+import { useEffect, useRef, useState, useTransition } from 'react';
+import acf from '../../../pt_acf.json' assert { type: "json" };
+import nvi from '../../../pt_nvi.json' assert { type: "json" };
+import ntlh from '../../../pt_ntlh.json' assert { type: "json" };
 import logo from '@/assets/logo-teologia-2.svg';
 import logo_white from '@/assets/logo-teologia-white.svg'
 import { driver } from "driver.js";
+
 import "driver.js/dist/driver.css";
 import {
     Select,
@@ -29,21 +30,22 @@ import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { Lora } from 'next/font/google';
 import { useBibleStore } from '@/zustand/useBible';
-import DualRingSpinnerLoader from '../../../components/ui/DualRingSpinnerLoader';
+import DualRingSpinnerLoader from '../components/ui/DualRingSpinnerLoader';
 import { Editor, EditorState, ContentState, convertFromHTML } from 'draft-js';
 import { ArrowLeft, ArrowRight, Share2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { useResize } from '../../../../../context/triggerResizeContext';
+import { useResize } from '../../../context/triggerResizeContext';
 import { Button } from '@/components/ui/button';
-import { HasAskExisting } from '../../../../../service/getResExist';
+import { HasAskExisting } from '../../../service/getResExist';
 import {
     TwitterIcon,
     TwitterShareButton,
     WhatsappIcon,
     WhatsappShareButton,
 } from "react-share";
+import UpdateNewUser from '../../../service/updateNewUser';
 export interface BibleBook {
     abbrev: string;
     name: string;
@@ -55,10 +57,12 @@ const lora = Lora({
 });
 
 export default function BibleIA() {
+
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
     const { data: session } = useSession();
     const { resolvedTheme } = useTheme()
     const { innerHeight } = useResize()
+    const [isPending, startTransition] = useTransition()
     const {
         setSelectNameBook,
         selectNameBook,
@@ -72,8 +76,6 @@ export default function BibleIA() {
         selectTranslation,
         setLoadingLayout,
         loadingLayout,
-        isNewUser,
-        setIsNewUser
     } = useBibleStore();
     const route = useRouter()
 
@@ -81,18 +83,11 @@ export default function BibleIA() {
         selectTranslation === "NTLH" ? ntlh as BibleBook[] :
             selectTranslation === "NVI" ? nvi as BibleBook[] : ntlh as BibleBook[]
 
-    const [isConfeti, setIsConfeti] = useState<boolean>();
     const [loading, setLoading] = useState<boolean>(false);
     const [responseIa, setResponseIa] = useState<string>("");
     const [currentHash, setCurrentHash] = useState<string>("");
     const [currentTitle, setCurrentTitle] = useState<string>("");
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const isDrawerOpenRef = useRef(isDrawerOpen);
-
-    useEffect(() => {
-        isDrawerOpenRef.current = isDrawerOpen;
-    }, [isDrawerOpen])
-
     useEffect(() => {
         setLoadingLayout(true)
         if (!session?.user.id) {
@@ -116,6 +111,46 @@ export default function BibleIA() {
         }
     }, [responseIa]);
 
+    useEffect(() => {
+        async function initializeDriver() {
+            await new Promise(resolve => setTimeout(resolve, 10));
+            if (!session?.user.isNewUser) {
+                return driverObj.destroy()
+
+            }
+            driverObj.drive()
+            await UpdateNewUser(session?.user.id)
+        }
+        initializeDriver()
+    }, [])
+    // Efeito que é chamado após a hidratação do Zustand
+    useEffect(() => {
+        setLoadingLayout(true)
+        if (!hasHydrated) return; // Espera até o Zustand terminar de hidratar
+        if (!selectChapter) {
+            const chapters = bible[0]?.chapters
+            const chaptersInKey = Object?.keys(chapters)?.map((_, index) => {
+                return { number: index };
+            });
+            setSelectTextBookBible(bible[0]?.chapters);
+            setSelectChapter(chaptersInKey);
+
+            getChapterBible("Gênesis");
+            setSelectNameBook("Gênesis");
+            setSelectNumberChapter(0);
+            setLoadingLayout(false)
+        }
+        setLoadingLayout(false)
+    }, [hasHydrated]);
+
+    useEffect(() => {
+        if (!selectNameBook) {
+            setSelectTextBookBible(bible[0]?.chapters);
+            getChapterBible("Gênesis");
+            setSelectNameBook("Gênesis");
+            setSelectNumberChapter(0);
+        }
+    }, [selectTranslation, selectNameBook]);
 
     function getChapterBible(bookName: string) {
 
@@ -155,6 +190,7 @@ export default function BibleIA() {
             section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
+
     async function previousChapter() {
         const section = document.querySelector('#top');
         if (selectNumberChapter === 0) {
@@ -170,113 +206,81 @@ export default function BibleIA() {
             section?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
-    // Efeito que é chamado após a hidratação do Zustand
-    useEffect(() => {
-        setLoadingLayout(true)
-        if (!hasHydrated) return; // Espera até o Zustand terminar de hidratar
-        if (!selectChapter) {
-            const chapters = bible[0]?.chapters
-            const chaptersInKey = Object?.keys(chapters)?.map((_, index) => {
-                return { number: index };
-            });
-            setSelectTextBookBible(bible[0]?.chapters);
-            setSelectChapter(chaptersInKey);
 
-            getChapterBible("Gênesis");
-            setSelectNameBook("Gênesis");
-            setSelectNumberChapter(0);
-            setLoadingLayout(false)
-        }
-        setLoadingLayout(false)
-    }, [hasHydrated]);
-
-    useEffect(() => {
-        if (!selectNameBook) {
-            setSelectTextBookBible(bible[0]?.chapters);
-            getChapterBible("Gênesis");
-            setSelectNameBook("Gênesis");
-            setSelectNumberChapter(0);
-        }
-    }, [selectTranslation, selectNameBook]);
     function generateHash(ask: string) {
         const chave = `${ask?.trim()?.toLowerCase()}`
         return crypto.createHash('sha256').update(chave).digest('hex')
     }
 
     const askIA = async (verse: number,) => {
-        setLoading(true);
-        setResponseIa("");
-        const ASK_USER = `Livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1} Versículo: ${verse + 1}`.trim();
-        const askHash = generateHash(ASK_USER)
-        setCurrentHash(askHash)
-        const dataHasAskExisting = await HasAskExisting(askHash)
-        setCurrentTitle(ASK_USER)
-        if (dataHasAskExisting?.htmlContent) {
-            setIsNewUser(false)
-            setResponseIa(dataHasAskExisting?.htmlContent)
-            return
-        }
-        try {
-            if (dataHasAskExisting?.status === "pending" && dataHasAskExisting.perguntaHash === askHash) {
-                throw new Error("Resposta em processamento, Volte em alguns minutos.");
-            }
-            const stream = await fetch(`${session?.user.stripeNamePlan === "Free" ? "/api/resBibleFree" : "/api/resBible"}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ messageUser: ASK_USER, perguntaHash: askHash, userId: session?.user.id }),
-            });
+        startTransition(async () => {
 
-            if (!stream.ok) {
-                const data = await stream.json();
-                throw new Error(`Erro ao gerar resposta: ${data.error}`);
-            }
-
-            if (!stream.body) {
-                throw new Error("Resposta da API não contém um corpo de stream válido");
-            }
-            if (stream.status === 202) {
-                setIsDrawerOpen(false)
-                toast.error("Estamos processando sua resposta, volte dentro de 1 minuto.", { duration: 10000, closeButton: true })
-                return; // não prossegue pois está esperando resposta pronta
-            }
-            const reader = stream.body.getReader();
-            const decoder = new TextDecoder();
-            let fullResponse = "";
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                const chunk = decoder.decode(value, { stream: true });
-                fullResponse += chunk;
-                setResponseIa(fullResponse); // Atualiza a UI em tempo real
-            }
-            // await resCreated(askHash, fullResponse)
-            // setSelectedText([]);
-        } catch (error: any) {
-            if (error instanceof Error) {
-                setIsDrawerOpen(false)
-                toast.error(error.message)
+            setLoading(true);
+            setResponseIa("");
+            const ASK_USER = `Livro: ${selectNameBook} Capítulo: ${selectNumberChapter + 1} Versículo: ${verse + 1}`.trim();
+            const askHash = generateHash(ASK_USER)
+            setCurrentHash(askHash)
+            const dataHasAskExisting = await HasAskExisting(askHash)
+            setCurrentTitle(ASK_USER)
+            if (dataHasAskExisting?.htmlContent) {
+                setResponseIa(dataHasAskExisting?.htmlContent)
                 return
             }
-            toast.error(error.message)
+            try {
+                if (dataHasAskExisting?.status === "pending" && dataHasAskExisting.perguntaHash === askHash) {
+                    throw new Error("Resposta em processamento, Volte em alguns minutos.");
+                }
+                const stream = await fetch(`${session?.user.stripeNamePlan === "Free" ? "/api/resBibleFree" : "/api/resBible"}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ messageUser: ASK_USER, perguntaHash: askHash, userId: session?.user.id }),
+                });
 
-        } finally {
-            setLoading(false);
-        }
+                if (!stream.ok) {
+                    const data = await stream.json();
+                    throw new Error(`Erro ao gerar resposta: ${data.error}`);
+                }
+
+                if (!stream.body) {
+                    throw new Error("Resposta da API não contém um corpo de stream válido");
+                }
+                if (stream.status === 202) {
+                    setIsDrawerOpen(false)
+                    toast.error("Estamos processando sua resposta, volte dentro de 1 minuto.", { duration: 10000, closeButton: true })
+                    return; // não prossegue pois está esperando resposta pronta
+                }
+                const reader = stream.body.getReader();
+                const decoder = new TextDecoder();
+                let fullResponse = "";
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    const chunk = decoder.decode(value, { stream: true });
+                    fullResponse += chunk;
+                    setResponseIa(fullResponse); // Atualiza a UI em tempo real
+                }
+                setLoading(false);
+
+            } catch (error: any) {
+                if (error instanceof Error) {
+                    setIsDrawerOpen(false)
+                    toast.error(error.message)
+                    return
+                }
+                toast.error(error.message)
+
+            }
+        })
     };
 
-    // Função de vibração no dispositivo
-    const handleVibration = () => {
-        if (navigator.vibrate) {
-            navigator.vibrate(90); // Vibra por 90ms
-        }
-    };
     const driverObj = driver({
         showButtons: [
             'next',
             'close'
         ],
         steps: [
+
             {
                 element: '#verse-0',
                 popover: {
@@ -285,20 +289,9 @@ export default function BibleIA() {
                     description: 'Clique em um versículo para fazer uma pergunta ao nosso Teólogo IA.',
                 }
             },
+
         ]
     });
-
-    useEffect(() => {
-        async function initializeDriver() {
-            await new Promise(resolve => setTimeout(resolve, 10));
-            if (!isNewUser) {
-                return driverObj.destroy()
-
-            }
-            driverObj.drive()
-        }
-        initializeDriver()
-    }, [isNewUser])
 
     const share = async () => {
         try {
@@ -338,6 +331,7 @@ export default function BibleIA() {
 
     return (
         <div id='top' className=" ">
+
             <div className="flex flex-col items-center justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
@@ -362,7 +356,6 @@ export default function BibleIA() {
                     </Select>
                     <Select value={String(selectNumberChapter)} onValueChange={(e) => {
                         setSelectNumberChapter(Number(e));
-                        // setSelectedText([]);
                     }}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Selecionar capítulo" />
@@ -385,7 +378,7 @@ export default function BibleIA() {
                             <div
                                 key={index}
                                 id={`verse-${index}`}
-                                onClick={() => { askIA(index); setIsDrawerOpen(!isDrawerOpen); }}
+                                onClick={() => { askIA(index); setIsDrawerOpen(!isDrawerOpen); driverObj.destroy() }}
                                 className={`cursor-pointer flex items-start gap-1 border dark:border dark:border-gray-700  rounded-md p-1 shadow-xs`}>
                                 <p className={`${lora.className} text-[16px] text-left`} >
                                     {index + 1} - <span className='font-normal'>{texts}</span>
@@ -440,7 +433,7 @@ export default function BibleIA() {
                             )}
                         </div>
                     </div>
-                    {!loading && <div className='md:flex hidden flex-row items-center gap-3 justify-center'>
+                    {!isPending && <div className='md:flex hidden flex-row items-center gap-3 justify-center'>
                         <WhatsappShareButton title={"Estudo do " + currentTitle} url={`${process.env.NEXT_PUBLIC_URL}share/${currentHash}`} >
                             <div className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive">
                                 Compartilhar
@@ -455,7 +448,7 @@ export default function BibleIA() {
                         </TwitterShareButton>
                     </div>
                     }
-                    {!loading && <div onClick={() => share()} className='md:hidden flex  flex-row items-center gap-3 justify-center'>
+                    {!isPending && <div onClick={() => share()} className='md:hidden flex  flex-row items-center gap-3 justify-center'>
                         <Button className='flex'>
                             Compartilhar
                             <Share2 />
