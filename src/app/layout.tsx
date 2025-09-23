@@ -45,7 +45,7 @@ export default async function RootLayout({
             {children}
           </ResizeProvider>
         </SessionProvider>
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   );

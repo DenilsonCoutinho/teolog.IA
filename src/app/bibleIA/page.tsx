@@ -1,4 +1,4 @@
-import BibleIA from "./components/bibleIA/bible"
+import BibleIA from "./bible"
 
 
 export default async function BibleIAcomponents() {

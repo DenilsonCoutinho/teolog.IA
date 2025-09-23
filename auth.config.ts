@@ -17,7 +17,6 @@ export default {
           image: true,
           email: true,
           emailVerified: true,
-          hasCompletedQuestionnaire: true,
           stripeCustomerId: true,
           stripeSubscriptionId: true,
           stripeSubscriptionStatus: true,
@@ -27,6 +26,7 @@ export default {
           stripePricePlan: true,
           is_current_period_end: true,
           stripe_current_period_end: true,
+          isNewUser: true
         },
       })
 
@@ -35,8 +35,8 @@ export default {
       token.image = user?.image
       token.email = user?.email
       token.typ = user?.email
+      token.isNewUser = user?.isNewUser
       token.emailVerified = user?.emailVerified
-      token.hasCompletedQuestionnaire = user?.hasCompletedQuestionnaire
       token.stripeCustomerId = user?.stripeCustomerId
       token.stripeSubscriptionId = user?.stripeSubscriptionId
       token.stripeSubscriptionStatus = user?.stripeSubscriptionStatus
@@ -50,14 +50,13 @@ export default {
       return token
     },
     session({ session, token }: { session: any, token: any }) {
-      // session.user.id = token.id as string
 
       session.user.id = token.id
       session.user.name = token.name
       session.user.image = token.image
+      session.user.isNewUser = token.isNewUser
       session.user.email = token.email
       session.user.emailVerified = token.emailVerified
-      session.user.hasCompletedQuestionnaire = token.hasCompletedQuestionnaire
       session.user.stripeCustomerId = token.stripeCustomerId
       session.user.stripeSubscriptionId = token.stripeSubscriptionId
       session.user.stripeSubscriptionStatus = token.stripeSubscriptionStatus

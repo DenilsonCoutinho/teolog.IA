@@ -2,9 +2,9 @@
 import { db as prisma } from "@/lib/db";
 export default async function UpdateNewUser(userId: string) {
 
-    const isNewUser = await prisma.user.findUnique({
+    const isNewUser = await prisma.user.update({
         where: { id: userId },
-        select: {
+        data: {
             isNewUser: false
         }
     })
