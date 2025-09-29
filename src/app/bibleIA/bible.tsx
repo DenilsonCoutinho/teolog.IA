@@ -330,15 +330,13 @@ export default function BibleIA() {
     }
 
     return (
-        <div id='top' className=" ">
-
-            <div className="flex flex-col items-center justify-center w-full my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
+        <div id='top' className=" flex justify-center  mx-auto items-center w-full max-w-[700px]">
+            <div className="flex justify-center flex-col items-center w-full  my-selects mx-auto p-3 pb-28 md:gap-11 gap-10 mt-14">
                 <div className='flex items-center justify-between flex-row gap-6 w-full'>
                     <Select value={selectNameBook} onValueChange={(e) => {
                         setSelectNameBook(e);
                         getChapterBible(e);
                         setSelectNumberChapter(0);
-                        // setSelectedText([]);
                     }}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Selecionar Livro" />
@@ -372,26 +370,26 @@ export default function BibleIA() {
                         </SelectContent>
                     </Select>
                 </div>
-                <section>
-                    <div className='flex flex-col gap-2'>
+                <section className=''>
+                    <div className='flex flex-col gap-2 relative w-full'>
                         {selectTextBookBible[selectNumberChapter]?.map((texts, index) => (
                             <div
                                 key={index}
                                 id={`verse-${index}`}
                                 onClick={() => { askIA(index); setIsDrawerOpen(!isDrawerOpen); driverObj.destroy() }}
-                                className={`cursor-pointer flex items-start gap-1 border dark:border dark:border-gray-700  rounded-md p-1 shadow-xs`}>
+                                className={`cursor-pointer w-full flex items-start gap-1 border dark:border dark:border-gray-700  rounded-md p-1 shadow-xs`}>
                                 <p className={`${lora.className} text-[16px] text-left`} >
                                     {index + 1} - <span className='font-normal'>{texts}</span>
                                 </p>
                             </div>
                         ))}
 
-                        <div className='controlls flex items-center justify-between mt-3'>
-                            <div className='flex justify-center cursor-pointer items-center h-10 w-10 border rounded-full dark:border dark:border-gray-700'>
-                                <ArrowLeft onClick={() => previousChapter()} className='text-gray-300' />
+                        <div className='controlls flex items-center justify-between mt-3  w-full z-10 bottom-0'>
+                            <div className='flex justify-center cursor-pointer items-center h-10 w-10 border rounded-full dark:bg-yellow-50 bg-gray-800 dark:border dark:border-gray-700'>
+                                <ArrowLeft onClick={() => previousChapter()} className='dark:text-black text-gray-300 ' />
                             </div>
-                            <div onClick={() => nextChapter()} className='flex cursor-pointer justify-center items-center h-10 w-10 border rounded-full dark:border dark:border-gray-700'>
-                                <ArrowRight className='text-gray-300' />
+                            <div onClick={() => nextChapter()} className='flex cursor-pointer justify-center items-center dark:bg-yellow-50 bg-gray-800 h-10 w-10 border rounded-full dark:border dark:border-gray-700'>
+                                <ArrowRight className='text-gray-300 dark:text-black' />
                             </div>
                         </div>
                     </div>
