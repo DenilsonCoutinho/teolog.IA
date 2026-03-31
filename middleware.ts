@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-
+  console.log("AQUI")
   // evita loop infinito
   if (pathname === "/cancelado") {
     return NextResponse.next();
