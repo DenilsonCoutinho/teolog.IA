@@ -20,9 +20,9 @@ export async function POST(req: NextRequest) {
   const systemPrompt = systemGenericPrompt
 
   try {
-    // if (!session?.user?.id) {
-    //   redirect('/')
-    // }
+    if (!session?.user?.id) {
+      redirect('/')
+    }
 
     await rateLimitService.checkLimitTries(req)
     await checkReposeService.checkResponseInQueue(perguntaHash)
